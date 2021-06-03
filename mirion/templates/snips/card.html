@@ -4,6 +4,10 @@
         <div class="card-button-container">
             <div class="card-icon">
                 <img class="card-raw-icon" src="{{ card.icon }}">
+                {% if card.rarity != 1 %}
+                <img class="icon-overlay" src="{{ url_for('static', filename='imgs/icon_overlays/' ~ card.rarity ~ '.png') }}">
+                {% endif %}
+                <img class="icon-overlay" src="{{ url_for('static', filename='imgs/icon_overlays/' ~ card.idol_type ~ '_type.png') }}">
             </div>
             <div class="card-info">
                 <b>{{ card.card_name }}</b>
