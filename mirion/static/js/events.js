@@ -33,37 +33,44 @@ function interpolate(level, min, max, y0, y1) {
 }
 
 function increaseLevel(id, limit) {
-    var stats = ["vo", "da", "vi"];
-    var levelText = document.getElementById(`lvl-${id}`);
-    if (Number(levelText.textContent) != Number(limit)) {
-        for (var i = 0; i < stats.length; i++) {
-            var stat = document.getElementById(`${stats[i]}-${id}`);
-            var level = stat.getAttribute("data-level");
-            var min = Number(stat.getAttribute("data-default"));
-            var max = Number(stat.getAttribute("data-awaken"));
-    
-            stat.textContent = interpolate((Number(level) + 1), 1, 80, min, max);
-            stat.setAttribute("data-level", ((Number(level)) + 1).toString());
-        };
+    var inputValue = document.getElementById(`level-input-${id}`);
+    if (Number(inputValue.value) != Number(limit)) {
+        changeValues(id, inputValue.value, limit);
 
-        levelText.textContent = Number(level) + 1;
+        inputValue.value = Number(inputValue.value) + 1;
     }
 }
 
-function decreaseLevel(id) {
-    var levelText = document.getElementById(`lvl-${id}`);
-    if (Number(levelText.textContent) > 1) {
-        var stats = ["vo", "da", "vi"];
-        for (var i = 0; i < stats.length; i++) {
-            var stat = document.getElementById(`${stats[i]}-${id}`);
-            var level = stat.getAttribute("data-level");
-            var min = Number(stat.getAttribute("data-default"));
-            var max = Number(stat.getAttribute("data-awaken"));
+function decreaseLevel(id, limit) {
+    var inputValue = document.getElementById(`level-input-${id}`);
+    if (Number(inputValue.value) > 1) {
+        changeValues(id, (Number(inputValue.value) - 1), limit)
 
-            stat.textContent = interpolate((Number(level) - 1), 1, 80, min, max);
-            stat.setAttribute("data-level", ((Number(level)) - 1).toString());
-        };
-
-        levelText.textContent = Number(level) - 1;
+        inputValue.value = Number(inputValue.value) - 1;
     }
+}
+
+function listenForLevel(id, limit) {
+    var inputValue = document.getElementById(`level-input-${id}`);
+
+    if (Number(inputValue.value) <= limit) {
+        changeValues(id, Number(inputValue.value), limit);
+    } else {
+        changeValues(id, limit, limit);
+
+        inputValue.value = limit
+    }
+    
+}
+
+function changeValues(id, value, limit) {
+    var stats = ["vo", "da", "vi"];
+    for (var i = 0; i < stats.length; i++) {
+        var stat = document.getElementById(`${stats[i]}-${id}`);
+        var min = Number(stat.getAttribute("data-default"));
+        var max = Number(stat.getAttribute("data-awaken"));
+
+        stat.textContent = interpolate(value, 1, limit, min, max);
+        stat.setAttribute("data-level", value.toString());
+    };
 }

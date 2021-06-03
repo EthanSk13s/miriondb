@@ -37,10 +37,10 @@
                 <div class="row row-cols-*">
                     <div class="col">
                         Level
-                        <button type="button" id="decrease-{{ card.id }}" onclick="decreaseLevel('{{ card.id }}')" class="btn btn-warning btn-sm">
+                        <button type="button" id="decrease-{{ card.id }}" onclick="decreaseLevel('{{ card.id }}', '{{ card.level_max }}')" class="btn btn-warning btn-sm">
                             -
                         </button>
-                        <span id="lvl-{{ card.id }}">1</span>
+                        <input type="text" id="level-input-{{ card.id }}" class="level-input" value="1" autocomplete="off" onchange="listenForLevel('{{ card.id }}', '{{ card.level_max }}')">
                         <button type="button" id="increase-{{ card.id }}" onclick="increaseLevel('{{ card.id }}', '{{ card.level_max }}')"  class="btn btn-warning btn-sm">
                             +
                         </button>

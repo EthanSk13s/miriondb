@@ -208,3 +208,9 @@ span.card-stats-badge.costumes {
     background-color: DodgerBlue !important;
     color: #464545;
 }
+
+.level-input {
+    width: 25px;
+    padding-bottom: 5px;
+    border-radius: 0.2rem
+}
