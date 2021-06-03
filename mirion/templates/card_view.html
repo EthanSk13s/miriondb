@@ -1,0 +1,25 @@
+{% import 'snips/card.html' as ca %}
+
+{% extends "snips/nav.html" %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+{% block title %} {{ card.card_name }} | MirionDB {% endblock %}
+
+{% block content %}
+    <div class="container">
+        {{ ca.card_info(card) }}
+        <div class="row misc-row">
+            <div class="col d-flex justify-content-center">
+                <a href="{{ url_for('card.idol', id=card.idol_id) }}">
+                    <button class="btn btn-dark btn-sm">
+                        Other cards
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+{% endblock %}

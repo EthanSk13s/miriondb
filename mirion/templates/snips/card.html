@@ -1,0 +1,130 @@
+{% macro card_container(card) %}
+<div class="col-12 col-lg-6 col xl-4">
+    <a class="card-link" href="{{ url_for('card.card', card_id=card.id) }}">
+        <div class="card-button-container">
+            <div class="card-icon">
+                <img class="card-raw-icon" src="{{ card.icon }}">
+            </div>
+            <div class="card-info">
+                <b>{{ card.card_name }}</b>
+            </div>
+        </div>
+    </a>
+</div>
+{% endmacro %}
+
+{% macro card_list(cards) -%}
+<div class="row card-list">
+    {% for card in cards %}
+    {{ card_container(card) | indent(12, True)}}
+    {%- endfor %}
+</div>
+{%- endmacro %}
+
+{% macro card_info(card) %}
+<div class="row stats no-gutters">
+    <div class="col-12 name-header {{ card.idol_type }}-header">
+        <p class="name">[{{ card.rarity }}] {{ card.card_name }}</p>
+    </div>
+    <div class="col col-lg-auto d-flex justify-content-center">
+        <div class="card-image-wrapper">
+            <img class="card-image" src="{{ card.card_url }}">
+        </div>
+    </div>
+    <div class="col stats-container">
+        <div class="row">
+            <div class="col-12">
+                <div class="row row-cols-*">
+                    <div class="col">
+                        Level
+                        <button type="button" id="decrease-{{ card.id }}" onclick="decreaseLevel('{{ card.id }}')" class="btn btn-warning btn-sm">
+                            -
+                        </button>
+                        <span id="lvl-{{ card.id }}">1</span>
+                        <button type="button" id="increase-{{ card.id }}" onclick="increaseLevel('{{ card.id }}', '{{ card.level_max }}')"  class="btn btn-warning btn-sm">
+                            +
+                        </button>
+                    </div>
+                </div>
+                <div class="row row-cols-* row-cols-sm-*">
+                    <div class="col">
+                        <p><span class="card-stats-badge life">
+                            Life
+                        </span><strong id="life">{{ card.life }}</strong></p>
+                    </div>
+                    <div class="col">
+                        <p><span class="card-stats-badge vocal">
+                            Vocal
+                        </span><strong id="vo-{{ card.id }}" data-default="{{ card.vocal }}" data-awaken="{{ card.max_vocal }}" data-level=1>
+                            {{ card.vocal }}
+                        </strong></p>
+                    </div>
+                    <div class="col">
+                        <p><span class="card-stats-badge dance">
+                            Dance
+                        </span><strong id="da-{{ card.id }}" data-default="{{ card.dance }}" data-awaken="{{ card.max_dance }}" data-level=1>
+                            {{ card.dance }}
+                        </strong></p>
+                    </div>
+                    <div class="col">
+                        <p><span class="card-stats-badge visual">
+                            Visual
+                        </span><strong id="vi-{{ card.id }}" data-default="{{ card.visual }}" data-awaken="{{ card.max_visual }}" data-level=1>
+                            {{ card.visual }}
+                        </strong></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="skill-container">
+                    <div class="skill-header">
+                        Skill: {{ card.skill_id }}
+                    </div>
+                    <div class="skill-description">
+                        {{ card.skill }}
+                    </div>
+                    <div class="skill-header">
+                        Center Skill
+                    </div>
+                    <div class="skill-description">
+                        {{ card.center_skill }}
+                    </div>
+                </div>
+            </div>
+            {% if card.costume %}
+            <div class="col-12">
+                <div class="costume-container">
+                    <div class="row">
+                        <div class="col-12 costume-header">
+                            Costumes
+                        </div>
+                        <div class="col-auto costume-wrapper">
+                            <img class="costume-image" src="{{ card.costume }}">
+                        </div>
+                        {% if card.b_costume %}
+                        <div class="col-auto costume-wrapper">
+                            <img class="costume-image" src="{{ card.b_costume }}">
+                        </div>
+                        {% endif %}
+                        {% if card.r_costume %}
+                        <div class="col-auto costume-wrapper">
+                            <img class="costume-image" src="{{ card.r_costume }}">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% if card.bg_url %}
+    <div class="col-12">
+        <img id="bg-art-{{ card.id }}" class="d-block w-100" src="{{ card.bg_url }}">
+        <button type="button" 
+        onClick="changeBgArt('{{ card.id }}', '{{ card.awake_bg_url}}', '{{ card.bg_url }}')" class="btn btn-dark btn-sm bg-btn">
+            Swap art
+        </button>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}

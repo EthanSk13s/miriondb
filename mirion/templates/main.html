@@ -1,0 +1,70 @@
+{% import 'snips/card.html' as card %}
+
+{% extends "snips/nav.html" %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+{% block title %} Home | MirionDB {% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <form class="col mx-auto" action="/idol_query" method="POST" autocomplete="off">
+                <div class="col form-outline mx-auto autocomplete">
+                    <input type="text" name="card-search" class="form-control card-search" value="" 
+                    id="card1" placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)">
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            Current events
+        </div>
+        <div class="row event-container">
+            <div class="row header col-12">
+                <h6 id="countdown">{{ event.name }}</h6>
+            </div>
+            {% if event_cards != None %}
+                {{ card.card_list(event_cards) }}
+            {% endif %}
+        </div>
+        <div class="row">
+            Recent Additions
+        </div>
+        <div class="row additions-container">
+            {{ card.card_list(recent_additions)}}
+        </div>
+        <div class="row misc-row">
+            <h5>About</h5>
+            <div class="col-12">
+                    Just a translated database for MLTD cards. All data is from <a href="https://api.matsurihi.me/docs/">matsurihi.me</a><br>
+                    Source: idk :^)
+            </div>
+        </div>
+    </div>
+    <script>
+        var arr = "{{ event.end }}".split(/[- :]/)
+        var countDownDate = new Date(Date.UTC(arr[0], arr[1]-1, arr[2], arr[3]-9, arr[4], arr[5]));
+    
+        var x = setInterval(function() {
+    
+            var now = Date.now();
+        
+            var distance = countDownDate - now;
+        
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+            document.getElementById("countdown").innerHTML = "{{ event.name }} ends in " + days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ";
+        
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("countdown").innerHTML = "{{ event.name }} has finished! Good work everyone!";
+            }
+        }, 1000);
+      </script>
+      <script src="{{ url_for('static', filename='js/events.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/autocomplete.js') }}"></script>
+{% endblock %}
