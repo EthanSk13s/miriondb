@@ -105,7 +105,7 @@ def set_enums(card):
 def match_name(query: str):
     for i in NAMES:
         full_name = NAMES[i]['name'].lower()
-        match = bool(re.search(r"\s({0})".format(query), full_name))
+        match = bool(re.search(r"\A({0})|\s({0})".format(query), full_name))
         if match:
             name = NAMES[i]['id']
             break
