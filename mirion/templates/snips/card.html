@@ -27,12 +27,15 @@
 
 {% macro card_info(card) %}
 <div class="row stats no-gutters">
-    <div class="col-12 name-header {{ card.idol_type }}-header">
+    <div class="col-12 name-header {{ card.idol_type }}-header" id="card-{{ card.id }}" data-awaken=0 data-max-level="{{ card.level_max }}">
         <p class="name">[{{ card.rarity }}] {{ card.card_name }}</p>
     </div>
     <div class="col col-lg-auto d-flex justify-content-center">
         <div class="card-image-wrapper">
-            <img class="card-image" src="{{ card.card_url }}">
+            <img class="card-image" id="card-image-{{ card.id }}" src="{{ card.card_url }}" data-awaken="{{ card.awake_card_url }}" data-default="{{ card.card_url }}">
+            <button type="button" class="btn btn-dark btn-sm bg-btn" onclick="toggleArt('{{ card.id }}')">
+                Toggle Art
+            </button>
         </div>
     </div>
     <div class="col stats-container">
@@ -59,21 +62,21 @@
                     <div class="col">
                         <p><span class="card-stats-badge vocal">
                             Vocal
-                        </span><strong id="vo-{{ card.id }}" data-default="{{ card.vocal }}" data-awaken="{{ card.max_vocal }}" data-level=1>
+                        </span><strong id="vo-{{ card.id }}" data-default="{{ card.vocal }}" data-awaken="{{ card.awake_vocal }}" data-default-max="{{ card.max_vocal }}" data-awaken-max="{{ card.max_awake_vocal }}" data-level=1>
                             {{ card.vocal }}
                         </strong></p>
                     </div>
                     <div class="col">
                         <p><span class="card-stats-badge dance">
                             Dance
-                        </span><strong id="da-{{ card.id }}" data-default="{{ card.dance }}" data-awaken="{{ card.max_dance }}" data-level=1>
+                        </span><strong id="da-{{ card.id }}" data-default="{{ card.dance }}" data-awaken="{{ card.awake_dance }}" data-default-max="{{ card.max_dance }}" data-awaken-max="{{ card.max_awake_dance }}" data-level=1>
                             {{ card.dance }}
                         </strong></p>
                     </div>
                     <div class="col">
                         <p><span class="card-stats-badge visual">
                             Visual
-                        </span><strong id="vi-{{ card.id }}" data-default="{{ card.visual }}" data-awaken="{{ card.max_visual }}" data-level=1>
+                        </span><strong id="vi-{{ card.id }}" data-default="{{ card.visual }}" data-awaken="{{ card.awake_visual }}" data-default-max="{{ card.max_visual }}" data-awaken-max="{{ card.max_awake_visual }}" data-level=1>
                             {{ card.visual }}
                         </strong></p>
                     </div>
@@ -123,11 +126,7 @@
     </div>
     {% if card.bg_url %}
     <div class="col-12">
-        <img id="bg-art-{{ card.id }}" class="d-block w-100" src="{{ card.bg_url }}">
-        <button type="button" 
-        onClick="changeBgArt('{{ card.id }}', '{{ card.awake_bg_url}}', '{{ card.bg_url }}')" class="btn btn-dark btn-sm bg-btn">
-            Swap art
-        </button>
+        <img id="bg-art-{{ card.id }}" class="d-block w-100" src="{{ card.bg_url }}" data-awaken="{{ card.awake_bg_url }}" data-default="{{ card.bg_url }}">
     </div>
     {% endif %}
 </div>

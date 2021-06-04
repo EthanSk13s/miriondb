@@ -1,10 +1,33 @@
-function changeBgArt(id, current_url, post_url) {
-    var image = document.getElementById(`bg-art-${id}`);
-
-    if (image.src.match(current_url)) {
-        image.src = post_url;
+function toggleArt(id) {
+    var header = document.getElementById(`card-${id}`);
+    var status = header.getAttribute("data-awaken");
+    if (status == "0") {
+        header.setAttribute("data-awaken", "1");
     } else {
-        image.src = current_url;
+        header.setAttribute("data-awaken", "0");
+    }
+    changeAllStats(id);
+
+    var limit = header.getAttribute("data-max-level");
+    var level = document.getElementById(`level-input-${id}`).value;
+
+    changeValues(id, level, limit);
+
+    var card_image = document.getElementById(`card-image-${id}`);
+    changeArt(card_image);
+
+    var bg_image = document.getElementById(`bg-art-${id}`);
+    if (bg_image !== null) {
+        changeArt(bg_image);
+    }
+}
+
+function changeArt(element) {
+    var current = element.getAttribute('data-default');
+    if (element.src.match(current)) {
+        element.src = element.getAttribute("data-awaken");
+    } else {
+        element.src = element.getAttribute("data-default");
     }
 }
 
@@ -58,17 +81,23 @@ function listenForLevel(id, limit) {
     } else {
         changeValues(id, limit, limit);
 
-        inputValue.value = limit
+        inputValue.value = limit;
     }
     
 }
 
 function changeValues(id, value, limit) {
     var stats = ["vo", "da", "vi"];
+    var isAwaken = document.getElementById(`card-${id}`).getAttribute('data-awaken');
     for (var i = 0; i < stats.length; i++) {
         var stat = document.getElementById(`${stats[i]}-${id}`);
-        var min = Number(stat.getAttribute("data-default"));
-        var max = Number(stat.getAttribute("data-awaken"));
+        if (isAwaken == "0") {
+            var min = Number(stat.getAttribute("data-default"));
+            var max = Number(stat.getAttribute("data-default-max"));
+        } else {
+            var min = Number(stat.getAttribute("data-awaken"));
+            var max = Number(stat.getAttribute("data-awaken-max"));
+        }
 
         stat.textContent = interpolate(value, 1, limit, min, max);
         stat.setAttribute("data-level", value.toString());
