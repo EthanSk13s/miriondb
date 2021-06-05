@@ -5,6 +5,11 @@ from mirion.models import Card, Event
 main_page = Blueprint("main", __name__)
 
 
+@main_page.app_errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
 @main_page.route("/")
 def index():
     recent_datetime = Card.query.order_by(-Card.db_id).first().release

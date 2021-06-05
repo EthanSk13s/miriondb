@@ -1,7 +1,7 @@
 import logging
 import pryncess
 
-from flask import Flask, render_template
+from flask import Flask
 from mirion import views, database, task
 
 
@@ -26,10 +26,6 @@ def create_app(config):
     # Start Background tasks
     app.first_run = 0  # So tasks don't fire twice
     task.init_app(app)
-
-    @app.errorhandler(404)
-    def page_not_found(e):
-        return render_template('404.html'), 404
 
     views.register_views(app)
 
