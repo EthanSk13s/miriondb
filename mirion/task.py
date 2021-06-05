@@ -1,3 +1,5 @@
+import logging
+
 from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -19,9 +21,9 @@ def add_changes(db_list: list, changes: list, is_event=False):
             for item in changes[-diff:]:
                 fetch.get_events(item, db)
 
-        print(f"{diff} added to Database")
+        logging.info(f"{diff} added to Database")
     else:
-        print("No changes found")
+        logging.info("No changes found")
 
 
 @scheduler.task('cron', id='check_changes', hour=15, minute=2)
@@ -38,9 +40,9 @@ def add_to_database():
 def init_app(app):
     if app.first_run == 0:
         with app.app_context():
-            print("Checking for new cards...")
+            logging.info("Startup checking for new cards...")
             add_changes(Card.query.all(), app.pryncess.get_all_cards(tl=True))
-            print("Checking for new events...")
+            logging.info("Startup checking for new events...")
             add_changes(Event.query.all(), app.pryncess.get_all_events(),
                         is_event=True)
             db.session.commit()

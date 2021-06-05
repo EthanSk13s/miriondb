@@ -1,3 +1,4 @@
+import logging
 import pryncess
 
 from flask import Flask, render_template
@@ -13,11 +14,17 @@ def create_app(config):
 
     app.static_folder = "static"
 
+    # Setup Logging
+    app.event_handler = logging.basicConfig(
+        filename='app.log', level=logging.DEBUG
+    )
+    app.logger.addHandler(app.event_handler)
+
     # Setup Database
     database.init_app(app)
 
     # Start Background tasks
-    app.first_run = 0           # So tasks don't fire twice
+    app.first_run = 0  # So tasks don't fire twice
     task.init_app(app)
 
     @app.errorhandler(404)
