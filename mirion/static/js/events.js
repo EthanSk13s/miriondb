@@ -1,17 +1,21 @@
 function toggleArt(id) {
     var header = document.getElementById(`card-${id}`);
     var status = header.getAttribute("data-awaken");
+    var level = document.getElementById(`level-input-${id}`);
+    var limit = header.getAttribute("data-max-level");
+
     if (status == "0") {
         header.setAttribute("data-awaken", "1");
+        limit = Number(limit) + 10;
     } else {
         header.setAttribute("data-awaken", "0");
+        if (Number(level.value) > Number(limit)) {
+            level.value = limit;
+        }
     }
+
     changeAllStats(id);
-
-    var limit = header.getAttribute("data-max-level");
-    var level = document.getElementById(`level-input-${id}`).value;
-
-    changeValues(id, level, limit);
+    changeValues(id, level.value, limit);
 
     var card_image = document.getElementById(`card-image-${id}`);
     changeArt(card_image);
@@ -57,6 +61,11 @@ function interpolate(level, min, max, y0, y1) {
 
 function increaseLevel(id, limit) {
     var inputValue = document.getElementById(`level-input-${id}`);
+    var isAwaken = checkifAwakened(id);
+    if (isAwaken === true) {
+        limit = Number(limit) + 10;
+    }
+
     if (Number(inputValue.value) != Number(limit)) {
         changeValues(id, inputValue.value, limit);
 
@@ -66,6 +75,11 @@ function increaseLevel(id, limit) {
 
 function decreaseLevel(id, limit) {
     var inputValue = document.getElementById(`level-input-${id}`);
+    var isAwaken = checkifAwakened(id);
+    if (isAwaken === true) {
+        limit = Number(limit) + 10;
+    }
+
     if (Number(inputValue.value) > 1) {
         changeValues(id, (Number(inputValue.value) - 1), limit)
 
@@ -75,6 +89,10 @@ function decreaseLevel(id, limit) {
 
 function listenForLevel(id, limit) {
     var inputValue = document.getElementById(`level-input-${id}`);
+    var isAwaken = checkifAwakened(id);
+    if (isAwaken === true) {
+        limit = Number(limit) + 10;
+    }
 
     if (Number(inputValue.value) <= limit) {
         changeValues(id, Number(inputValue.value), limit);
@@ -88,10 +106,11 @@ function listenForLevel(id, limit) {
 
 function changeValues(id, value, limit) {
     var stats = ["vo", "da", "vi"];
-    var isAwaken = document.getElementById(`card-${id}`).getAttribute('data-awaken');
+    var isAwaken = checkifAwakened(id);
+
     for (var i = 0; i < stats.length; i++) {
         var stat = document.getElementById(`${stats[i]}-${id}`);
-        if (isAwaken == "0") {
+        if (isAwaken == false) {
             var min = Number(stat.getAttribute("data-default"));
             var max = Number(stat.getAttribute("data-default-max"));
         } else {
@@ -102,4 +121,14 @@ function changeValues(id, value, limit) {
         stat.textContent = interpolate(value, 1, limit, min, max);
         stat.setAttribute("data-level", value.toString());
     };
+}
+
+function checkifAwakened(id) {
+    var isAwaken = document.getElementById(`card-${id}`).getAttribute('data-awaken');
+
+    if (isAwaken == "1") {
+        return true;
+    } else {
+        return false;
+    }
 }
