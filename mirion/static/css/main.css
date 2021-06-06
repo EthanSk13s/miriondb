@@ -223,3 +223,9 @@ span.card-stats-badge.costumes {
     padding-bottom: 5px;
     border-radius: 0.2rem
 }
+
+@media (max-width: 375px) {
+    .level-input {
+        width: 35px;
+    }
+}
