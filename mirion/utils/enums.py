@@ -139,7 +139,10 @@ def set_enums(card):
     card.level_max = LEVEL_LIMITS.get(card.rarity)
     card.rarity = RARITIES.get(card.rarity)
     # Modify skill_id, because adding attributes only applies to last index
-    card.skill_id = SKILL_TYPES.get(card.skill.effect_id)
+    if card.skill is not None:
+        card.skill_id = SKILL_TYPES.get(card.skill.effect_id)
+    else:
+        card.skill_id = None
 
 
 def match_name(query: str):
