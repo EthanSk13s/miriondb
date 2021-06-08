@@ -4,7 +4,7 @@ NAMES = {
     '天海春香': {'name': 'Amami Haruka', 'id': 1},
     '如月千早': {'name': 'Kisaragi Chihaya', 'id': 2},
     '星井美希': {'name': 'Hoshii Miki', 'id': 3},
-    '萩原雪歩': {'name': 'Sugawara Yukiho', 'id': 4},
+    '萩原雪歩': {'name': 'Hagiwara Yukiho', 'id': 4},
     '高槻やよい': {'name': 'Takatsuki Yayoi', 'id': 5},
     '菊地真': {'name': 'Kikuchi Makoto', 'id': 6},
     '水瀬伊織': {'name': 'Minase Iori', 'id': 7},
