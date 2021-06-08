@@ -53,14 +53,14 @@ def get_card(card, db):
         # Since anniv cards have two versions of the same card
         # unique constraints fail, so we add the skills only once
         if db.session.query(Skill).filter(Skill.id == skill_entry.id).first():
-            db.session.add(skill_entry)
-        else:
             pass
+        else:
+            db.session.add(skill_entry)
 
         if db.session.query(CenterSkill).filter(CenterSkill.id == center_entry.id).first():
-            db.session.add(center_entry)
-        else:
             pass
+        else:
+            db.session.add(center_entry)
 
     if card.costume is not None:
         entry.costume = card.costume.get_image()
