@@ -14,7 +14,7 @@ class Skill(db.Model):
     probability = db.Column(db.Integer)
     value = db.Column(db.JSON)
 
-    @classmethod
+    @property
     def tl_desc(self):
         interval = self.interval
         probability = self.probability
@@ -31,9 +31,9 @@ class Skill(db.Model):
 
         eff_vals = {}
         if self.evaluation != 0:
-            eff_vals['evalutation'] = enums.EVALUATIONS.get(self.evaluation)
+            eff_vals['evaluation'] = enums.EVALUATIONS.get(self.evaluation)
 
-        if len(self.value) != 0:
+        if len(list(self.value)) != 0:
             eff_vals['value'] = self.value
 
         if self.evaluation2 != 0:
@@ -58,13 +58,13 @@ class CenterSkill(db.Model):
     song_type = db.Column(db.Integer, default=None)
     value_2 = db.Column(db.Integer)
 
-    @classmethod
+    @property
     def tl_desc(self):
-        idol_type = enums.TYPES(self.idol_type)
-        attribute = enums.ATTRIBUTES(self.attribute)
+        idol_type = enums.TYPES.get(self.idol_type)
+        attribute = enums.ATTRIBUTES.get(self.attribute)
         value = self.value
 
-        if any(idol_type, attribute) is None:
+        if any([idol_type, attribute]) is None:
             return "No TL available"
 
         first_cond = enums.CENTER_SKILL_STRING.format(idol_type.capitalize(),
