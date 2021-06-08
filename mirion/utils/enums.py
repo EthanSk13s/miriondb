@@ -34,7 +34,7 @@ NAMES = {
     '天空橋朋花': {'name': 'Tenkubashi Tomoka', 'id': 31},
     'エミリー': {'name': 'Stewart Emily', 'id': 32},
     '北沢志保': {'name': 'Kitazawa Shiho', 'id': 33},
-    '舞浜歩': {'name': 'Maihama Ayumi', 'id': 34},
+    '舞浜歩': {'name': 'Maihama Ayumu', 'id': 34},
     '木下ひなた': {'name': 'Kinoshita Hinata', 'id': 35},
     '矢吹可奈': {'name': 'Yabuki Kana', 'id': 36},
     '横山奈緒': {'name': 'Yokoyama Nao', 'id': 37},

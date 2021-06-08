@@ -72,9 +72,9 @@ class CenterSkill(db.Model):
                                                       value)
 
         if self.song_type is not None:
-            attr_2 = enums.TYPES(self.song_type)
+            attr_2 = enums.TYPES.get(self.song_type)
             value_2 = self.value_2
-            second_cond = enums.SONG_STRING(attr_2, value_2)
+            second_cond = enums.SONG_STRING.format(attr_2, value_2)
             return f"{first_cond}. {second_cond}"
         else:
             return first_cond
