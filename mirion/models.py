@@ -1,4 +1,86 @@
 from mirion.database import db
+from mirion.utils import enums
+
+
+# Instead of relying on pryncess's TLs
+# let's manually TL skills to save space on DB
+class Skill(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    effect_id = db.Column(db.Integer)
+    evaluation = db.Column(db.Integer)
+    evaluation2 = db.Column(db.Integer)
+    duration = db.Column(db.Integer)
+    interval = db.Column(db.Integer)
+    probability = db.Column(db.Integer)
+    value = db.Column(db.JSON)
+
+    @classmethod
+    def tl_desc(self):
+        interval = self.interval
+        probability = self.probability
+        duration = self.duration
+
+        interval_str = enums.INTERVAL_STRING.format(interval=interval,
+                                                    probability=probability)
+        duration_str = enums.DURATION_STRING.format(duration=duration)
+
+        eff_id = self.effect_id
+
+        if eff_id == 4:
+            return f"{interval_str} {enums.EFFECTS.get(eff_id)} {duration_str}"
+
+        eff_vals = {}
+        if self.evaluation != 0:
+            eff_vals['evalutation'] = enums.EVALUATIONS.get(self.evaluation)
+
+        if len(self.value) != 0:
+            eff_vals['value'] = self.value
+
+        if self.evaluation2 != 0:
+            eff_vals['evaluation2'] = enums.EVALUATIONS.get(self.evaluation2)
+
+        try:
+            effect_str = enums.EFFECTS.get(eff_id).format(**eff_vals)
+        except AttributeError:
+            return "No TL available"
+
+        return f"{interval_str} {effect_str} {duration_str}"
+
+    def __repr__(self):
+        return '<Skill {}>'.format(self.id)
+
+
+class CenterSkill(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    idol_type = db.Column(db.Integer)
+    attribute = db.Column(db.Integer)
+    value = db.Column(db.Integer)
+    song_type = db.Column(db.Integer, default=None)
+    value_2 = db.Column(db.Integer)
+
+    @classmethod
+    def tl_desc(self):
+        idol_type = enums.TYPES(self.idol_type)
+        attribute = enums.ATTRIBUTES(self.attribute)
+        value = self.value
+
+        if any(idol_type, attribute) is None:
+            return "No TL available"
+
+        first_cond = enums.CENTER_SKILL_STRING.format(idol_type.capitalize(),
+                                                      attribute,
+                                                      value)
+
+        if self.song_type is not None:
+            attr_2 = enums.TYPES(self.song_type)
+            value_2 = self.value_2
+            second_cond = enums.SONG_STRING(attr_2, value_2)
+            return f"{first_cond}. {second_cond}"
+        else:
+            return first_cond
+
+    def __repr__(self):
+        return '<Center Skill {}>'.format(self.id)
 
 
 class Card(db.Model):
@@ -13,9 +95,11 @@ class Card(db.Model):
     release = db.Column(db.DateTime, index=True, default=None)
     event_id = db.Column(db.Integer, index=True, default=None)
 
-    skill = db.Column(db.Text, default=None)
-    skill_id = db.Column(db.Integer, default=None)
-    center_skill = db.Column(db.Text, default=None)
+    skill_id = db.Column(db.Integer, db.ForeignKey(Skill.id), default=None)
+    center_skill_id = db.Column(db.Text, db.ForeignKey(CenterSkill.id), default=None)
+
+    skill = db.relationship('Skill', foreign_keys='Card.skill_id', lazy='joined')
+    center_skill = db.relationship('CenterSkill', foreign_keys='Card.center_skill_id', lazy='joined')
 
     vocal = db.Column(db.Integer)
     dance = db.Column(db.Integer)

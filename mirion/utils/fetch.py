@@ -1,6 +1,6 @@
 import dateutil.parser
 
-from mirion.models import Card, Event
+from mirion.models import Card, Event, CenterSkill, Skill
 
 
 def get_card(card, db):
@@ -33,9 +33,34 @@ def get_card(card, db):
         entry.event_id = card.event_id
 
     if card.skill is not None:
-        entry.skill = card.skill.desc
-        entry.skill_id = card.skill.effect
-        entry.center_skill = card.center_skill.desc
+        entry.skill_id = card.skill.id
+        skill_entry = Skill(id=card.skill.id,
+                            effect_id=card.skill.effect,
+                            evaluation=card.skill.evaluation,
+                            evaluation2=card.skill.evaluation2,
+                            duration=card.skill.duration,
+                            interval=card.skill.interval,
+                            probability=card.skill.probability,
+                            value=card.skill.value)
+
+        entry.center_skill_id = card.center_skill.id
+        center_entry = CenterSkill(id=card.center_skill.id,
+                                   idol_type=card.center_skill.type,
+                                   attribute=card.center_skill.attribute,
+                                   value=card.center_skill.value,
+                                   song_type=card.center_skill.song_type,
+                                   value_2=card.center_skill.value_2)
+        # Since anniv cards have two versions of the same card
+        # unique constraints fail, so we add the skills only once
+        if db.session.query(Skill).filter(Skill.id == skill_entry.id).first():
+            db.session.add(skill_entry)
+        else:
+            pass
+
+        if db.session.query(CenterSkill).filter(CenterSkill.id == center_entry.id).first():
+            db.session.add(center_entry)
+        else:
+            pass
 
     if card.costume is not None:
         entry.costume = card.costume.get_image()

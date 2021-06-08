@@ -70,8 +70,21 @@ TYPES = {
     1: 'princess',
     2: 'fairy',
     3: 'angel',
+    4: 'all-type',
     5: 'extra'
 }
+
+ATTRIBUTES = {
+    1: "vocal",
+    2: "dance",
+    3: "visual",
+    4: "all appeal",
+    5: "life",
+    6: "skill rate up"
+}
+
+CENTER_SKILL_STRING = "{0} idols' {1} value is increased by {2}%"
+SONG_STRING = "If playing an {0} song, an additional {1}% is added."
 
 SKILL_TYPES = {
     1: "Score Up",
@@ -91,6 +104,33 @@ LEVEL_LIMITS = {
     2: 40,
     3: 60,
     4: 80
+}
+
+EVALUATIONS = {
+    0: None,
+    1: "Perfect",
+    2: "Perfect/Great",
+    3: "Great",
+    4: "Great/Fast/Good/Slow",
+    5: "Perfect/Great/Good",
+    6: "Perfect/Great/Good/Fast/Slow",
+    7: "Great/Good"
+}
+
+INTERVAL_STRING = "Every {interval} seconds, there is a {probability}% chance"
+DURATION_STRING = "for {duration} seconds"
+EFFECTS = {
+    1: "of increasing {evaluation} scores by {value[0]}%",
+    2: "of increasing the combo bonus by {value[0]}%",
+    3: "of recovering {value[0]} lives while hitting {evaluation}",
+    4: "of not losing life",
+    5: "of maintaining the combo, while hitting {evaluation}",
+    6: "of converting {evaluation} into Perfect",
+    7: "of increasing the {evaluation} score by {value[0]} and the combo bonus by {value[1]}%",
+    8: "of increasing {evaluation} score by {value[0]}% and recovering {value[1]} life with every {evaluation2}",
+    10: "of consuming {value[1]} lives, and increasing {evaluation} score by {value[0]}%",
+    11: "of consuming {value[1]} lives, and increasing combo bonus by {value[0]}%"
+    # 12?: ??????
 }
 
 
