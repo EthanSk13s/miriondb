@@ -137,7 +137,7 @@ EFFECTS = {
 def set_enums(card):
     card.idol_type = TYPES.get(card.idol_type)
     card.level_max = LEVEL_LIMITS.get(card.rarity)
-    card.rarity = RARITIES.get(card.rarity)
+    card.text_rarity = RARITIES.get(card.rarity)
     # Modify skill_id, because adding attributes only applies to last index
     if card.skill is not None:
         card.skill_id = SKILL_TYPES.get(card.skill.effect_id)
