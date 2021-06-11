@@ -7,6 +7,7 @@ function toggleArt(id) {
     if (status == "0") {
         header.setAttribute("data-awaken", "1");
         limit = Number(limit) + 10;
+
     } else {
         header.setAttribute("data-awaken", "0");
         if (Number(level.value) > Number(limit)) {
@@ -14,25 +15,25 @@ function toggleArt(id) {
         }
     }
 
-    changeAllStats(id);
-    changeValues(id, level.value, limit);
-
     var card_image = document.getElementById(`card-image-${id}`);
-    changeArt(card_image);
+    changeArt(card_image, `${status}_`, 6);
 
     var bg_image = document.getElementById(`bg-art-${id}`);
     if (bg_image !== null) {
-        changeArt(bg_image);
+        changeArt(bg_image, `${status}.`, 4);
     }
+
+    changeAllStats(id);
+    changeValues(id, level.value, limit);
 }
 
-function changeArt(element) {
-    var current = element.getAttribute('data-default');
-    if (element.src.match(current)) {
-        element.src = element.getAttribute("data-awaken");
-    } else {
-        element.src = element.getAttribute("data-default");
-    }
+function changeArt(element, char, index) {
+    element.src = replaceAt(element.src, index, char);
+}
+
+function replaceAt(str, index, char) {
+    if (index > str.length - 1) return str;
+    return str.substring(0, str.length - index - 1) + char + str.substring(str.length - index + 1);
 }
 
 function changeAllStats(id) {
