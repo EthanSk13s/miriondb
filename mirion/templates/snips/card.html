@@ -98,26 +98,18 @@
                     </div>
                 </div>
             </div>
-            {% if card.costume %}
+            {% if card.costumes %}
             <div class="col-12">
                 <div class="costume-container">
                     <div class="row">
                         <div class="col-12 costume-header">
                             Costumes
                         </div>
+                        {% for costume in card.costumes.url %}
                         <div class="col-auto costume-wrapper">
-                            <img class="costume-image" src="{{ card.costume }}">
+                            <img class="costume-image" src="{{ costume }}">
                         </div>
-                        {% if card.b_costume %}
-                        <div class="col-auto costume-wrapper">
-                            <img class="costume-image" src="{{ card.b_costume }}">
-                        </div>
-                        {% endif %}
-                        {% if card.r_costume %}
-                        <div class="col-auto costume-wrapper">
-                            <img class="costume-image" src="{{ card.r_costume }}">
-                        </div>
-                        {% endif %}
+                        {% endfor %}
                     </div>
                 </div>
             </div>
