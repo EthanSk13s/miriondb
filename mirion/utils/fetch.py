@@ -1,14 +1,16 @@
 import dateutil.parser
 
-from mirion.models import Card, Event, CenterSkill, Skill
+from mirion.models import Card, Event, CenterSkill, Skill, Costume
 
 
 def get_card(card, db):
     entry = Card(id=card.id,
+                 resc_id=card.resc_id,
                  idol_id=card.idol_id,
                  card_name=card.name,
                  rarity=card.rarity,
                  idol_type=card.type,
+                 ex_type=card.ex_type,
                  vocal=card.min_vocal,
                  visual=card.min_visual,
                  dance=card.min_dance,
@@ -21,10 +23,7 @@ def get_card(card, db):
                  awake_dance=card.min_awake_dance,
                  max_awake_vocal=card.max_awake_vocal,
                  max_awake_dance=card.max_awake_dance,
-                 max_awake_visual=card.max_awake_visual,
-                 card_url=card.get_image("card"),
-                 awake_card_url=card.get_image("card", is_awaken=True),
-                 icon=card.get_image("icon"))
+                 max_awake_visual=card.max_awake_visual)
 
     if card.add_date is not None:
         entry.release = dateutil.parser.parse(card.add_date)
@@ -62,20 +61,30 @@ def get_card(card, db):
         else:
             db.session.add(center_entry)
 
+    # Same situation here, anniv cards share costumes
     if card.costume is not None:
-        entry.costume = card.costume.get_image()
+        entry_costume = Costume(costume_resc_id=card.costume.resc_id,
+                                resc_id=card.resc_id)
+
+        if db.session.query(Costume).filter(Costume.costume_resc_id == entry_costume.costume_resc_id).first():
+            pass
+        else:
+            db.session.add(entry_costume)
 
     if card.bonus_costume is not None:
-        entry.b_costume = card.bonus_costume.get_image()
+        entry_b_costume = Costume(costume_resc_id=card.bonus_costume.resc_id,
+                                  resc_id=card.resc_id)
+
+        if db.session.query(Costume).filter(Costume.costume_resc_id == entry_b_costume.costume_resc_id).first():
+            pass
+        else:
+            db.session.add(entry_b_costume)
 
     if card.rank_costume is not None:
-        entry.r_costume = card.rank_costume.get_image()
+        entry_r_costume = Costume(costume_resc_id=card.rank_costume.resc_id,
+                                  resc_id=card.resc_id)
 
-    if card.rarity == 4:
-        if card.ex_type not in (5, 7, 10):
-            entry.bg_url = card.get_image("card_bg", bg=True)
-            entry.awake_bg_url = card.get_image("card_bg", bg=True,
-                                                is_awaken=True)
+        db.session.add(entry_r_costume)
 
     db.session.add(entry)
 

@@ -83,9 +83,15 @@ class CenterSkill(db.Model):
         return '<Center Skill {}>'.format(self.id)
 
 
+class Costume(db.Model):
+    costume_resc_id = db.Column(db.Text, primary_key=True)
+    resc_id = db.Column(db.Text)
+
+
 class Card(db.Model):
     db_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id = db.Column(db.Integer)
+    resc_id = db.Column(db.Text, db.ForeignKey(Costume.resc_id))
     idol_id = db.Column(db.Integer, index=True)
     card_name = db.Column(db.Text, index=True)
     rarity = db.Column(db.Integer, index=True)
@@ -118,17 +124,28 @@ class Card(db.Model):
     max_awake_dance = db.Column(db.Integer)
     max_awake_visual = db.Column(db.Integer)
 
-    card_url = db.Column(db.Text)
-    bg_url = db.Column(db.Text, default=None)
+    costumes = db.relationship('Costume', foreign_keys='Card.resc_id', uselist=True, lazy='joined')
 
-    awake_card_url = db.Column(db.Text)
-    awake_bg_url = db.Column(db.Text, default=None)
+    @property
+    def icon(self):
+        base_url = "https://storage.matsurihi.me/mltd/icon_l/"
 
-    costume = db.Column(db.Text, default=None)
-    b_costume = db.Column(db.Text, default=None)
-    r_costume = db.Column(db.Text, default=None)
+        return f"{base_url}{self.resc_id}_0.png"
 
-    icon = db.Column(db.Text)
+    @property
+    def card_url(self):
+        base_url = "https://storage.matsurihi.me/mltd/card/"
+
+        return f"{base_url}{self.resc_id}_0_a.png"
+
+    @property
+    def bg_url(self):
+        if self.rarity == 4 and self.ex_type not in [5, 7, 10]:
+            base_url = "https://storage.matsurihi.me/mltd/card_bg/"
+
+            return f"{base_url}{self.resc_id}_0.png"
+        else:
+            return None
 
     def __repr__(self):
         return '<Card {}>'.format(self.card_name)
