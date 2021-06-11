@@ -63,28 +63,22 @@ def get_card(card, db):
 
     # Same situation here, anniv cards share costumes
     if card.costume is not None:
-        entry_costume = Costume(costume_resc_id=card.costume.resc_id,
-                                resc_id=card.resc_id)
+        entry_costume = Costume(resc_id=card.resc_id)
 
-        if db.session.query(Costume).filter(Costume.costume_resc_id == entry_costume.costume_resc_id).first():
+        entry_costume.costume_resc_ids = [card.costume.resc_id]
+
+        if card.bonus_costume is not None:
+            entry_costume.costume_resc_ids.append(card.bonus_costume.resc_id)
+
+        if card.rank_costume is not None:
+            entry_costume.costume_resc_ids.append(card.rank_costume.resc_id)
+
+        entry_costume.costume_resc_ids = str(entry_costume.costume_resc_ids)
+
+        if db.session.query(Costume).filter(Costume.resc_id == entry_costume.resc_id).first():
             pass
         else:
             db.session.add(entry_costume)
-
-    if card.bonus_costume is not None:
-        entry_b_costume = Costume(costume_resc_id=card.bonus_costume.resc_id,
-                                  resc_id=card.resc_id)
-
-        if db.session.query(Costume).filter(Costume.costume_resc_id == entry_b_costume.costume_resc_id).first():
-            pass
-        else:
-            db.session.add(entry_b_costume)
-
-    if card.rank_costume is not None:
-        entry_r_costume = Costume(costume_resc_id=card.rank_costume.resc_id,
-                                  resc_id=card.resc_id)
-
-        db.session.add(entry_r_costume)
 
     db.session.add(entry)
 

@@ -1,3 +1,5 @@
+import json
+
 from mirion.database import db
 from mirion.utils import enums
 
@@ -84,8 +86,18 @@ class CenterSkill(db.Model):
 
 
 class Costume(db.Model):
-    costume_resc_id = db.Column(db.Text, primary_key=True)
-    resc_id = db.Column(db.Text)
+    resc_id = db.Column(db.Text, primary_key=True)
+    costume_resc_ids = db.Column(db.Text)
+
+    @property
+    def url(self):
+        base_url = "https://storage.matsurihi.me/mltd/costume_icon_ll/"
+        urls = []
+
+        for resc_id in json.loads(self.costume_resc_ids.replace('\'', '"')):
+            urls.append(f"{base_url}{resc_id}.png")
+
+        return urls
 
 
 class Card(db.Model):
@@ -124,7 +136,7 @@ class Card(db.Model):
     max_awake_dance = db.Column(db.Integer)
     max_awake_visual = db.Column(db.Integer)
 
-    costumes = db.relationship('Costume', foreign_keys='Card.resc_id', uselist=True, lazy='joined')
+    costumes = db.relationship('Costume', foreign_keys='Card.resc_id', lazy='joined')
 
     @property
     def icon(self):
