@@ -16,11 +16,11 @@ function toggleArt(id) {
     }
 
     var card_image = document.getElementById(`card-image-${id}`);
-    changeArt(card_image, `${status}_`, 6);
+    changeArt(card_image, `${header.getAttribute('data-awaken')}_`, 6);
 
     var bg_image = document.getElementById(`bg-art-${id}`);
     if (bg_image !== null) {
-        changeArt(bg_image, `${status}.`, 4);
+        changeArt(bg_image, `${header.getAttribute('data-awaken')}.`, 4);
     }
 
     changeAllStats(id);
