@@ -40,6 +40,17 @@
                     Website Code: <a href="https://github.com/EthanSk13s/miriondb">Here</a>
             </div>
         </div>
+        <div class="row">
+            Previous Additions
+        </div>
+        {% for cards in previous_additions %}
+        <div class="row">
+            {{ cards[0].release }}
+        </div>
+        <div class="row additions-container">
+            {{ card.card_list(cards) }}
+        </div>
+        {% endfor %}
     </div>
     <script>
         var arr = "{{ event.end }}".split(/[- :]/)

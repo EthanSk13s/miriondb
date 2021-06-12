@@ -24,5 +24,27 @@ def index():
     else:
         event_cards = None
 
+    previous_dates = Card.query.filter(recent_datetime != Card.release).\
+        order_by(Card.release.desc()).\
+        group_by(Card.release)[0:2]
+
+    dates = [card.release for card in previous_dates]
+
+    previous_additions = Card.query.filter(Card.release.in_(dates)).all()
+
+    sorted_additions = []
+    cards = []
+    for i, card in enumerate(previous_additions):
+        try:
+            if card.release == previous_additions[i + 1].release:
+                cards.append(card)
+            else:
+                cards.append(card)
+                sorted_additions.append([x for x in cards])
+                cards.clear()
+        except IndexError:
+            sorted_additions.append([x for x in cards])
+
     return render_template('main.html', recent_additions=recent_additions,
-                           event=current_event, event_cards=event_cards)
+                           event=current_event, event_cards=event_cards,
+                           previous_additions=reversed(sorted_additions))
