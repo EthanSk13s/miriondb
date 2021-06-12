@@ -99,6 +99,9 @@ class Costume(db.Model):
 
         return urls
 
+    def __repr__(self):
+        return '<Costumes {}>'.format(self.resc_id)
+
 
 class Card(db.Model):
     db_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
