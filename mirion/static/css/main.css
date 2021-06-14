@@ -1,11 +1,15 @@
 .row.event-container {
-    border: 1px solid lightblue;
+    border: 1px solid rgb(123, 222, 255);
     background: #303030;
 }
 
 .row.additions-container {
-    border: 1px solid black;
+    border: 1px solid rgb(134, 134, 134);
     background: #303030;
+}
+
+.row.additions-container.previous {
+    border: 1px solid rgb(44, 44, 44);
 }
 
 .header {
