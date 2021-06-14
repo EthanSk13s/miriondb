@@ -19,7 +19,7 @@
         <div class="row">
             Current events
         </div>
-        <div class="row event-container">
+        <div class="row box event-container">
             <div class="row header col-12">
                 <h6 id="countdown">{{ event.name }}</h6>
             </div>
@@ -30,7 +30,7 @@
         <div class="row">
             Recent Additions
         </div>
-        <div class="row additions-container">
+        <div class="row box additions-container">
             {{ card.card_list(recent_additions)}}
         </div>
         <div class="row misc-row">
@@ -47,7 +47,7 @@
         <div class="row">
             {{ cards[0].release }}
         </div>
-        <div class="row additions-container previous">
+        <div class="row box previous">
             {{ card.card_list(cards) }}
         </div>
         {% endfor %}
