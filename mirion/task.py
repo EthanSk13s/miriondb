@@ -21,9 +21,23 @@ def add_changes(db_list: list, changes: list, is_event=False):
             for item in changes[-diff:]:
                 fetch.get_events(item, db)
 
+        db.session.commit()
         logging.info(f"{diff} added to Database")
     else:
         logging.info("No changes found")
+
+    # Check for Master rank updates
+    if is_event is False:
+        ssr_cards = [card for card in changes if card.rarity == 4]
+        cards = Card.query.filter(Card.rarity == 4)
+
+        for ssr_card, card in zip(ssr_cards, cards):
+            if card.max_master_rank != ssr_card.max_master_rank:
+                card.max_master_rank = ssr_card.max_master_rank
+                print(f"{card.card_name}'s has been updated")
+                db.session.flush()
+
+        db.session.commit()
 
 
 @scheduler.task('cron', id='check_changes', hour=15, minute=2)
@@ -45,7 +59,6 @@ def init_app(app):
             logging.info("Startup checking for new events...")
             add_changes(Event.query.all(), app.pryncess.get_all_events(),
                         is_event=True)
-            db.session.commit()
 
             scheduler.init_app(app)
             app.first_run = 1
