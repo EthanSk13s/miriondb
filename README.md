@@ -13,10 +13,6 @@ $ python -m venv .venv
 $ source .venv/bin/activate // .venv/Scripts/activate if on windows
 $ pip install -r requirements.txt
 ```
-- also install pryncess (the client to interact with data)
-```
-pip install git+https://github.com/EthanSk13s/pryncess
-```
 
 3. Now simply start with:
 
