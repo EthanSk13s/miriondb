@@ -1,11 +1,12 @@
 import logging
+import json
 
 from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from mirion.utils import fetch
 from mirion.database import db
-from mirion.models import Card, Event
+from mirion.models import Card, Event, Costume
 
 scheduler = APScheduler(scheduler=BackgroundScheduler(
     {'apscheduler.timezone': 'Asia/Tokyo'}))
@@ -34,8 +35,17 @@ def add_changes(db_list: list, changes: list, is_event=False):
         for ssr_card, card in zip(ssr_cards, cards):
             if card.max_master_rank != ssr_card.max_master_rank:
                 card.max_master_rank = ssr_card.max_master_rank
-                print(f"{card.card_name}'s has been updated")
                 db.session.flush()
+
+                costume = Costume.query.filter(card.resc_id == Costume.resc_id).first()
+                list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
+
+                list_of_costumes.append(ssr_card.rank_costume.resc_id)
+
+                costume.costume_resc_ids = str(list_of_costumes).replace('"', '\'')
+
+                db.session.flush()
+                print(f"{card.card_name}'s master rank has been updated")
 
         db.session.commit()
 
