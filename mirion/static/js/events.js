@@ -1,5 +1,5 @@
 function toggleArt(id) {
-    var header = document.getElementById(`card-${id}`);
+    var header = document.getElementById(`${id}`);
     var status = header.getAttribute("data-awaken");
     var level = document.getElementById(`level-input-${id}`);
     var limit = header.getAttribute("data-max-level");
