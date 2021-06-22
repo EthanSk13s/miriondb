@@ -176,6 +176,10 @@ span.card-stats-badge.costumes {
     background: #5a939e;
 }
 
+span.card-stats-badge.misc {
+    background: #545454;
+}
+
 .bg-btn {
     position: absolute;
     top: 0%;
