@@ -43,7 +43,7 @@
             <div class="col-12">
                 <div class="row row-cols-*">
                     <div class="col">
-                        Level
+                        <span class="card-stats-badge misc">Level</span>
                         <button type="button" id="decrease-{{ card.id }}" onclick="decreaseLevel('{{ card.id }}', '{{ card.level_max }}')" class="btn btn-warning btn-sm">
                             -
                         </button>
@@ -52,7 +52,7 @@
                             +
                         </button>
                     </div>
-                    <div class="col">
+                    <div class="col d-flex align-items-center">
                         <span class="card-stats-badge misc">Max master rank</span> {{ card.max_master_rank }}
                     </div>
                 </div>
@@ -106,7 +106,7 @@
                 <div class="costume-container">
                     <div class="row">
                         <div class="col-12 costume-header">
-                            Costumes
+                            <span class="card-stats-badge costumes">Costumes</span>
                         </div>
                         {% for costume in card.costumes.url %}
                         <div class="col-auto costume-wrapper">
