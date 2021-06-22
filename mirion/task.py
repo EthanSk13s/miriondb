@@ -45,7 +45,7 @@ def add_changes(db_list: list, changes: list, is_event=False):
                 costume.costume_resc_ids = str(list_of_costumes).replace('"', '\'')
 
                 db.session.flush()
-                print(f"{card.card_name}'s master rank has been updated")
+                logging.info(f"{card.card_name}'s master rank has been updated")
 
         db.session.commit()
 
