@@ -90,6 +90,10 @@
     max-height: 120%;
 }
 
+.costume-header {
+    padding-bottom: 5px;
+}
+
 .costume-wrapper {
     width: 100%;
     max-width: 120px;
@@ -159,6 +163,7 @@
 
 span.card-stats-badge {
     margin-right: 3px;
+    border-radius: 4px;
     padding: 0 5px;
 }
 
@@ -175,7 +180,7 @@ span.card-stats-badge.dance {
 }
 
 span.card-stats-badge.visual {
-    background: #f5b83f;
+    background: #d19e37;
 }
 
 span.card-stats-badge.costumes {
@@ -244,5 +249,9 @@ span.card-stats-badge.misc {
 @media (max-width: 375px) {
     .level-input {
         width: 35px;
+    }
+
+    .costume-wrapper {
+        padding: 10px;
     }
 }
