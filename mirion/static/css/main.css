@@ -130,9 +130,15 @@
     font-size: 24px;
 }
 
-p.name {
+.name {
     margin-bottom: 0px;
+    color: white;
     padding: 0 5px;
+}
+
+.name:hover {
+    color: #e6e5e5;
+    text-decoration: none;
 }
 
 .name-header.princess-header {

@@ -125,7 +125,7 @@ function changeValues(id, value, limit) {
 }
 
 function checkifAwakened(id) {
-    var isAwaken = document.getElementById(`card-${id}`).getAttribute('data-awaken');
+    var isAwaken = document.getElementById(`${id}`).getAttribute('data-awaken');
 
     if (isAwaken == "1") {
         return true;

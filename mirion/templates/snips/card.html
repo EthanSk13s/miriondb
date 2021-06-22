@@ -27,8 +27,8 @@
 
 {% macro card_info(card) %}
 <div class="row stats no-gutters">
-    <div class="col-12 name-header {{ card.idol_type }}-header" id="card-{{ card.id }}" data-awaken=0 data-max-level="{{ card.level_max }}">
-        <p class="name">[{{ card.text_rarity }}] {{ card.card_name }}</p>
+    <div class="col-12 name-header {{ card.idol_type }}-header" id="{{ card.id }}" data-awaken=0 data-max-level="{{ card.level_max }}">
+        <a class="name" href="#{{ card.id }}">[{{ card.text_rarity }}] {{ card.card_name }}</a>
     </div>
     <div class="col col-lg-auto d-flex justify-content-center">
         <div class="card-image-wrapper">
