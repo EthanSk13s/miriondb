@@ -140,6 +140,9 @@ class Card(db.Model):
     max_awake_visual = db.Column(db.Integer)
 
     max_master_rank = db.Column(db.Integer)
+    vocal_rank_bonus = db.Column(db.Integer)
+    dance_rank_bonus = db.Column(db.Integer)
+    visual_rank_bonus = db.Column(db.Integer)
 
     costumes = db.relationship('Costume', foreign_keys='Card.resc_id', lazy='joined')
 

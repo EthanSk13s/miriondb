@@ -24,7 +24,10 @@ def get_card(card, db):
                  max_awake_vocal=card.max_awake_vocal,
                  max_awake_dance=card.max_awake_dance,
                  max_awake_visual=card.max_awake_visual,
-                 max_master_rank=card.max_master_rank)
+                 max_master_rank=card.max_master_rank,
+                 vocal_rank_bonus=card.bonus_vocal,
+                 dance_rank_bonus=card.bonus_dance,
+                 visual_rank_bonus=card.bonus_visual)
 
     if card.add_date is not None:
         entry.release = dateutil.parser.parse(card.add_date)
