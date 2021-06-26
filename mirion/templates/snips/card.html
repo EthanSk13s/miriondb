@@ -52,8 +52,15 @@
                             +
                         </button>
                     </div>
-                    <div class="col d-flex align-items-center">
-                        <span class="card-stats-badge misc">Max master rank</span> {{ card.max_master_rank }}
+                    <div class="col-lg col-sm-12">
+                        <span class="card-stats-badge misc">Master rank</span>
+                        <button class="btn btn-warning btn-sm" onclick="decreaseRank('{{ card.id }}', '{{ card.level_max }}')">
+                            -
+                        </button>
+                        <input type="text" id="rank-input-{{ card.id }}" class="level-input" value=0 onchange="listenForRank('{{ card.id }}', '{{ card.level_max }}')" data-max="{{ card.max_master_rank }}" data-vo="{{ card.vocal_rank_bonus }}" data-da="{{ card.dance_rank_bonus }}" data-vi="{{ card.visual_rank_bonus }}">
+                        <button class="btn btn-warning btn-sm" onclick="increaseRank('{{ card.id }}', '{{ card.level_max }}')">
+                            +
+                        </button>
                     </div>
                 </div>
                 <div class="row row-cols-* row-cols-sm-*">

@@ -68,7 +68,7 @@ function increaseLevel(id, limit) {
     }
 
     if (Number(inputValue.value) != Number(limit)) {
-        changeValues(id, inputValue.value, limit);
+        changeValues(id, (Number(inputValue.value) + 1), limit);
 
         inputValue.value = Number(inputValue.value) + 1;
     }
@@ -105,12 +105,68 @@ function listenForLevel(id, limit) {
     
 }
 
+function increaseRank(id, levelLimit) {
+    var rank = document.getElementById(`rank-input-${id}`);
+    var limit = rank.getAttribute("data-max");
+    var isAwaken = checkifAwakened(id);
+
+    if (isAwaken === true) {
+        levelLimit = Number(levelLimit) + 10;
+    }
+
+    if (rank.value != limit) {
+        var level = Number(document.getElementById(`level-input-${id}`).value);
+        rank.value = Number(rank.value) + 1;
+
+        changeValues(id, level, levelLimit)
+    }
+}
+
+function decreaseRank(id, levelLimit) {
+    var rank = document.getElementById(`rank-input-${id}`);
+    var isAwaken = checkifAwakened(id);
+
+    if (isAwaken === true) {
+        levelLimit = Number(levelLimit) + 10;
+    }
+
+    if (rank.value > 0) {
+        var level = Number(document.getElementById(`level-input-${id}`).value);
+        rank.value = rank.value - 1;
+
+        changeValues(id, level, levelLimit)
+    }
+}
+
+function listenForRank(id, levelLimit) {
+    var rank = document.getElementById(`rank-input-${id}`);
+    var limit = rank.getAttribute("data-max");
+    var isAwaken = checkifAwakened(id);
+
+    if (isAwaken === true) {
+        levelLimit = Number(levelLimit) + 10;
+    }
+
+    if (rank.value <= limit) {
+        var level = Number(document.getElementById(`level-input-${id}`).value);
+        changeValues(id, level, levelLimit);
+    } else {
+        changeValues(id, levelLimit, levelLimit);
+
+        rank.value = limit;
+    }
+} 
+
 function changeValues(id, value, limit) {
     var stats = ["vo", "da", "vi"];
     var isAwaken = checkifAwakened(id);
 
     for (var i = 0; i < stats.length; i++) {
         var stat = document.getElementById(`${stats[i]}-${id}`);
+        var rankBonus = document.getElementById(`rank-input-${id}`);
+
+        var rankValue = rankBonus.getAttribute(`data-${stats[i]}`);
+
         if (isAwaken == false) {
             var min = Number(stat.getAttribute("data-default"));
             var max = Number(stat.getAttribute("data-default-max"));
@@ -119,7 +175,7 @@ function changeValues(id, value, limit) {
             var max = Number(stat.getAttribute("data-awaken-max"));
         }
 
-        stat.textContent = interpolate(value, 1, limit, min, max);
+        stat.textContent = interpolate(value, 1, limit, min, max) + calcBonus(rankBonus.value, rankValue);
         stat.setAttribute("data-level", value.toString());
     };
 }
@@ -132,4 +188,8 @@ function checkifAwakened(id) {
     } else {
         return false;
     }
+}
+
+function calcBonus(bonus, value) {
+    return bonus * value;
 }
