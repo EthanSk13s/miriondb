@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 
 from mirion.database import db
 from mirion.utils import enums
@@ -100,7 +101,11 @@ class Costume(db.Model):
         base_url = "https://storage.matsurihi.me/mltd/costume_icon_ll/"
         urls = []
 
-        for resc_id in json.loads(self.costume_resc_ids.replace('\'', '"')):
+        try:
+            costumes = json.loads(self.costume_resc_ids.replace('\'', '"'))
+        except JSONDecodeError:
+            return None
+        for resc_id in costumes:
             urls.append(f"{base_url}{resc_id}.png")
 
         return urls
@@ -166,7 +171,7 @@ class Card(db.Model):
 
     @property
     def bg_url(self):
-        if self.rarity == 4 and self.ex_type not in [5, 7, 10]:
+        if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13]:
             base_url = "https://storage.matsurihi.me/mltd/card_bg/"
 
             return f"{base_url}{self.resc_id}_0.png"

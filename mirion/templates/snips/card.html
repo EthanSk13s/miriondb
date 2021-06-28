@@ -115,11 +115,13 @@
                         <div class="col-12 costume-header">
                             <span class="card-stats-badge costumes">Costumes</span>
                         </div>
-                        {% for costume in card.costumes.url %}
-                        <div class="col-auto costume-wrapper">
-                            <img class="costume-image" src="{{ costume }}">
-                        </div>
-                        {% endfor %}
+                        {% if card.costumes.url != None %}
+                            {% for costume in card.costumes.url %}
+                            <div class="col-auto costume-wrapper">
+                                <img class="costume-image" src="{{ costume }}">
+                            </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             </div>
