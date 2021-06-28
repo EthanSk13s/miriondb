@@ -51,6 +51,7 @@ def add_changes(db_list: list, changes: list, is_event=False):
 
 
 @scheduler.task('cron', id='check_changes', hour=15, minute=2)
+@scheduler.task('cron', id='check_changes_midnight', hour=0, minute=2)
 def add_to_database():
     app = scheduler.app
     with app.app_context():
