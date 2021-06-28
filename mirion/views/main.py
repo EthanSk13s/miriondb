@@ -17,7 +17,7 @@ def index():
                                          Card.event_id == None).all()
 
     current_event = Event.query.order_by(-Event.db_id).first()
-    if current_event.event_type in (3, 4, 9, 13):
+    if current_event.event_type in (3, 4, 5, 9, 13):
         event_cards = Card.query.filter(
             Card.event_id == current_event.id, Card.rarity == 3
         ).all()
