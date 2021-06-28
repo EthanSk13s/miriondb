@@ -69,9 +69,15 @@ class CenterSkill(db.Model):
         if any([idol_type, attribute]) is None:
             return "No TL available"
 
-        first_cond = enums.CENTER_SKILL_STRING.format(idol_type.capitalize(),
-                                                      attribute,
-                                                      value)
+        if self.id <= 7000:
+            first_cond = enums.CENTER_SKILL_STRING.format(idol_type.capitalize(),
+                                                          attribute,
+                                                          value)
+        else:
+            value_2 = self.value_2
+            first_cond = enums.CENTER_BOOST_STRING.format(value_2,
+                                                          attribute,
+                                                          value)
 
         if self.song_type is not None:
             attr_2 = enums.TYPES.get(self.song_type)
