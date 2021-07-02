@@ -97,7 +97,8 @@ SKILL_TYPES = {
     7: "Double Boost",
     8: "Multi Up",
     10: "Overclock",
-    11: "Overload"
+    11: "Overload",
+    12: "Double Effect"
 }
 
 LEVEL_LIMITS = {
@@ -130,8 +131,8 @@ EFFECTS = {
     7: "of increasing the {evaluation} score by {value[0]} and the combo bonus by {value[1]}%",
     8: "of increasing {evaluation} score by {value[0]}% and recovering {value[1]} life with every {evaluation2}",
     10: "of consuming {value[1]} lives, and increasing {evaluation} score by {value[0]}%",
-    11: "of consuming {value[1]} lives, and increasing combo bonus by {value[0]}%"
-    # 12?: ??????
+    11: "of consuming {value[1]} lives, and increasing combo bonus by {value[0]}%",
+    12: "of boosting score and combo bonuses by {value[0]}%"
 }
 
 
