@@ -21,7 +21,8 @@ def index():
     current_event = Event.query.order_by(-Event.db_id).first()
     if current_event.event_type in (3, 4, 5, 9, 13):
         event_cards = Card.query.filter(
-            sqlalchemy.or_(Card.event_id == current_event.id, Card.ex_type == 13), Card.rarity == 3
+            Card.event_id == current_event.id,
+            sqlalchemy.or_(Card.rarity == 3, Card.rarity == 2)
         ).all()
     else:
         event_cards = None
