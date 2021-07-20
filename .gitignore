@@ -11,3 +11,9 @@ __pycache__/
 
 # Databases
 *.db
+
+# Added by cargo
+theater/target
+
+# Image cache
+theater/cache/**/*.png
