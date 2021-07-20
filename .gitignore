@@ -16,4 +16,5 @@ __pycache__/
 *.db
 
 # Branch assets stuff
-theater/*
+theater/cache/**/*.png
+theater/target
