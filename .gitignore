@@ -12,6 +12,9 @@ __pycache__/
 # Databases
 *.db
 
+# logs
+*.log
+
 # Added by cargo
 theater/target
 
