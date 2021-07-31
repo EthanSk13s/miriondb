@@ -62,7 +62,7 @@ fn query_cards(conn: Connection) -> Result<Vec<Card>, rusqlite::Error> {
     let mut stmt = conn.prepare(
         r#"SELECT resc_id, rarity, ex_type, costume_resc_ids FROM card 
                 LEFT JOIN costume USING(resc_id)"#
-            ).expect("oops");
+            ).expect("Invalid Syntax");
 
     let rows = stmt.query_and_then([],
          |row| row_to_card(row.get(0)?, row.get(1)?,
