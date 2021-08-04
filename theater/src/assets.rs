@@ -35,7 +35,7 @@ fn establish_connection() -> Connection {
 }
 
 async fn write_image(name: String, data: Vec<u8>) {
-    let path = format!("test/{}", name);
+    let path = format!("cache/{}", name);
 
     fs::write(path, data).await
         .expect("Something went wrong with writing the file...");
@@ -62,7 +62,7 @@ fn query_cards(conn: Connection) -> Result<Vec<Card>, rusqlite::Error> {
     let mut stmt = conn.prepare(
         r#"SELECT resc_id, rarity, ex_type, costume_resc_ids FROM card 
                 LEFT JOIN costume USING(resc_id)"#
-            ).expect("oops");
+            ).expect("Invalid Syntax");
 
     let rows = stmt.query_and_then([],
          |row| row_to_card(row.get(0)?, row.get(1)?,
@@ -79,7 +79,7 @@ fn query_cards(conn: Connection) -> Result<Vec<Card>, rusqlite::Error> {
 }
 
 async fn write_assets(client: &Client, url: &str, path: String) {
-    if Path::new(&format!("test/{}", path)).exists() == false {
+    if Path::new(&format!("cache/{}", path)).exists() == false {
         let image = client.get(url).send().await;
         match image {
             Ok(data) => {
