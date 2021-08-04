@@ -14,12 +14,12 @@ def page_not_found(e):
 
 @main_page.route("/")
 def index():
-    recent_datetime = Card.query.filter(Card.ex_type != 13).order_by(Card.db_id.desc()).first().release
+    recent_datetime = Card.query.filter(Card.ex_type != 13, Card.event_id == None).order_by(Card.db_id.desc()).first().release
     recent_additions = Card.query.filter(recent_datetime == Card.release,
                                          Card.event_id == None, Card.ex_type != 13).all()
 
     current_event = Event.query.order_by(-Event.db_id).first()
-    if current_event.event_type in (3, 4, 5, 9, 13):
+    if current_event.event_type in (3, 4, 5, 9, 11, 13):
         event_cards = Card.query.filter(
             Card.event_id == current_event.id,
             sqlalchemy.or_(Card.rarity == 3, Card.rarity == 2)
@@ -27,7 +27,8 @@ def index():
     else:
         event_cards = None
 
-    previous_dates = Card.query.filter(recent_datetime != Card.release, Card.ex_type != 13).\
+    previous_dates = Card.query.filter(recent_datetime != Card.release,
+                                       Card.ex_type != 13, Card.event_id == None).\
         order_by(Card.release.desc()).\
         group_by(Card.release)[0:2]
 
