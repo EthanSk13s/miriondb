@@ -31,4 +31,8 @@ def create_app(config):
 
     views.register_views(app)
 
+    # Create a fifo for asset server
+    fifo = open("theater/wake.fifo", 'w')
+    fifo.close()
+
     return app

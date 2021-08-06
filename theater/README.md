@@ -1,5 +1,5 @@
 # Theater
-A server that downloads and serves images for cards using Tcp streams between mirion and theater
+A server that downloads and serves images for cards using a fifo between mirion and theater
 
 ## Why Rust?
 Just for practice and experimenting.

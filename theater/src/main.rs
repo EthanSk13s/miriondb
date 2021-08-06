@@ -9,5 +9,6 @@ mod listener;
 fn rocket() -> _ {
     rocket::build()
         .attach(AdHoc::on_ignite("asset_check", assets::download_image)) // Check if we need to download new images
+        .attach(listener::FifoChecker::default())
         .mount("/", FileServer::from(relative!("cache")))
 }

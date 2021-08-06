@@ -1,21 +1,41 @@
-use std::error::Error;
-use std::{io::{Read}, net::{TcpListener, TcpStream}};
+use tokio::{fs, time::Duration};
 
-fn handle_client(stream: TcpStream) -> Result<String, Box<Error + Send + Sync>> {
-    let mut connection = stream.take(1024);
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::{Rocket, Orbit};
 
-    let mut response = String::new();
-    connection.read_to_string(&mut response);
+#[derive(Default)]
+pub struct FifoChecker {}
 
-    Ok(response)
-}
-
-fn start_listen() -> std::io::Result<()>{
-    let listener = TcpListener::bind("http://127.0.0.1:5500/")?;
-
-    for stream in listener.incoming() {
-        handle_client(stream?);
+#[rocket::async_trait]
+impl Fairing for FifoChecker {
+    fn info(&self) -> Info {
+        Info {
+            name: "Fifo Checker",
+            kind: Kind::Liftoff
+        }
     }
 
-    Ok(())
+    async fn on_liftoff(&self, _rocket: &Rocket<Orbit>) {
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(Duration::from_secs(1));
+
+            loop {
+                check_fifo().await;
+                interval.tick().await;
+            }
+        });
+
+    }
+}
+
+async fn check_fifo() {
+    let fifo = fs::read("wake.fifo").await;
+    match fifo {
+        Ok(contents) => {
+            if String::from_utf8_lossy(&contents) == String::from("1") {
+                println!("Change!");
+            }
+        },
+        Err(_) => { println!("Error") }
+    }
 }
