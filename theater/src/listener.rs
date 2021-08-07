@@ -6,6 +6,20 @@ use rocket::{Rocket, Orbit};
 #[derive(Default)]
 pub struct FifoChecker {}
 
+impl FifoChecker {
+    async fn check_fifo() {
+        let fifo = fs::read("wake.fifo").await;
+        match fifo {
+            Ok(contents) => {
+                if String::from_utf8_lossy(&contents) == String::from("1") {
+                    println!("Change!");
+                }
+            },
+            Err(_) => { println!("Error") }
+        }
+    }
+}
+
 #[rocket::async_trait]
 impl Fairing for FifoChecker {
     fn info(&self) -> Info {
@@ -20,22 +34,10 @@ impl Fairing for FifoChecker {
             let mut interval = tokio::time::interval(Duration::from_secs(1));
 
             loop {
-                check_fifo().await;
+                Self::check_fifo().await;
                 interval.tick().await;
             }
         });
 
-    }
-}
-
-async fn check_fifo() {
-    let fifo = fs::read("wake.fifo").await;
-    match fifo {
-        Ok(contents) => {
-            if String::from_utf8_lossy(&contents) == String::from("1") {
-                println!("Change!");
-            }
-        },
-        Err(_) => { println!("Error") }
     }
 }
