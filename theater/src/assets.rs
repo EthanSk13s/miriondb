@@ -55,7 +55,7 @@ impl DbConn {
 
             let rows = stmt.query_and_then([],
                 |row| DbConn::row_to_card(row.get(0)?, row.get(1)?,
-                                  row.get(2)?, match row.get(3) {
+                                          row.get(2)?, match row.get(3) {
                                                                            Ok(row) => row,
                                                                            Err(_) => String::from("")
                                                                        }));
