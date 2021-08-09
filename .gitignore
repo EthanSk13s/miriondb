@@ -23,3 +23,6 @@ theater/target
 
 # Image cache
 theater/cache/**/*.png
+
+# Fifo
+theater/wake.fifo
