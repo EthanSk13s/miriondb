@@ -27,6 +27,7 @@ impl Default for Costumes {
 }
 
 #[database("theater")]
+#[derive(Clone)]
 pub struct DbConn(rusqlite::Connection);
 
 impl DbConn {
@@ -70,7 +71,7 @@ impl DbConn {
 
 #[derive(Default)]
 pub struct ImageServer {
-    client: Client,
+    pub client: Client,
 }
 
 impl ImageServer {
@@ -95,22 +96,15 @@ impl ImageServer {
             }
         }
     }
-}
 
-#[rocket::async_trait]
-impl Fairing for ImageServer {
-    fn info(&self) -> Info {
-        Info {
-            name: "Image Server",
-            kind: Kind::Liftoff
+    async fn batch_write(&self, urls: Vec<String>, paths: Vec<String>) {
+        for item in urls.iter().zip(paths.iter()) {
+            self.write_assets(item.0, item.1.to_string()).await;
         }
     }
 
-    async fn on_liftoff(&self, rocket: &Rocket<Orbit>) {
+    pub async fn check_for_images(&self, db: &DbConn) {
         println!("Checking for new images... Please wait");
-
-        let db = DbConn::get_one(&rocket).await
-                    .expect("database mounted");
 
         for x in db.query_cards().await.unwrap() {
             let base = "https://storage.matsurihi.me/mltd";
@@ -119,17 +113,21 @@ impl Fairing for ImageServer {
             let card_file = format!("{}_0", x.resc_id);
             let awake_card = format!("{}_1", x.resc_id);
 
-            let card_url = format!("{}/card/{}_a.png", base, card_file);
-            self.write_assets(&card_url, format!("card/{}.png", card_file)).await;
+            let urls = vec![
+                format!("{}/card/{}_a.png", base, card_file),
+                format!("{}/card/{}_a.png", base, awake_card),
+                format!("{}/icon_l/{}.png", base, card_file),
+                format!("{}/icon_l/{}.png", base, awake_card)
+            ];
 
-            let awake_url = format!("{}/card/{}_a.png", base, awake_card);
-            self.write_assets(&awake_url, format!("card/{}.png", awake_card)).await;
+            let paths = vec![
+                format!("card/{}.png", card_file),
+                format!("card/{}.png", awake_card),
+                format!("icons/{}.png", card_file),
+                format!("icons/{}.png", awake_card)
+            ];
 
-            let icon_url = format!("{}/icon_l/{}.png", base, card_file);
-            self.write_assets(&icon_url, format!("icons/{}.png", card_file)).await;
-
-            let icon_awake = format!("{}/icon_l/{}.png", base, awake_card);
-            self.write_assets(&icon_awake, format!("icons/{}.png", awake_card)).await;
+            self.batch_write(urls, paths).await;
 
             // Download SSR backgrounds... also ignore SSR anniv. cards
             let anniv_types = vec![5, 7, 10, 13];
@@ -147,5 +145,23 @@ impl Fairing for ImageServer {
                 self.write_assets(&costume_url, format!("costumes/{}.png", costume)).await;
             }
         }
+
+    }
+}
+
+#[rocket::async_trait]
+impl Fairing for ImageServer {
+    fn info(&self) -> Info {
+        Info {
+            name: "Image Server",
+            kind: Kind::Liftoff
+        }
+    }
+
+    async fn on_liftoff(&self, rocket: &Rocket<Orbit>) {
+        let db = DbConn::get_one(&rocket).await
+                    .expect("database mounted.");
+
+        self.check_for_images(&db).await;
     }
 }

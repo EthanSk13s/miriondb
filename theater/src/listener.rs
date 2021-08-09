@@ -2,17 +2,23 @@ use tokio::{fs, time::Duration};
 
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::{Rocket, Orbit};
+use reqwest::Client;
+
+use crate::assets::{self, DbConn};
 
 #[derive(Default)]
 pub struct FifoChecker {}
 
 impl FifoChecker {
-    async fn check_fifo() {
+    async fn check_fifo(server: &assets::ImageServer, db: &DbConn) {
         let fifo = fs::read("wake.fifo").await;
         match fifo {
             Ok(contents) => {
                 if String::from_utf8_lossy(&contents) == String::from("1") {
-                    println!("Change!");
+                    server.check_for_images(db).await;
+
+                    fs::write("wake.fifo", "0").await
+                        .expect("Cannot write to fifo.");
                 }
             },
             Err(_) => { println!("Error") }
@@ -29,12 +35,16 @@ impl Fairing for FifoChecker {
         }
     }
 
-    async fn on_liftoff(&self, _rocket: &Rocket<Orbit>) {
+    async fn on_liftoff(&self, rocket: &Rocket<Orbit>) {
+        let server = assets::ImageServer { client: Client::new() };
+        let db = DbConn::get_one(&rocket).await
+                            .expect("database mounted.");
+
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(1));
 
             loop {
-                Self::check_fifo().await;
+                Self::check_fifo(&server, &db).await;
                 interval.tick().await;
             }
         });
