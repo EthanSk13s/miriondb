@@ -23,6 +23,11 @@ def add_changes(db_list: list, changes: list, is_event=False):
                 fetch.get_events(item, db)
 
         db.session.commit()
+
+        fifo = open("theater/wake.fifo", "w")  # Let asset server know that there are images to be downloaded
+        fifo.write("1")
+        fifo.close()
+
         logging.info(f"{diff} added to Database")
     else:
         logging.info("No changes found")
