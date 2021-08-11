@@ -1,5 +1,5 @@
 #[macro_use] extern crate rocket;
-use rocket::fs::{FileServer, relative};
+use rocket::fs::{FileServer};
 
 mod assets;
 mod listener;
@@ -10,5 +10,5 @@ fn rocket() -> _ {
         .attach(assets::ImageServer::default())
         .attach(assets::DbConn::fairing())
         .attach(listener::FifoChecker::default())
-        .mount("/", FileServer::from(relative!("cache")))
+        .mount("/", FileServer::from("./cache"))
 }
