@@ -94,7 +94,7 @@ class CenterSkill(db.Model):
 
 class Costume(db.Model):
     resc_id = db.Column(db.Text, primary_key=True)
-    costume_resc_ids = db.Column(db.Text)
+    costume_resc_ids = db.Column(db.Text, default=None)
 
     @property
     def url(self):
@@ -128,7 +128,7 @@ class Card(db.Model):
     event_id = db.Column(db.Integer, index=True, default=None)
 
     skill_id = db.Column(db.Integer, db.ForeignKey(Skill.id), default=None)
-    center_skill_id = db.Column(db.Text, db.ForeignKey(CenterSkill.id), default=None)
+    center_skill_id = db.Column(db.Integer, db.ForeignKey(CenterSkill.id), default=None)
 
     skill = db.relationship('Skill', foreign_keys='Card.skill_id', lazy='joined')
     center_skill = db.relationship('CenterSkill', foreign_keys='Card.center_skill_id', lazy='joined')
