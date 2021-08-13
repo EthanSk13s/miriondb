@@ -108,6 +108,9 @@ class Costume(db.Model):
         for resc_id in costumes:
             urls.append(f"{base_url}{resc_id}.png")
 
+        if not urls:
+            return None
+
         return urls
 
     def __repr__(self):

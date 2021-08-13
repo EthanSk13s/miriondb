@@ -34,25 +34,27 @@ def add_changes(db_list: list, changes: list, is_event=False):
 
     # Check for Master rank updates
     if is_event is False:
-        ssr_cards = [card for card in changes if card.rarity == 4]
-        cards = Card.query.filter(Card.rarity == 4)
+        if diff > 0:
+            ssr_cards = [card for card in changes if card.rarity == 4]
+            cards = Card.query.filter(Card.rarity == 4)
 
-        for ssr_card, card in zip(ssr_cards, cards):
-            if card.max_master_rank != ssr_card.max_master_rank:
-                card.max_master_rank = ssr_card.max_master_rank
-                db.session.flush()
+            for ssr_card, card in zip(ssr_cards, cards):
+                if card.max_master_rank != ssr_card.max_master_rank:
+                    if ssr_card.rank_costume is not None:
+                        card.max_master_rank = ssr_card.max_master_rank
+                        db.session.flush()
 
-                costume = Costume.query.filter(card.resc_id == Costume.resc_id).first()
-                list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
+                        costume = Costume.query.filter(card.resc_id == Costume.resc_id).first()
+                        list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
 
-                list_of_costumes.append(ssr_card.rank_costume.resc_id)
+                        list_of_costumes.append(ssr_card.rank_costume.resc_id)
 
-                costume.costume_resc_ids = str(list_of_costumes).replace('"', '\'')
+                        costume.costume_resc_ids = str(list_of_costumes).replace('"', '\'')
 
-                db.session.flush()
-                logging.info(f"{card.card_name}'s master rank has been updated")
+                        db.session.flush()
+                        logging.info(f"{card.card_name}'s master rank has been updated")
 
-        db.session.commit()
+            db.session.commit()
 
 
 @scheduler.task('cron', id='check_changes', hour=15, minute=2)

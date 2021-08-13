@@ -4,6 +4,25 @@ from mirion.models import Card, Event, CenterSkill, Skill, Costume
 
 
 def get_card(card, db):
+    # Same situation here as anniv skills, anniv cards share costumes
+    entry_costume = Costume(resc_id=card.resc_id)
+    if card.costume is not None:
+
+        entry_costume.costume_resc_ids = [card.costume.resc_id]
+
+        if card.bonus_costume is not None:
+            entry_costume.costume_resc_ids.append(card.bonus_costume.resc_id)
+
+        if card.rank_costume is not None:
+            entry_costume.costume_resc_ids.append(card.rank_costume.resc_id)
+
+        entry_costume.costume_resc_ids = str(entry_costume.costume_resc_ids)
+
+        if db.session.query(Costume).filter(Costume.resc_id == entry_costume.resc_id).first():
+            pass
+
+    db.session.add(entry_costume)
+
     entry = Card(id=card.id,
                  resc_id=card.resc_id,
                  idol_id=card.idol_id,
@@ -30,7 +49,7 @@ def get_card(card, db):
                  visual_rank_bonus=card.bonus_visual)
 
     if card.add_date is not None:
-        entry.release = dateutil.parser.parse(card.add_date)
+        entry.release = dateutil.parser.parse(card.add_date, ignoretz=True)
 
     if card.event_id is not None:
         entry.event_id = card.event_id
@@ -64,25 +83,6 @@ def get_card(card, db):
             pass
         else:
             db.session.add(center_entry)
-
-    # Same situation here, anniv cards share costumes
-    if card.costume is not None:
-        entry_costume = Costume(resc_id=card.resc_id)
-
-        entry_costume.costume_resc_ids = [card.costume.resc_id]
-
-        if card.bonus_costume is not None:
-            entry_costume.costume_resc_ids.append(card.bonus_costume.resc_id)
-
-        if card.rank_costume is not None:
-            entry_costume.costume_resc_ids.append(card.rank_costume.resc_id)
-
-        entry_costume.costume_resc_ids = str(entry_costume.costume_resc_ids)
-
-        if db.session.query(Costume).filter(Costume.resc_id == entry_costume.resc_id).first():
-            pass
-        else:
-            db.session.add(entry_costume)
 
     db.session.add(entry)
 
