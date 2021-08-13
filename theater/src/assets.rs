@@ -3,7 +3,7 @@ use tokio::fs;
 
 use rocket::{Orbit, Rocket, fairing::{Fairing, Kind, Info}};
 use rocket::serde::{Deserialize, json};
-use rocket_sync_db_pools::{database, rusqlite};
+use rocket_sync_db_pools::{database, postgres};
 use reqwest::Client;
 
 struct Card {
@@ -28,10 +28,10 @@ impl Default for Costumes {
 
 #[database("theater")]
 #[derive(Clone)]
-pub struct DbConn(rusqlite::Connection);
+pub struct DbConn(postgres::Client);
 
 impl DbConn {
-    fn row_to_card(resc_id: String, rarity: i32, ex_type: i32, costume_resc_ids: String) -> Result<Card, rusqlite::Error> {
+    fn row_to_card(resc_id: String, rarity: i32, ex_type: i32, costume_resc_ids: String) -> Result<Card, postgres::Error> {
         let new = costume_resc_ids.replace("'", '"'.to_string().as_str());
         let resc_ids = match json::from_str(&new) {
             Ok(ids) => ids,
@@ -47,25 +47,28 @@ impl DbConn {
         })
     }
 
-    async fn query_cards(&self) -> Result<Vec<Card>, rusqlite::Error> {
+    async fn query_cards(&self) -> Result<Vec<Card>, postgres::Error> {
         let rows = self.run(|conn| {
-            let mut stmt = conn.prepare(
+            let mut cards = Vec::new();
+            let rows = conn.query(
                                 r#"SELECT resc_id, rarity, ex_type, costume_resc_ids FROM card 
-                                    LEFT JOIN costume USING(resc_id)"#
+                                    LEFT JOIN costume USING(resc_id)"#, &[]
                             ).expect("Invalid Syntax");
-
-            let rows = stmt.query_and_then([],
-                |row| DbConn::row_to_card(row.get(0)?, row.get(1)?,
-                                          row.get(2)?, match row.get(3) {
-                                                                           Ok(row) => row,
-                                                                           Err(_) => String::from("")
-                                                                       }));
-
-            rows.unwrap().collect::<Result<Vec<Card>, _>>()
+            
+            for row in rows {
+                let card = DbConn::row_to_card(row.get("resc_id"), row.get("rarity"),
+                                    row.get("ex_type"), match row.try_get("costume_resc_ids") {
+                                        Ok(row) => row,
+                                        Err(_) => String::from("")
+                                    }).unwrap();
+                cards.push(card);
+            }
+            
+            cards
 
         }).await;
     
-        rows
+        Ok(rows)
     }
 }
 
