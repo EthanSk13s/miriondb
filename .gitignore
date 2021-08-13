@@ -26,3 +26,6 @@ theater/cache/**/*.png
 
 # Fifo
 theater/wake.fifo
+
+# Configs
+db.yml
