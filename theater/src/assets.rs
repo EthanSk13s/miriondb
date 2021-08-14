@@ -1,7 +1,6 @@
 use std::path::Path;
-use tokio::fs;
 
-use rocket::{Orbit, Rocket, fairing::{Fairing, Kind, Info}};
+use rocket::{Orbit, Rocket, fairing::{Fairing, Kind, Info}, tokio::fs};
 use rocket::serde::{Deserialize, json};
 use rocket_sync_db_pools::{database, postgres};
 use reqwest::Client;

@@ -1,7 +1,5 @@
-use tokio::{fs, time::Duration};
-
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::{Rocket, Orbit, tokio::select};
+use rocket::{Rocket, Orbit, tokio::{self, select, fs, time::Duration}};
 use reqwest::Client;
 
 use crate::assets::{self, DbConn};
