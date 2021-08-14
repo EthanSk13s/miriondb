@@ -1,7 +1,7 @@
 use tokio::{fs, time::Duration};
 
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::{Rocket, Orbit};
+use rocket::{Rocket, Orbit, tokio::select};
 use reqwest::Client;
 
 use crate::assets::{self, DbConn};
@@ -39,13 +39,16 @@ impl Fairing for FifoChecker {
         let server = assets::ImageServer { client: Client::new() };
         let db = DbConn::get_one(&rocket).await
                             .expect("database mounted.");
+        let mut shutdown = rocket.shutdown();
 
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(1));
 
             loop {
-                Self::check_fifo(&server, &db).await;
-                interval.tick().await;
+                select! {
+                    _ = interval.tick() => Self::check_fifo(&server, &db).await,
+                    _ = &mut shutdown => break
+                }
             }
         });
 
