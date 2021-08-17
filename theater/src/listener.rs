@@ -1,5 +1,7 @@
+use std::net::SocketAddr;
+use std::str::from_utf8;
 use rocket::fairing::{Fairing, Info, Kind};
-use rocket::{Rocket, Orbit, tokio::{self, select, fs, time::Duration}};
+use rocket::{Rocket, Orbit, tokio::{self, select, net, time::Duration}};
 use reqwest::Client;
 
 use crate::assets::{self, DbConn};
@@ -8,18 +10,25 @@ use crate::assets::{self, DbConn};
 pub struct FifoChecker {}
 
 impl FifoChecker {
-    async fn check_fifo(server: &assets::ImageServer, db: &DbConn) {
-        let fifo = fs::read("wake.fifo").await;
-        match fifo {
-            Ok(contents) => {
-                if String::from_utf8_lossy(&contents) == String::from("1") {
-                    server.check_for_images(db).await;
+    async fn check_fifo(server: &assets::ImageServer, db: &DbConn, stream: (net::TcpStream, SocketAddr)) {
+        let data = [0 as u8; 50];
+        let status = Self::handle_connection(stream.0, data);
 
-                    fs::write("wake.fifo", "0").await
-                        .expect("Cannot write to fifo.");
+        if status == "1" {
+            server.check_for_images(db).await;
+        }
+    }
+
+    fn handle_connection(client: net::TcpStream, mut data: [u8; 50]) -> String {
+        match client.try_read(&mut data) {
+            Ok(test) => {
+                let text = from_utf8(&data[0..test]);
+                match text {
+                    Ok(status) => status.to_string(),
+                    Err(_) => String::from("N/A")
                 }
-            },
-            Err(_) => { println!("Error") }
+            }
+            Err(_) => String::from("N/A")
         }
     }
 }
@@ -38,13 +47,21 @@ impl Fairing for FifoChecker {
         let db = DbConn::get_one(&rocket).await
                             .expect("database mounted.");
         let mut shutdown = rocket.shutdown();
+        let listener = net::TcpListener::bind("127.0.0.1:5501").await.unwrap();
 
+
+        // TODO: Thread panicks when shutting down, currently does not affect anything should fix
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(1));
 
             loop {
                 select! {
-                    _ = interval.tick() => Self::check_fifo(&server, &db).await,
+                    _ = interval.tick() => {
+                            match listener.accept().await {
+                                Ok(stream) => Self::check_fifo(&server, &db, stream).await,
+                                Err(_) => {}
+                            }
+                    },
                     _ = &mut shutdown => break
                 }
             }
