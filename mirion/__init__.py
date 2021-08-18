@@ -25,14 +25,13 @@ def create_app(config):
     # Setup Database
     database.init_app(app)
 
+    # Setup asset server address
+    app.assets_addr = (app.config['ASSETS_HOST'], app.config['ASSETS_PORT'])
+
     # Start Background tasks
     app.first_run = 0  # So tasks don't fire twice
     task.init_app(app)
 
     views.register_views(app)
-
-    # Create a fifo for asset server
-    fifo = open("theater/wake.fifo", 'w')
-    fifo.close()
 
     return app
