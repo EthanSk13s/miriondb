@@ -1,5 +1,6 @@
 import logging
 import json
+import socket
 
 from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -7,6 +8,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from mirion.utils import fetch
 from mirion.database import db
 from mirion.models import Card, Event, Costume
+from mirion.connection import ConnectionSocket
 
 scheduler = APScheduler(scheduler=BackgroundScheduler(
     {'apscheduler.timezone': 'Asia/Tokyo'}))
@@ -24,9 +26,13 @@ def add_changes(db_list: list, changes: list, is_event=False):
 
         db.session.commit()
 
-        fifo = open("theater/wake.fifo", "w")  # Let asset server know that there are images to be downloaded
-        fifo.write("1")
-        fifo.close()
+        try:
+            app = scheduler.app
+            with app.context():
+                s = ConnectionSocket(app.assets_addr)
+                s.send_message("1")
+        except socket.error:
+            print("connection failed, maybe server is down?")
 
         logging.info(f"{diff} added to Database")
     else:
