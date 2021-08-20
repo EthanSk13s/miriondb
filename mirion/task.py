@@ -26,13 +26,14 @@ def add_changes(db_list: list, changes: list, is_event=False):
 
         db.session.commit()
 
-        try:
-            app = scheduler.app
-            with app.context():
-                s = ConnectionSocket(app.assets_addr)
-                s.send_message("1")
-        except socket.error:
-            print("connection failed, maybe server is down?")
+        app = scheduler.app
+        if app.first_run == 1:
+            try:
+                with app.app_context():
+                    s = ConnectionSocket(app.assets_addr)
+                    s.send_message("1")
+            except socket.error:
+                print("connection failed, maybe server is down?")
 
         logging.info(f"{diff} added to Database")
     else:
@@ -81,13 +82,13 @@ def add_to_database():
 def init_app(app):
     if app.first_run == 0:
         with app.app_context():
+            scheduler.init_app(app)
             logging.info("Startup checking for new cards...")
             add_changes(Card.query.all(), app.pryncess.get_all_cards(tl=True))
             logging.info("Startup checking for new events...")
             add_changes(Event.query.all(), app.pryncess.get_all_events(),
                         is_event=True)
 
-            scheduler.init_app(app)
             app.first_run = 1
             scheduler.start()
     else:
