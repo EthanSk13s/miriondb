@@ -7,7 +7,10 @@ use reqwest::Client;
 use crate::assets::{self, DbConn};
 
 #[derive(Default)]
-pub struct FifoChecker {}
+pub struct FifoChecker {
+    pub host: String,
+    pub port: i64
+}
 
 impl FifoChecker {
     async fn check_fifo(server: &assets::ImageServer, db: &DbConn, stream: (net::TcpStream, SocketAddr)) {
@@ -47,7 +50,8 @@ impl Fairing for FifoChecker {
         let db = DbConn::get_one(&rocket).await
                             .expect("database mounted.");
         let mut shutdown = rocket.shutdown();
-        let listener = net::TcpListener::bind("127.0.0.1:5501").await.unwrap();
+        let addr = format!("{}:{}", self.host, self.port);
+        let listener = net::TcpListener::bind(addr).await.unwrap();
 
 
         // TODO: Thread panicks when shutting down, currently does not affect anything should fix
