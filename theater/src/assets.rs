@@ -137,7 +137,7 @@ impl ImageServer {
                 let bg_url = format!("{}/card_bg/{}.png", base, card_file);
                 self.write_assets(&bg_url, format!("card_bg/{}.png", card_file)).await;
 
-                let awake_bg_url = format!("{}/card_bg/{}", base, awake_card);
+                let awake_bg_url = format!("{}/card_bg/{}.png", base, awake_card);
                 self.write_assets(&awake_bg_url, format!("card_bg/{}.png", awake_card)).await;
             }
 
