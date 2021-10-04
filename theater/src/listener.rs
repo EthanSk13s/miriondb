@@ -53,21 +53,20 @@ impl Fairing for FifoChecker {
         let addr = format!("{}:{}", self.host, self.port);
         let listener = net::TcpListener::bind(addr).await.unwrap();
 
-
-        // TODO: Thread panicks when shutting down, currently does not affect anything should fix
         tokio::spawn(async move {
-            let mut interval = tokio::time::interval(Duration::from_secs(1));
-
             loop {
-                select! {
-                    _ = interval.tick() => {
-                            match listener.accept().await {
-                                Ok(stream) => Self::check_fifo(&server, &db, stream).await,
-                                Err(_) => {}
-                            }
-                    },
+                let stream = select! {
+                    stream = listener.accept() => stream,
                     _ = &mut shutdown => break
+                };
+                // We sleep here for a little bit to allow the stream to actually connect
+                rocket::tokio::time::sleep(Duration::from_millis(10)).await;
+
+                match stream {
+                    Ok(stream) => Self::check_fifo(&server, &db, stream).await,
+                    Err(_) => continue
                 }
+                
             }
         });
 
