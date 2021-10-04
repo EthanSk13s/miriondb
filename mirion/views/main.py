@@ -47,6 +47,7 @@ def index():
                 sorted_additions.append([x for x in cards])
                 cards.clear()
         except IndexError:
+            cards.append(card)
             sorted_additions.append([x for x in cards])
 
     return render_template('main.html', recent_additions=recent_additions,
