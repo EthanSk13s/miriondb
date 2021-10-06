@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use rocket::{Orbit, Rocket, fairing::{Fairing, Kind, Info}, tokio::fs};
+use rocket::{Orbit, Rocket, fairing::{Fairing, Kind, Info}, tokio::{self, fs, time::Duration, select}};
 use rocket::serde::{Deserialize, json};
 use rocket_sync_db_pools::{database, postgres};
 use reqwest::Client;
@@ -77,10 +77,8 @@ pub struct ImageServer {
 }
 
 impl ImageServer {
-    async fn write_image(&self, name: String, data: Vec<u8>) {
-        let path = format!("cache/{}", name);
-    
-        fs::write(path, data).await
+    async fn write_image(name: String, data: Vec<u8>) {    
+        fs::write(name, data).await
             .expect("Something went wrong with writing the file...");
     }
 
@@ -90,7 +88,10 @@ impl ImageServer {
             match image {
                 Ok(data) => {
                     match data.bytes().await {
-                        Ok(bytes) => { self.write_image(path, bytes.to_vec()).await },
+                        Ok(bytes) => {
+                            let fp = format!("cache/{}", path); 
+                            Self::write_image(fp, bytes.to_vec()).await 
+                        },
                         Err(_) => {}
                     }
                 },
@@ -147,7 +148,50 @@ impl ImageServer {
                 self.write_assets(&costume_url, format!("costumes/{}.png", costume)).await;
             }
         }
+    }
 
+    async fn check_image_health(&self, file: fs::File, name: String) {
+        let size = file.metadata().await.unwrap().len();
+
+        // Anything below 127 bytes is considered "invalid" so we redownload the image
+        if size <= 127 {
+            let url: Vec<&str> = name.split(&['\\', '/'][..]).collect();
+            let mut base = "";
+            let mut image= ""; 
+    
+            for string in url {
+                if string == "cache" {
+                    continue;
+                }
+                match string {
+                    "card" => base = "card/",
+                    "card_bg" => base = "card_bg/",
+                    "costumes" => base = "costume_icon_ll/",
+                    "icons" => base = "icons/",
+                    &_ => image = string
+                }
+            }
+
+            let img_url = format!("https://storage.matsurihi.me/mltd/{}{}", base, image);
+            let image = self.client.get(img_url).send().await.unwrap();
+
+            Self::write_image(name, image.bytes().await.unwrap().to_vec()).await;
+        }
+    }
+
+    async fn iterate_dir(&self) {
+        let base_dir = std::fs::read_dir("cache/").unwrap();
+
+        for dir in base_dir {
+            for image in std::fs::read_dir(dir.unwrap().path()).unwrap() {
+                let path = image.unwrap().path();
+                let file = fs::File::open(&path).await.unwrap();
+
+                let name = format!("{}", path.to_str().unwrap());
+
+                self.check_image_health(file, name).await;
+            }
+        }
     }
 }
 
@@ -163,7 +207,21 @@ impl Fairing for ImageServer {
     async fn on_liftoff(&self, rocket: &Rocket<Orbit>) {
         let db = DbConn::get_one(&rocket).await
                     .expect("database mounted.");
+        let mut shutdown = rocket.shutdown();
+        let clone = Self { client: Client::new() };
 
         self.check_for_images(&db).await;
+        self.iterate_dir().await;
+
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(Duration::from_secs(300));
+
+            loop {
+                select! {
+                    _ = interval.tick() => clone.iterate_dir().await,
+                    _ = &mut shutdown => break
+                }
+            }
+        });
     }
 }
