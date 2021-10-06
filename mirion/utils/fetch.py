@@ -72,6 +72,7 @@ def get_card(card, db):
                                    value=card.center_skill.value,
                                    song_type=card.center_skill.song_type,
                                    value_2=card.center_skill.value_2)
+
         # Since anniv cards have two versions of the same card
         # unique constraints fail, so we add the skills only once
         if db.session.query(Skill).filter(Skill.id == skill_entry.id).first():
