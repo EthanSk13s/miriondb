@@ -24,14 +24,14 @@ def handle_query():
     got_rarity = 0
 
     if len(query) == 1:
-        idol_id = enums.match_name(query[0].lower())
+        idol_id = enums.NAMES.get_id(query[0].lower())
         return redirect(f"/idol/{idol_id}")
 
     for param in query:
         if param.isdigit():
             release = param
         if got_idol == 0:
-            idol_id = enums.match_name(param.lower())
+            idol_id = enums.NAMES.get_id(param.lower())
             if idol_id is not False:
                 got_idol = 1
         else:
