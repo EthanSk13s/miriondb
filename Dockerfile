@@ -23,7 +23,7 @@ COPY mirion/ /app/mirion
 RUN mkdir theater
 
 COPY theater/cache/ /app/theater/cache
-COPY --from=asset-server /build/target/release/theater theater/theater
+COPY --from=asset-server /build/target/release/theater /app/theater/theater
 COPY --from=asset-server /build/Rocket.toml theater/Rocket.toml
 
 COPY start.sh ./

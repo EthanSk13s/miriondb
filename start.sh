@@ -1,9 +1,14 @@
 #!/bin/sh
 
-nohup python run.py &
-cd theater
-
-echo "Waiting for website to be up until asset server can be started..."
-sleep 15
-
-exec ./theater
+CMD=$1; shift
+case "$CMD" in
+    mirion) 
+        exec python run.py
+        ;;
+    theater)
+        cd theater
+        exec ./theater
+        ;;
+    *) echo "Did not supply an argument"
+        ;;
+esac
