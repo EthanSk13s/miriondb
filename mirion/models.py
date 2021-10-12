@@ -1,8 +1,11 @@
 import json
+import os
 from json.decoder import JSONDecodeError
 
 from mirion.database import db
 from mirion.utils import enums
+
+BASE_URL = os.environ.get("USE_ASSETS")
 
 
 # Instead of relying on pryncess's TLs
@@ -98,7 +101,6 @@ class Costume(db.Model):
 
     @property
     def url(self):
-        base_url = "https://storage.matsurihi.me/mltd/costume_icon_ll/"
         urls = []
 
         try:
@@ -106,7 +108,10 @@ class Costume(db.Model):
         except JSONDecodeError:
             return None
         for resc_id in costumes:
-            urls.append(f"{base_url}{resc_id}.png")
+            if BASE_URL == "https://storage.matsurihi.me/mltd/":
+                urls.append(f"{BASE_URL}/costume_icon_ll/{resc_id}.png")
+
+            urls.append(f"{BASE_URL}/costumes/{resc_id}.png")
 
         if not urls:
             return None
@@ -162,22 +167,22 @@ class Card(db.Model):
 
     @property
     def icon(self):
-        base_url = "https://storage.matsurihi.me/mltd/icon_l/"
+        if BASE_URL == "https://storage.matsurihi.me/mltd/":
+            return f"{BASE_URL}/icon_l/{self.resc_id}_0.png"
 
-        return f"{base_url}{self.resc_id}_0.png"
+        return f"{BASE_URL}/icons/{self.resc_id}_0.png"
 
     @property
     def card_url(self):
-        base_url = "https://storage.matsurihi.me/mltd/card/"
+        if BASE_URL == "https://storage.matsurihi.me/mltd/":
+            return f"{BASE_URL}/card/{self.resc_id}_0_a.png"
 
-        return f"{base_url}{self.resc_id}_0_a.png"
+        return f"{BASE_URL}/card/{self.resc_id}_0.png"
 
     @property
     def bg_url(self):
         if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13]:
-            base_url = "https://storage.matsurihi.me/mltd/card_bg/"
-
-            return f"{base_url}{self.resc_id}_0.png"
+            return f"{BASE_URL}/card_bg/{self.resc_id}_0.png"
         else:
             return None
 
