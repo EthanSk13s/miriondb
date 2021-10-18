@@ -36,6 +36,8 @@ services:
   theater:
     container_name: theater
     image: miriondb
+    volumes:
+      - theater-cache:/app/theater/cache/
     build:
       context: .
       dockerfile: Dockerfile
@@ -53,3 +55,4 @@ services:
 
 volumes:
    theater-db:
+   theater-cache:
