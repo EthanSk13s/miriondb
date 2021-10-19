@@ -1,6 +1,5 @@
 import logging
 import json
-import socket
 
 from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -28,12 +27,8 @@ def add_changes(db_list: list, changes: list, is_event=False):
 
         app = scheduler.app
         if app.first_run == 1:
-            try:
-                with app.app_context():
-                    s = ConnectionSocket(app.assets_addr)
-                    s.send_message("1")
-            except socket.error:
-                print("connection failed, maybe server is down?")
+            s = ConnectionSocket(app.assets_addr)
+            s.send_message("1", app)
 
         logging.info(f"{diff} added to Database")
     else:
@@ -63,6 +58,11 @@ def add_changes(db_list: list, changes: list, is_event=False):
 
                 db.session.flush()
                 logging.info(f"{card.card_name}'s master rank has been updated")
+
+        app = scheduler.app
+        if app.first_run == 1:
+            s = ConnectionSocket(app.assets_addr)
+            s.send_message("1", app)
 
         db.session.commit()
 

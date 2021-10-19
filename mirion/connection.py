@@ -1,10 +1,10 @@
 import socket
 
 
-class ConnectionSocket():
-    def __init__(self, host_ip, host_port):
-        self.host_ip = host_ip
-        self.host_port = host_port
+class ConnectionSocket:
+    def __init__(self, host: tuple):
+        self.host_ip = host[0]
+        self.host_port = host[1]
 
         self.start_connection()
 
@@ -15,7 +15,11 @@ class ConnectionSocket():
 
         s.connect((self.host_ip, self.host_port))
 
-    def send_message(self, message: str):
-        self.socket.sendall(message.encode('utf-8'))
+    def send_message(self, message: str, app):
+        try:
+            with app.app_context():
+                self.socket.sendall(message.encode('utf-8'))
 
-        self.socket.recv(1024)
+                self.socket.recv(1024)
+        except socket.error:
+            print("connection failed, maybe server is down?")
