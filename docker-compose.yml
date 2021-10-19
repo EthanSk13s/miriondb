@@ -16,7 +16,7 @@ services:
       ASSETS_HOST: theater
       ASSETS_PORT: 5501
       # Change where to obtain images from. Options are:
-      # https://storage.matsurihi.me/mltd/ (To obtain assets from matsurihi.me)
+      # https://storage.matsurihi.me/mltd (To obtain assets from matsurihi.me)
       # https://theater.miriondb.com (To obtain assets from the actual server)
       # http://127.0.0.1:8000 (Locally obtain from disk)
       USE_ASSETS: "http://127.0.0.1:8000"
