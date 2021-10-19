@@ -5,7 +5,7 @@ from json.decoder import JSONDecodeError
 from mirion.database import db
 from mirion.utils import enums
 
-BASE_URL = os.environ.get("USE_ASSETS")
+BASE_URL = os.environ.get("USE_ASSETS") if os.environ.get("USE_ASSETS") else "https://storage.matsurihi.me/mltd"
 
 
 # Instead of relying on pryncess's TLs
@@ -108,10 +108,10 @@ class Costume(db.Model):
         except JSONDecodeError:
             return None
         for resc_id in costumes:
-            if BASE_URL == "https://storage.matsurihi.me/mltd/":
+            if BASE_URL == "https://storage.matsurihi.me/mltd":
                 urls.append(f"{BASE_URL}/costume_icon_ll/{resc_id}.png")
-
-            urls.append(f"{BASE_URL}/costumes/{resc_id}.png")
+            else:
+                urls.append(f"{BASE_URL}/costumes/{resc_id}.png")
 
         if not urls:
             return None
@@ -167,22 +167,36 @@ class Card(db.Model):
 
     @property
     def icon(self):
-        if BASE_URL == "https://storage.matsurihi.me/mltd/":
+        if BASE_URL == "https://storage.matsurihi.me/mltd":
             return f"{BASE_URL}/icon_l/{self.resc_id}_0.png"
 
         return f"{BASE_URL}/icons/{self.resc_id}_0.png"
 
     @property
     def card_url(self):
-        if BASE_URL == "https://storage.matsurihi.me/mltd/":
+        if BASE_URL == "https://storage.matsurihi.me/mltd":
             return f"{BASE_URL}/card/{self.resc_id}_0_a.png"
 
         return f"{BASE_URL}/card/{self.resc_id}_0.png"
 
     @property
+    def awake_card_url(self):
+        if BASE_URL == "https://storage.matsurihi.me/mltd":
+            return f"{BASE_URL}/card/{self.resc_id}_1_a.png"
+
+        return f"{BASE_URL}/card/{self.resc_id}_1.png"
+
+    @property
     def bg_url(self):
         if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13]:
             return f"{BASE_URL}/card_bg/{self.resc_id}_0.png"
+        else:
+            return None
+
+    @property
+    def awake_bg_url(self):
+        if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13]:
+            return f"{BASE_URL}/card_bg/{self.resc_id}_1.png"
         else:
             return None
 

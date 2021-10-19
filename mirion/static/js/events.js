@@ -15,12 +15,16 @@ function toggleArt(id) {
         }
     }
 
-    var card_image = document.getElementById(`card-image-${id}`);
-    changeArt(card_image, `${header.getAttribute('data-awaken')}_`, 6);
+    var cardImage = document.getElementById(`card-image-${id}`);
+    var oldImg = cardImage.src;
+    cardImage.src = cardImage.getAttribute("data-awaken");
+    cardImage.setAttribute("data-awaken", oldImg);
 
-    var bg_image = document.getElementById(`bg-art-${id}`);
-    if (bg_image !== null) {
-        changeArt(bg_image, `${header.getAttribute('data-awaken')}.`, 4);
+    var bgImage = document.getElementById(`bg-art-${id}`);
+    if (bgImage !== null) {
+        var oldBgImg = bgImage.src;
+        bgImage.src = bgImage.getAttribute("data-awaken");
+        bgImage.setAttribute("data-awaken", oldBgImg);
     }
 
     changeAllStats(id);

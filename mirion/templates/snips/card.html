@@ -32,7 +32,7 @@
     </div>
     <div class="col col-lg-auto d-flex justify-content-center">
         <div class="card-image-wrapper">
-            <img class="card-image" id="card-image-{{ card.id }}" src="{{ card.card_url }}">
+            <img class="card-image" id="card-image-{{ card.id }}" src="{{ card.card_url }}" data-awaken="{{ card.awake_card_url }}">
             <button type="button" class="btn btn-dark btn-sm bg-btn" onclick="toggleArt('{{ card.id }}')">
                 Toggle Art
             </button>
@@ -130,7 +130,7 @@
     </div>
     {% if card.bg_url %}
     <div class="col-12">
-        <img id="bg-art-{{ card.id }}" class="d-block w-100" src="{{ card.bg_url }}">
+        <img id="bg-art-{{ card.id }}" class="d-block w-100" src="{{ card.bg_url }}" data-awaken="{{ card.awake_bg_url }}">
     </div>
     {% endif %}
 </div>
