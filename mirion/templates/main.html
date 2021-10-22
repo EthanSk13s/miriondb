@@ -54,7 +54,11 @@
     </div>
     <script>
         var arr = "{{ event.end }}".split(/[- :]/);
+<<<<<<< HEAD
         var countDownDate = new Date(Date.UTC(arr[0], arr[1]-1, date=arr[2], hours=Number(arr[3]), arr[4], arr[5]));
+=======
+        var countDownDate = new Date(Date.UTC(arr[0], arr[1]-1, date=arr[2], hours=Number(arr[3])+7, arr[4], arr[5]));
+>>>>>>> 55abc0ad0e97abf4ef6ffc8fec24dc0546fbdcca
     
         var x = setInterval(function() {
     
