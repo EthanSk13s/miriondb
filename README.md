@@ -9,12 +9,12 @@ git clone https://github.com/EthanSk13s/miriondb
 ```
 2. Modify the compose file as necessary, it should work out of the box (unless relying on hosting images on your own, in that case images may take time to download)
 
-3. Now simply start with:
+3. Now to simply start, merge the base compose with the other composes inisde the composes folder:
 
 ```
-$ docker compose build
+$ docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 ...
-$ docker compose up
+$ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
 ## Setup (Manual)
@@ -42,13 +42,18 @@ assets:
   host: "127.0.0.1"
   port: 5501
 ```
+4. Don't forget to edit `Rocket.toml` to point to the DB uri
+```toml
+[default.databases]
 
-4. Now start the python server:
+theater = { url = "postgresql://{user}:{pass}@localhost/{database}" }
+```
+5. Now start the python server:
 ```
 python run.py
 ```
 
-5. Start the asset server by:
+6. Start the asset server by:
 ```sh
 cd theater          # traverse to the theater director
 cargo run           # add the --release flag, if building through release
