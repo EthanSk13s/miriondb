@@ -1,6 +1,7 @@
-# For the sake of security, please change database stuff when actually running
 version: "3.7"
 
 services: 
   app:
     command: ["deploy"]
+    environment: 
+      USE_ASSETS: "http://127.0.0.1:8000"
