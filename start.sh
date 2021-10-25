@@ -6,6 +6,7 @@ case "$CMD" in
         exec python run.py
         ;;
     theater)
+        sleep 10
         cd theater || exit
         exec ./theater
         ;;
