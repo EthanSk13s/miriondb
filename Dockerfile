@@ -27,5 +27,6 @@ COPY --from=asset-server /build/target/release/theater /app/theater/theater
 COPY --from=asset-server /build/Rocket.toml theater/Rocket.toml
 
 COPY start.sh ./
+RUN chmod +x start.sh
 
 ENTRYPOINT ["./start.sh"]
