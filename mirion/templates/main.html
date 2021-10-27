@@ -16,35 +16,35 @@
                 </div>
             </form>
         </div>
-        <div class="row box-header event" id="countdown">
+        <div class="row box-header event mx-auto" id="countdown">
             {{ event.name }}
         </div>
-        <div class="row box event-container">
+        <div class="row box event-container mx-auto">
             {% if event_cards != None %}
                 {{ card.card_list(event_cards) }}
             {% endif %}
         </div>
-        <div class="row box-header additions">
+        <div class="row box-header additions mx-auto">
             Recent Additions
         </div>
-        <div class="row box additions-container">
+        <div class="row box additions-container mx-auto">
             {{ card.card_list(recent_additions)}}
         </div>
-        <div class="row misc-row">
+        <div class="row misc-row mx-auto">
             <h5>About</h5>
             <div class="col-12">
                     Just a translated database for MLTD cards. All data is from <a href="https://api.matsurihi.me/docs/">matsurihi.me</a><br>
                     Website Code: <a href="https://github.com/EthanSk13s/miriondb">Here</a>
             </div>
         </div>
-        <div class="row">
+        <div class="row mx-auto">
             <h5>Previous Additions</h5>
         </div>
         {% for cards in previous_additions %}
-        <div class="row box-header previous">
+        <div class="row box-header previous mx-auto">
             {{ cards[0].release }}
         </div>
-        <div class="row box previous">
+        <div class="row box previous mx-auto">
             {{ card.card_list(cards) }}
         </div>
         {% endfor %}
