@@ -1,6 +1,6 @@
 .row.box {
     background: #303030;
-    border-radius: 0 0 5px;
+    border-radius: 0 0 5px 5px;
 }
 
 .row.box-header {
