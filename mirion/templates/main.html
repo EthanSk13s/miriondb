@@ -16,18 +16,15 @@
                 </div>
             </form>
         </div>
-        <div class="row">
-            Current events
+        <div class="row box-header event" id="countdown">
+            {{ event.name }}
         </div>
         <div class="row box event-container">
-            <div class="row header col-12">
-                <h6 id="countdown">{{ event.name }}</h6>
-            </div>
             {% if event_cards != None %}
                 {{ card.card_list(event_cards) }}
             {% endif %}
         </div>
-        <div class="row">
+        <div class="row box-header additions">
             Recent Additions
         </div>
         <div class="row box additions-container">
@@ -41,10 +38,10 @@
             </div>
         </div>
         <div class="row">
-            Previous Additions
+            <h5>Previous Additions</h5>
         </div>
         {% for cards in previous_additions %}
-        <div class="row">
+        <div class="row box-header previous">
             {{ cards[0].release }}
         </div>
         <div class="row box previous">
