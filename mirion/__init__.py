@@ -26,7 +26,7 @@ def create_app(config):
     database.init_app(app)
 
     # Setup asset server address
-    app.assets_addr = (app.config['ASSETS_HOST'], app.config['ASSETS_PORT'])
+    app.assets_addr = (app.config['ASSETS_HOST'], int(app.config['ASSETS_PORT']))
 
     # Start Background tasks
     app.first_run = 0  # So tasks don't fire twice
