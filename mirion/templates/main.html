@@ -17,7 +17,7 @@
             </form>
         </div>
         <div class="row box-header event mx-auto" id="countdown">
-            {{ event.name }}
+            <b>{{ event.name }}</b>
         </div>
         <div class="row box event-container mx-auto">
             {% if event_cards != None %}
@@ -25,7 +25,7 @@
             {% endif %}
         </div>
         <div class="row box-header additions mx-auto">
-            Recent Additions
+            <b>Recent Additions</b>
         </div>
         <div class="row box additions-container mx-auto">
             {{ card.card_list(recent_additions)}}
@@ -42,7 +42,7 @@
         </div>
         {% for cards in previous_additions %}
         <div class="row box-header previous mx-auto">
-            {{ cards[0].release }}
+            <b>{{ cards[0].release }}</b>
         </div>
         <div class="row box previous mx-auto">
             {{ card.card_list(cards) }}
@@ -63,12 +63,12 @@
             var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
         
-            document.getElementById("countdown").innerHTML = "{{ event.name }} ends in " + days + "d " + hours + "h "
-            + minutes + "m " + seconds + "s ";
+            document.getElementById("countdown").innerHTML = "<b>{{ event.name }} ends in " + days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s </b>";
         
             if (distance < 0) {
                 clearInterval(x);
-                document.getElementById("countdown").innerHTML = "{{ event.name }} has finished! Good work everyone!";
+                document.getElementById("countdown").innerHTML = "<b>{{ event.name }} has finished! Good work everyone!</b>";
             }
         }, 1000);
       </script>
