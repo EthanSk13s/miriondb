@@ -32,8 +32,10 @@ def handle_query():
             release = param
         if got_idol == 0:
             idol_id = enums.NAMES.get_id(param.lower())
-            if idol_id is not False:
+            if idol_id is not None:
                 got_idol = 1
+            else:
+                abort(404)
         else:
             pass
         if got_rarity == 0:
@@ -46,10 +48,18 @@ def handle_query():
     if release is not None:
         allowed_types = [0, 1, 2, 3, 4, 6, 8, 9, 11, 12]
         i = int(release) - 1
-        card = Card.query.filter_by(idol_id=idol_id, rarity=rarity).\
-            filter(Card.ex_type.in_(allowed_types)).all()[i]
+        filters = [Card.idol_id == idol_id]
 
-        return redirect(f"/card/{card.id}")
+        if rarity is not False:
+            filters.append(Card.rarity == rarity)
+
+        filters.append(Card.ex_type.in_(allowed_types))
+
+        try:
+            card = Card.query.filter(*filters).all()[i]
+            return redirect(f"/card/{card.id}")
+        except IndexError:
+            abort(404)
     else:
         return redirect(f"/idol/{idol_id}?rarity={rarity}")
 
