@@ -28,12 +28,15 @@
 {% macro card_info(card) %}
 {% set card_id = '{}-1'.format(card.id) if card.ex_type in [5, 7, 10, 13] and card.rarity == 4 else card.id %}
 <div class="row stats no-gutters">
-    <div class="col-12 name-header {{ card.idol_type }}-header" id="{{ card_id }}" data-awaken=0 data-max-level="{{ card.level_max }}">
+    <div class="col-12 name-header {{ card.idol_type }}-header" 
+        id="{{ card_id }}"
+        data-awaken=0 data-max-level="{{ card.level_max }}">
         <a class="name" href="#{{ card_id }}">[{{ card.text_rarity }}] {{ card.card_name }}</a>
     </div>
     <div class="col col-lg-auto d-flex justify-content-center">
         <div class="card-image-wrapper">
-            <img class="card-image" id="card-image-{{ card_id }}" src="{{ card.card_url }}" data-awaken="{{ card.awake_card_url }}">
+            <img class="card-image" id="card-image-{{ card_id }}"
+                src="{{ card.card_url }}" data-awaken="{{ card.awake_card_url }}">
             <button type="button" class="btn btn-dark btn-sm bg-btn" onclick="toggleArt('{{ card_id }}')">
                 Toggle Art
             </button>
@@ -45,21 +48,35 @@
                 <div class="row row-cols-*">
                     <div class="col">
                         <span class="card-stats-badge misc">Level</span>
-                        <button type="button" id="decrease-{{ card_id }}" onclick="decreaseLevel('{{ card_id }}', '{{ card.level_max }}')" class="btn btn-warning btn-sm">
+                        <button type="button" id="decrease-{{ card_id }}" 
+                            onclick="decreaseLevel('{{ card_id }}', '{{ card.level_max }}')" 
+                            class="btn btn-warning btn-sm">
                             -
                         </button>
-                        <input type="text" id="level-input-{{ card_id }}" class="level-input" value="1" autocomplete="off" onchange="listenForLevel('{{ card_id }}', '{{ card.level_max }}')">
-                        <button type="button" id="increase-{{ card_id }}" onclick="increaseLevel('{{ card_id }}', '{{ card.level_max }}')"  class="btn btn-warning btn-sm">
+                        <input type="text" id="level-input-{{ card_id }}" 
+                            class="level-input" value="1" autocomplete="off"
+                            onchange="listenForLevel('{{ card_id }}', '{{ card.level_max }}')">
+                        <button type="button" id="increase-{{ card_id }}" 
+                            onclick="increaseLevel('{{ card_id }}', '{{ card.level_max }}')"
+                            class="btn btn-warning btn-sm">
                             +
                         </button>
                     </div>
                     <div class="col-lg col-sm-12">
                         <span class="card-stats-badge misc">Master rank</span>
-                        <button class="btn btn-warning btn-sm" onclick="decreaseRank('{{ card_id }}', '{{ card.level_max }}')">
+                        <button class="btn btn-warning btn-sm"
+                            onclick="decreaseRank('{{ card_id }}', '{{ card.level_max }}')">
                             -
                         </button>
-                        <input type="text" id="rank-input-{{ card_id }}" class="level-input" value=0 onchange="listenForRank('{{ card_id }}', '{{ card.level_max }}')" data-max="{{ card.max_master_rank }}" data-vo="{{ card.vocal_rank_bonus }}" data-da="{{ card.dance_rank_bonus }}" data-vi="{{ card.visual_rank_bonus }}">
-                        <button class="btn btn-warning btn-sm" onclick="increaseRank('{{ card_id }}', '{{ card.level_max }}')">
+                        <input type="text" id="rank-input-{{ card_id }}"
+                            class="level-input" value=0
+                            onchange="listenForRank('{{ card_id }}', '{{ card.level_max }}')"
+                            data-max="{{ card.max_master_rank }}"
+                            data-vo="{{ card.vocal_rank_bonus }}"
+                            data-da="{{ card.dance_rank_bonus }}"
+                            data-vi="{{ card.visual_rank_bonus }}">
+                        <button class="btn btn-warning btn-sm" 
+                            onclick="increaseRank('{{ card_id }}', '{{ card.level_max }}')">
                             +
                         </button>
                     </div>
@@ -73,21 +90,36 @@
                     <div class="col">
                         <p><span class="card-stats-badge vocal">
                             Vocal
-                        </span><strong id="vo-{{ card_id }}" data-default="{{ card.vocal }}" data-awaken="{{ card.awake_vocal }}" data-default-max="{{ card.max_vocal }}" data-awaken-max="{{ card.max_awake_vocal }}" data-level=1>
+                        </span><strong id="vo-{{ card_id }}"
+                            data-default="{{ card.vocal }}"
+                            data-awaken="{{ card.awake_vocal }}"
+                            data-default-max="{{ card.max_vocal }}"
+                            data-awaken-max="{{ card.max_awake_vocal }}"
+                            data-level=1>
                             {{ card.vocal }}
                         </strong></p>
                     </div>
                     <div class="col">
                         <p><span class="card-stats-badge dance">
                             Dance
-                        </span><strong id="da-{{ card_id }}" data-default="{{ card.dance }}" data-awaken="{{ card.awake_dance }}" data-default-max="{{ card.max_dance }}" data-awaken-max="{{ card.max_awake_dance }}" data-level=1>
+                        </span><strong id="da-{{ card_id }}" 
+                            data-default="{{ card.dance }}"
+                            data-awaken="{{ card.awake_dance }}"
+                            data-default-max="{{ card.max_dance }}"
+                            data-awaken-max="{{ card.max_awake_dance }}"
+                            data-level=1>
                             {{ card.dance }}
                         </strong></p>
                     </div>
                     <div class="col">
                         <p><span class="card-stats-badge visual">
                             Visual
-                        </span><strong id="vi-{{ card_id }}" data-default="{{ card.visual }}" data-awaken="{{ card.awake_visual }}" data-default-max="{{ card.max_visual }}" data-awaken-max="{{ card.max_awake_visual }}" data-level=1>
+                        </span><strong id="vi-{{ card_id }}"
+                            data-default="{{ card.visual }}"
+                            data-awaken="{{ card.awake_visual }}"
+                            data-default-max="{{ card.max_visual }}"
+                            data-awaken-max="{{ card.max_awake_visual }}"
+                            data-level=1>
                             {{ card.visual }}
                         </strong></p>
                     </div>
