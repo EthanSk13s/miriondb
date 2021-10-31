@@ -11,7 +11,11 @@ class NameTl:
     id: int
 
     def match_name(self, query: str) -> bool:
-        match = bool(re.search(r"\A({0})|\s({0})".format(query), self.tl_name.lower()))
+        try:
+            match = bool(re.search(r"\A({0})|\s({0})".format(query), self.tl_name.lower()))
+        except re.error:
+            return False
+
         if match:
             return True
         else:
