@@ -3,6 +3,7 @@ import sqlalchemy
 from flask import Blueprint, render_template
 
 from mirion.models import Card, Event
+from mirion.utils import helpers
 
 main_page = Blueprint("main", __name__)
 
@@ -35,23 +36,8 @@ def index():
 
     previous_additions = Card.query.filter(Card.release.in_(dates)).all()
 
-    # This sorts cards by dates through enumerating through a list of cards
-    # and appending them to a "temporary" list, if the next card has the same date
-    # then append them to the temp list, if not then append the current card
-    # and add the cards in that list to the sorted list, then clear the temp list.
-    sorted_additions = []
-    cards = []
-    for i, card in enumerate(previous_additions):
-        try:
-            if card.release == previous_additions[i + 1].release:
-                cards.append(card)
-            else:
-                cards.append(card)
-                sorted_additions.append([x for x in cards])
-                cards.clear()
-        except IndexError:
-            cards.append(card)
-            sorted_additions.append([x for x in cards])
+    sorted_additions = helpers.list_grouper(previous_additions,
+                                            helpers.check_for_release)
 
     return render_template('main.html', recent_additions=recent_additions,
                            event=current_event, event_cards=event_cards,
