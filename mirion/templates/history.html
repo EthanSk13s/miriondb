@@ -1,0 +1,35 @@
+{% import 'snips/card.html' as card %}
+
+{% extends "snips/nav.html" %}
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+{% block title %} History | MirionDB {% endblock %}
+
+{% block content %}
+{% set next_page = current_page | int() %}
+{% set next_page = next_page + 1 %}
+    <div class="container">
+        {% for cards in paginated_cards %}
+        {% if cards[0].event_id is not none %}
+            <div class="row box-header event mx-auto">
+                <b>{{ cards[0].release }} || {{ cards[0].event.name }}</b>
+            </div>
+        {% else %}
+            <div class="row box-header previous mx-auto">
+                <b>{{ cards[0].release }}</b>
+            </div>
+        {% endif %}
+        <div class="row box previous mx-auto">
+            {{ card.card_list(cards) }}
+        </div>
+        {% endfor %}
+        <div class="col d-flex justify-content-center" style="margin-top: 5px; margin-bottom: 5px; ">
+            <a href="{{ url_for('main.history', page=next_page) }}">
+                <button class="btn btn-dark btn-sm">
+                    Next Page
+                </button>
+            </a>
+        </div>
+    </div>
+{% endblock %}

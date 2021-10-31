@@ -42,3 +42,24 @@ def index():
     return render_template('main.html', recent_additions=recent_additions,
                            event=current_event, event_cards=event_cards,
                            previous_additions=reversed(sorted_additions))
+
+
+@main_page.route("/history/<page>")
+def history(page):
+    # TODO: Probably should add a check if we've reached the end of the pages
+    dates = Card.query.with_entities(Card.release).\
+        order_by(Card.release.desc()).group_by(Card.release).\
+        paginate(int(page), 10, False)
+
+    # In docker, without making a copy of the dates list,
+    # and specifying the release column
+    # it throws a psycopg2 error (Can't adapt to type 'row')
+    new_dates = [date.release for date in dates.items]
+
+    paginated_cards = Card.query.filter(Card.release.in_(new_dates)).all()
+    sorted_history = helpers.list_grouper(paginated_cards,
+                                          helpers.check_for_release)
+
+    return render_template('history.html',
+                           paginated_cards=reversed(sorted_history),
+                           current_page=page)

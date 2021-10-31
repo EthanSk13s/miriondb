@@ -122,6 +122,18 @@ class Costume(db.Model):
         return '<Costumes {}>'.format(self.resc_id)
 
 
+class Event(db.Model):
+    db_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, index=True)
+    event_type = db.Column(db.Integer, index=True)
+    name = db.Column(db.Text)
+    begin = db.Column(db.DateTime)
+    end = db.Column(db.DateTime)
+
+    def __repr__(self):
+        return '<Event {}>'.format(self.name)
+
+
 class Card(db.Model):
     db_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id = db.Column(db.Integer)
@@ -133,7 +145,8 @@ class Card(db.Model):
     idol_type = db.Column(db.Integer, index=True)
     ex_type = db.Column(db.Integer, index=True)
     release = db.Column(db.DateTime, index=True, default=None)
-    event_id = db.Column(db.Integer, index=True, default=None)
+    event_id = db.Column(db.Integer, db.ForeignKey(Event.id), index=True, default=None)
+    event = db.relationship('Event', foreign_keys='Card.event_id')
 
     skill_id = db.Column(db.Integer, db.ForeignKey(Skill.id), default=None)
     center_skill_id = db.Column(db.Integer, db.ForeignKey(CenterSkill.id), default=None)
@@ -202,15 +215,3 @@ class Card(db.Model):
 
     def __repr__(self):
         return '<Card {}>'.format(self.card_name)
-
-
-class Event(db.Model):
-    db_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id = db.Column(db.Integer, index=True)
-    event_type = db.Column(db.Integer, index=True)
-    name = db.Column(db.Text)
-    begin = db.Column(db.DateTime)
-    end = db.Column(db.DateTime)
-
-    def __repr__(self):
-        return '<Event {}>'.format(self.name)
