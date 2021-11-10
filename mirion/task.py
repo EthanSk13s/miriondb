@@ -41,8 +41,7 @@ def add_changes(db_list: list, changes: list, is_event=False):
 
         for ssr_card, card in zip(ssr_cards, cards):
             if card.max_master_rank != ssr_card.max_master_rank:
-                card.max_master_rank = ssr_card.max_master_rank
-                db.session.flush()
+                Card.query.filter(Card.id == ssr_card.id).update({'max_master_rank': ssr_card.max_master_rank})
 
                 costume = Costume.query.filter(card.resc_id == Costume.resc_id).first()
                 list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
@@ -54,9 +53,8 @@ def add_changes(db_list: list, changes: list, is_event=False):
                 except AttributeError:
                     continue
 
-                costume.costume_resc_ids = str(list_of_costumes).replace('"', '\'')
+                Costume.query.filter(Costume.resc_id == card.resc_id).update({"costume_resc_ids": (str(list_of_costumes).replace('"', '\''))})
 
-                db.session.flush()
                 logging.info(f"{card.card_name}'s master rank has been updated")
 
         app = scheduler.app
