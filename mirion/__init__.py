@@ -16,8 +16,12 @@ def create_app(config):
 
     # Setup Logging
     app.event_handler = logging.basicConfig(
+        format='%(asctime)s %(message)s',
+        datefmt='%m/%d/%Y %I:%M:%S %p',
         handlers=[logging.handlers.RotatingFileHandler(
-                  'app.log', maxBytes=10485760, backupCount=5)],
+                  'app.log', 'w', encoding='utf-8',
+                  maxBytes=10485760, backupCount=5),
+                  logging.StreamHandler()],
         level=logging.DEBUG
     )
     app.logger.addHandler(app.event_handler)
