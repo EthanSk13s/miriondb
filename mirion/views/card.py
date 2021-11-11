@@ -68,9 +68,9 @@ def handle_query():
 def idol(id):
     if len(request.args) != 0:
         rarity = request.args.get('rarity')
-        cards = Card.query.filter_by(idol_id=id, rarity=rarity).all()
+        cards = Card.query.filter_by(idol_id=id, rarity=rarity).order_by(Card.id.asc()).all()
     else:
-        cards = Card.query.filter_by(idol_id=id).all()
+        cards = Card.query.filter_by(idol_id=id).order_by(Card.id.asc()).all()
 
     for card in cards:
         enums.set_enums(card)
