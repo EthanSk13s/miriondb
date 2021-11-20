@@ -4,9 +4,10 @@ import pryncess
 
 from flask import Flask
 from mirion import views, database, task
+from config import Config
 
 
-def create_app(config):
+def create_app(config=Config):
     app = Flask(__name__)
     app.config.from_object(config)
 
