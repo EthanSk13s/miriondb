@@ -71,8 +71,8 @@ def add_to_database():
     app = scheduler.app
     with app.app_context():
         client = app.pryncess
-        add_changes(Card.query.all(), client.get_all_cards(tl=True))
         add_changes(Event.query.all(), client.get_all_events(), is_event=True)
+        add_changes(Card.query.all(), client.get_all_cards(tl=True))
 
         db.session.commit()
 
@@ -81,11 +81,11 @@ def init_app(app):
     if app.first_run == 0:
         with app.app_context():
             scheduler.init_app(app)
-            logging.info("Startup checking for new cards...")
-            add_changes(Card.query.all(), app.pryncess.get_all_cards(tl=True))
             logging.info("Startup checking for new events...")
             add_changes(Event.query.all(), app.pryncess.get_all_events(),
                         is_event=True)
+            logging.info("Startup checking for new cards...")
+            add_changes(Card.query.all(), app.pryncess.get_all_cards(tl=True))
 
             app.first_run = 1
             scheduler.start()

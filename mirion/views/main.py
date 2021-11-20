@@ -20,7 +20,7 @@ def index():
     recent_additions = Card.query.filter(recent_datetime == Card.release,
                                          Card.event_id == None, Card.ex_type != 13).order_by(Card.id.asc()).all()
 
-    current_event = Event.query.order_by(-Event.db_id).first()
+    current_event = Event.query.order_by(-Event.id).first()
     if current_event.event_type in (3, 4, 5, 9, 11, 13, 16):
         event_cards = Card.query.filter(Card.event_id == current_event.id,
                                         sqlalchemy.or_(Card.rarity == 3, Card.rarity == 2)).all()

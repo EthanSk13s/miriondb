@@ -123,8 +123,7 @@ class Costume(db.Model):
 
 
 class Event(db.Model):
-    db_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id = db.Column(db.Integer, index=True)
+    id = db.Column(db.Integer, index=True, primary_key=True)
     event_type = db.Column(db.Integer, index=True)
     name = db.Column(db.Text)
     begin = db.Column(db.DateTime)
