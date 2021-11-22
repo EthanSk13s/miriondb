@@ -168,6 +168,7 @@ impl ImageServer {
                     "card_bg" => base = "card_bg/",
                     "costumes" => base = "costume_icon_ll/",
                     "icons" => base = "icons/",
+                    "DO_NOT_DELETE_TO_KEEP_DIR" => continue,
                     &_ => image = string
                 }
             }
