@@ -152,6 +152,7 @@ SKILL_TYPES = {
     6: "Judgment Strengthen",
     7: "Double Boost",
     8: "Multi Up",
+    9: "Multi-Bonus",
     10: "Overclock",
     11: "Overload",
     12: "Double Effect"
@@ -186,6 +187,7 @@ EFFECTS = {
     6: "of converting {evaluation} into Perfect",
     7: "of increasing the {evaluation} score by {value[0]} and the combo bonus by {value[1]}%",
     8: "of increasing {evaluation} score by {value[0]}% and recovering {value[1]} life with every {evaluation2}",
+    9: "of boosting combo bonus by {value[0]}% while also restoring {evaluation2} life for every perfect",
     10: "of consuming {value[1]} lives, and increasing {evaluation} score by {value[0]}%",
     11: "of consuming {value[1]} lives, and increasing combo bonus by {value[0]}%",
     12: "of boosting score and combo bonuses by {value[0]}%"
