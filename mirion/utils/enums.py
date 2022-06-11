@@ -107,6 +107,8 @@ tl_names = [
     NameTl('ジュリア', 'Julia', 50),
     NameTl('白石紬', 'Shiraishi Tsumugi', 51),
     NameTl('桜守歌織', 'Sakuramori Kaori', 52),
+    NameTl('音無小鳥', 'Otonashi Kotori', 101),
+    NameTl('青羽美咲', 'Aoba Misaki', 102),
     NameTl('詩花', 'Shika', 201),
     NameTl('玲音', 'Leon', 202),
     NameTl('宮本フレデリカ', 'Miyamoto Frederica', 204),
