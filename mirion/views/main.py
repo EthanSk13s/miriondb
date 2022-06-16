@@ -16,7 +16,8 @@ def page_not_found(e):
 @main_page.route("/")
 def index():
     recent_datetime = Card.query.filter(Card.ex_type != 13,
-                                        Card.event_id == None).order_by(Card.db_id.desc()).first().release
+                                        Card.event_id == None,
+                                        Card.idol_type != 5).order_by(Card.id.desc()).first().release
     recent_additions = Card.query.filter(recent_datetime == Card.release,
                                          Card.event_id == None, Card.ex_type != 13).order_by(Card.id.asc()).all()
 
