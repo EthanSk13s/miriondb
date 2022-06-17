@@ -21,7 +21,9 @@ def get_card(card, db):
         if db.session.query(Costume).filter(Costume.resc_id == entry_costume.resc_id).first():
             pass
 
-    db.session.add(entry_costume)
+    exists = Costume.query.filter(Costume.resc_id == entry_costume.resc_id).first()
+    if exists is None:
+        db.session.add(entry_costume)
 
     entry = Card(id=card.id,
                  resc_id=card.resc_id,
