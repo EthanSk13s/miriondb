@@ -42,7 +42,7 @@ def index():
 
     return render_template('main.html', recent_additions=recent_additions,
                            event=current_event, event_cards=event_cards,
-                           previous_additions=reversed(sorted_additions))
+                           previous_additions=sorted_additions)
 
 
 @main_page.route("/history/<page>")
@@ -57,10 +57,11 @@ def history(page):
     # it throws a psycopg2 error (Can't adapt to type 'row')
     new_dates = [date.release for date in dates.items]
 
-    paginated_cards = Card.query.filter(Card.release.in_(new_dates)).all()
+    # TODO: Properly separate event cards from regular cards
+    paginated_cards = Card.query.filter(Card.release.in_(new_dates)).order_by(Card.release.desc()).all()
     sorted_history = helpers.list_grouper(paginated_cards,
                                           helpers.check_for_release)
 
     return render_template('history.html',
-                           paginated_cards=reversed(sorted_history),
+                           paginated_cards=sorted_history,
                            current_page=page)
