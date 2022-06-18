@@ -1,5 +1,9 @@
+from __future__ import annotations
+
 import logging
 import json
+
+import dateutil.parser
 
 from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -9,61 +13,81 @@ from mirion.database import db
 from mirion.models import Card, Event, Costume
 from mirion.connection import ConnectionSocket
 
+from pryncess.models.cards import Card as PryncessCard
+from pryncess.models.events import Event as PryncessEvent
+
 scheduler = APScheduler(scheduler=BackgroundScheduler(
     {'apscheduler.timezone': 'Asia/Tokyo'}))
 
+def add_changes_cards(changes: list[PryncessCard]):
+    changes.reverse()
+    num_of_changes = 0
+    for item in changes:
+        card_rows = Card.query.filter(Card.release == item.add_date).all()
+        exists = [card.resc_id for card in card_rows]
 
-def add_changes(db_list: list, changes: list, is_event=False):
-    diff = len(changes) - len(db_list)
-    if diff > 0:
-        if is_event is False:
-            for item in changes[-diff:]:
-                fetch.get_card(item, db)
+        if item.resc_id not in exists:
+            fetch.get_card(item, db)
+            num_of_changes += 1
         else:
-            for item in changes[-diff:]:
-                fetch.get_events(item, db)
+            if card_rows[0].release is not None:
+                if card_rows[0].release <= dateutil.parser.parse(item.add_date, ignoretz=True) and item.type != 5:
+                    break
+                
 
-        db.session.commit()
-
-        app = scheduler.app
-        if app.first_run == 1:
-            s = ConnectionSocket(app.assets_addr)
-            s.send_message("1", app)
-
-        logging.info(f"{diff} added to Database")
+    if num_of_changes > 0:
+        logging.info(f"{num_of_changes} cards have been added")
     else:
-        logging.info("No changes found")
+        logging.info("No Changes found")
 
-    # Check for Master rank updates
-    if is_event is False:
-        ssr_cards = [card for card in changes if card.rarity == 4]
-        cards = Card.query.filter(Card.rarity == 4).order_by(Card.id)
+    db.session.commit()
 
-        for ssr_card, card in zip(ssr_cards, cards):
-            if card.max_master_rank != ssr_card.max_master_rank:
-                Card.query.filter(Card.id == ssr_card.id).update({'max_master_rank': ssr_card.max_master_rank})
+def add_changes_events(db_list: list, changes: list[PryncessEvent]):
+    # Works great, so fine to leave as is (for now)
+    diff = len(changes) - len(db_list)
+    num_of_changes = 0
+    if diff > 0:
+        for item in changes[-diff:]:
+            fetch.get_events(item, db)
+            num_of_changes += 1
 
-                costume = Costume.query.filter(card.resc_id == Costume.resc_id).first()
-                list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
+    if num_of_changes > 0:
+        logging.info(f"{num_of_changes} events have been added")
+    else:
+        logging.info("No Changes found")
 
-                # For whatever reason, this can cause an error when
-                # starting up for the first time
-                try:
-                    list_of_costumes.append(ssr_card.rank_costume.resc_id)
-                except AttributeError:
-                    continue
+    db.session.commit()
 
-                Costume.query.filter(Costume.resc_id == card.resc_id).update({"costume_resc_ids": (str(list_of_costumes).replace('"', '\''))})
+def check_for_master_ranks(changes: list[PryncessCard]):
+    ssr_cards = [card for card in changes if card.rarity == 4]
+    ssr_cards.sort(key=lambda x: x.id)
 
-                logging.info(f"{card.card_name}'s master rank has been updated")
+    cards = Card.query.filter(Card.rarity == 4).order_by(Card.id)
 
-        app = scheduler.app
-        if app.first_run == 1:
-            s = ConnectionSocket(app.assets_addr)
-            s.send_message("1", app)
+    for ssr_card, card in zip(ssr_cards, cards):
+        if card.max_master_rank != ssr_card.max_master_rank:
+            Card.query.filter(Card.id == ssr_card.id).update({'max_master_rank': ssr_card.max_master_rank})
 
-        db.session.commit()
+            costume = Costume.query.filter(card.resc_id == Costume.resc_id).first()
+            list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
 
+            # For whatever reason, this can cause an error when
+            # starting up for the first time
+            try:
+                list_of_costumes.append(ssr_card.rank_costume.resc_id)
+            except AttributeError:
+                continue
+
+            Costume.query.filter(Costume.resc_id == card.resc_id).update({"costume_resc_ids": (str(list_of_costumes).replace('"', '\''))})
+
+            logging.info(f"{card.card_name}'s master rank has been updated")
+
+    app = scheduler.app
+    if app.first_run == 1:
+        s = ConnectionSocket(app.assets_addr)
+        s.send_message("1", app)
+
+    db.session.commit()
 
 @scheduler.task('cron', id='check_changes', hour=15, minute=2)
 @scheduler.task('cron', id='check_changes_midnight', hour=0, minute=2)
@@ -71,8 +95,11 @@ def add_to_database():
     app = scheduler.app
     with app.app_context():
         client = app.pryncess
-        add_changes(Event.query.all(), client.get_all_events(), is_event=True)
-        add_changes(Card.query.all(), client.get_all_cards(tl=True))
+        card_changes = app.pryncess.get_all_cards(tl=True)
+
+        add_changes_events(Event.query.all(), client.get_all_events())
+        add_changes_cards(card_changes)
+        check_for_master_ranks(card_changes)
 
         db.session.commit()
 
@@ -81,11 +108,14 @@ def init_app(app):
     if app.first_run == 0:
         with app.app_context():
             scheduler.init_app(app)
+            card_changes = app.pryncess.get_all_cards(tl=True)
+
             logging.info("Startup checking for new events...")
-            add_changes(Event.query.all(), app.pryncess.get_all_events(),
-                        is_event=True)
+            add_changes_events(Event.query.all(), app.pryncess.get_all_events())
+
             logging.info("Startup checking for new cards...")
-            add_changes(Card.query.all(), app.pryncess.get_all_cards(tl=True))
+            add_changes_cards(card_changes)
+            check_for_master_ranks(card_changes)
 
             app.first_run = 1
             scheduler.start()
