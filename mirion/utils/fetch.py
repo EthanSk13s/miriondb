@@ -62,6 +62,7 @@ def get_card(card, db):
                             effect_id=card.skill.effect,
                             evaluation=card.skill.evaluation,
                             evaluation2=card.skill.evaluation2,
+                            evaluation3=card.skill.evaluation3,
                             duration=card.skill.duration,
                             interval=card.skill.interval,
                             probability=card.skill.probability,

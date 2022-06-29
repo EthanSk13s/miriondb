@@ -15,6 +15,7 @@ class Skill(db.Model):
     effect_id = db.Column(db.Integer)
     evaluation = db.Column(db.Integer)
     evaluation2 = db.Column(db.Integer)
+    evaluation3 = db.Column(db.Integer)
     duration = db.Column(db.Integer)
     interval = db.Column(db.Integer)
     probability = db.Column(db.Integer)
@@ -44,6 +45,8 @@ class Skill(db.Model):
 
         if self.evaluation2 != 0:
             eff_vals['evaluation2'] = enums.EVALUATIONS.get(self.evaluation2)
+        if self.evaluation3 != 0:
+            eff_vals['evaluation3'] = enums.EVALUATIONS.get(self.evaluation3)
 
         try:
             effect_str = enums.EFFECTS.get(eff_id).format(**eff_vals)
