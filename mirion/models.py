@@ -203,14 +203,14 @@ class Card(db.Model):
 
     @property
     def bg_url(self):
-        if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13]:
+        if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13, 16]:
             return f"{BASE_URL}/card_bg/{self.resc_id}_0.png"
         else:
             return None
 
     @property
     def awake_bg_url(self):
-        if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13]:
+        if self.rarity == 4 and self.ex_type not in [5, 7, 10, 13, 16]:
             return f"{BASE_URL}/card_bg/{self.resc_id}_1.png"
         else:
             return None
