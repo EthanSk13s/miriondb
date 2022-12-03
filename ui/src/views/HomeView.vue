@@ -4,6 +4,13 @@ import CardsContainer from "@/components/partials/CardsContainer.vue";
 
 <template>
   <main class="flex flex-col justify-center m-auto md:w-7/12 mt-5 gap-2">
+    <div class="p-1 m-1">
+      <form action="" method="GET">
+        <input type="text"
+          class="w-full py-1 pl-2 bg-slate-800 text-white rounded focus:outline-none focus:ring focus:ring-violet-400"
+          placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)">
+      </form>
+    </div>
     <CardsContainer label="Current Event" color="sky-500" />
     <CardsContainer label="Recent Additions" color="gray-700" />
     <div class="flex flex-col text-white mx-2">
