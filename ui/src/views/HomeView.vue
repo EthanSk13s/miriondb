@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import CardsContainer from "@/components/partials/CardsContainer.vue";
+import ItemContainer from "@/components/partials/ItemContainer.vue";
+import CardIcon from "@/components/partials/CardIcon.vue";
 </script>
 
 <template>
@@ -11,8 +12,18 @@ import CardsContainer from "@/components/partials/CardsContainer.vue";
           placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)">
       </form>
     </div>
-    <CardsContainer label="Current Event" color="sky-500" />
-    <CardsContainer label="Recent Additions" color="gray-700" />
+    <ItemContainer label="Current Event" color="sky-500" :bold="true" :is-text-white="true">
+      <CardIcon />
+      <CardIcon />
+      <CardIcon />
+      <CardIcon />
+    </ItemContainer>
+    <ItemContainer label="Recent Additions" color="gray-700" :bold="true" :is-text-white="true">
+      <CardIcon />
+      <CardIcon />
+      <CardIcon />
+      <CardIcon />
+    </ItemContainer>
     <div class="flex flex-col text-white mx-2">
       <h1 class="text-2xl">About</h1>
       <div>
@@ -25,9 +36,24 @@ import CardsContainer from "@/components/partials/CardsContainer.vue";
     </div>
     <div class="flex flex-col gap-2">
       <h1 class="text-white text-xl mx-2">Previous Additions</h1>
-      <CardsContainer label="Dec 3 2022, 15:00" color="gray-700" />
-      <CardsContainer label="Dec 3 2022, 15:00" color="gray-700" />
-      <CardsContainer label="Dec 3 2022, 15:00" color="gray-700" />
+      <ItemContainer label="Dec 3 2022, 15:00" color="gray-700" :bold="true" :is-text-white="true">
+        <CardIcon />
+        <CardIcon />
+        <CardIcon />
+        <CardIcon />
+      </ItemContainer>
+      <ItemContainer label="Dec 3 2022, 15:00" color="gray-700" :bold="true" :is-text-white="true">
+        <CardIcon />
+        <CardIcon />
+        <CardIcon />
+        <CardIcon />
+      </ItemContainer>
+      <ItemContainer label="Dec 3 2022, 15:00" color="gray-700" :bold="true" :is-text-white="true">
+        <CardIcon />
+        <CardIcon />
+        <CardIcon />
+        <CardIcon />
+      </ItemContainer>
     </div>
   </main>
 </template>

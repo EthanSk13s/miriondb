@@ -1,3 +1,13 @@
+<script lang="ts">
+import ItemContainer from '@/components/partials/ItemContainer.vue';
+
+export default {
+  components: {
+    ItemContainer
+  }
+}
+</script>
+
 <template>
   <main class="flex flex-col justify-center bg-slate-800 m-auto md:w-7/12 mt-5">
     <div class="flex flex-row rounded-t-lg bg-pink-600 p-2 text-2xl text-white">
@@ -14,11 +24,6 @@
             </button>
           </div>
         </div>
-        <button
-          class="absolute m-1 rounded bg-stone-900 p-1 text-sm text-white hover:bg-stone-800"
-        >
-          Awaken
-        </button>
         <img
           class="h-auto w-fit md:h-auto md:w-96"
           src="https://theater.miriondb.com/card/017kth0353_0.png"
@@ -83,24 +88,18 @@
           </div>
         </div>
         <div class="flex flex-col">
-          <div class="mx-1 rounded-t bg-yellow-300 p-1">Skill</div>
-          <div
-            class="mx-1 rounded-b border border-yellow-300 bg-gray-800 p-1 text-white"
-          >
+          <ItemContainer label="Skill" color="yellow-300">
             Every 9 seconds, there is a 40% chance that your Perfect/Great score
             will increase by 30. When there are two or more Score Up cards in
             the unit, the score of Perfect/Great is increased to 37, and when
             there are one or more cards that are Fusion Combo, Great/Good is set
             to Perfect for 5 seconds
-          </div>
+          </ItemContainer>
         </div>
         <div class="flex flex-col">
-          <div class="mx-1 rounded-t bg-yellow-300 p-1">Center Skill</div>
-          <div
-            class="mx-1 rounded-b border border-yellow-300 bg-gray-800 p-1 text-white"
-          >
+          <ItemContainer label="Skill" color="yellow-300">
             Princess idols' visual value is increased by 60%
-          </div>
+          </ItemContainer>
         </div>
         <div class="flex flex-col gap-2">
           <div
