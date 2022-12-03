@@ -18,7 +18,7 @@ onMounted(() => {
 <template>
   <header>
     <nav
-      class="bg-gray-800 flex md:flex-row flex-wrap gap-2 align-middle justify-between md:justify-around text-white text-center p-5 border-slate-700 border-b-2">
+      class="bg-gray-800 flex md:flex-row flex-wrap gap-2 align-middle justify-between md:justify-around text-white text-center p-5 border-slate-700 border-b">
       <RouterLink to="" class="text-lg"><b>MirionDB</b></RouterLink>
       <div class="md:hidden flex items-center justify-self-end">
         <button ref="menuButton" class="border-slate-700 border-2 rounded p-0.5 focus:outline-none focus:ring focus:ring-slate-900">
