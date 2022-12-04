@@ -1,5 +1,7 @@
 <script lang="ts">
 import ItemContainer from '@/components/partials/ItemContainer.vue';
+import DigitTextInput from '@/components/partials/DigitTextInput.vue';
+
 import { Card } from '@/models';
 
 export default {
@@ -7,6 +9,8 @@ export default {
     return {
       card: new Card(),
       isAwaken: false,
+      currentLevel: 1,
+      currentRank: 0,
       currentVocal: 0,
       currentDance: 0,
       currentVisual: 0,
@@ -14,7 +18,8 @@ export default {
     }
   },
   components: {
-    ItemContainer
+    ItemContainer,
+    DigitTextInput
   },
   methods: {
     fetchCard(id: string) {
@@ -93,12 +98,17 @@ export default {
         event.preventDefault()
       }
     },
+    updateRank(newRank: number) {
+      this.currentRank = newRank;
+      this.changeStats();
+    },
+    updateLevel(newLevel: number) {
+      this.currentLevel = newLevel;
+      this.changeStats();
+    },
     changeStats() {
-      let levelValue = this.$refs.levelInput as HTMLInputElement;
-      let rankValue = this.$refs.rankInput as HTMLInputElement;
-
-      let level = Number(levelValue.value);
-      let rank = Number(rankValue.value);
+      let level = this.currentLevel;
+      let rank = this.currentRank;
 
       let newVocal = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "vocal");
       let newDance = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "dance");
@@ -113,17 +123,11 @@ export default {
     }
   },
   mounted() {
-    this.fetchCard(String(this.$route.params.id!))
+    if (this.$route.params.id!) {
+      this.fetchCard(String(this.$route.params.id))
+    }
 
     let awakenButton = this.$refs.awakenButton as HTMLElement;
-    let decreaseLevel = this.$refs.decreaseLevel as HTMLElement;
-    let increaseLevel = this.$refs.increaseLevel as HTMLElement;
-    let decreaseRank = this.$refs.decreaseRank as HTMLElement;
-    let increaseRank = this.$refs.increaseRank as HTMLElement;
-
-    let levelInput = this.$refs.levelInput as HTMLInputElement;
-    let rankInput = this.$refs.rankInput as HTMLInputElement;
-
     awakenButton.addEventListener('click', () => {
       if (this.isAwaken) {
         this.isAwaken = false;
@@ -134,62 +138,7 @@ export default {
       }
 
       this.changeStats();
-    })
-
-    decreaseLevel.addEventListener('click', () => {
-      let level: number = Number(levelInput.value);
-      if (level != 1) {
-        let newLevel = level - 1;
-        levelInput.value = String(newLevel);
-
-        this.changeStats();
-      }
-    })
-
-    increaseLevel.addEventListener('click', () => {
-      let level: number = Number(levelInput.value);
-      if (level != this.maxLevel) {
-        let newLevel = level + 1;
-        levelInput.value = String(newLevel);
-
-        this.changeStats();
-      }
-    })
-
-    decreaseRank.addEventListener('click', () => {
-      let rank: number = Number(rankInput.value);
-      if (rank != 0) {
-        let newRank = rank - 1;
-        rankInput.value = String(newRank);
-
-        this.changeStats();
-      }
-    })
-
-    increaseRank.addEventListener('click', () => {
-      let rank: number = Number(rankInput.value);
-      if (rank < this.card.stats?.maxMasterRank!) {
-        let newRank = rank + 1;
-        rankInput.value = String(newRank);
-
-        this.changeStats();
-      }
-    })
-
-    levelInput.addEventListener('keydown', this.handleDigitInput);
-    rankInput.addEventListener('keydown', this.handleDigitInput);
-
-    levelInput.addEventListener('change', () => {
-      let level: number = Number(levelInput.value);
-
-      if (level > this.maxLevel) {
-        levelInput.value = String(this.maxLevel);
-      } else if (level < 0) {
-        levelInput.value = "1"
-      }
-
-      this.changeStats();
-    })
+    });
   }
 }
 </script>
@@ -215,19 +164,11 @@ export default {
         <div class="flex flex-row">
           <div>
             <span class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white">Level</span>
-            <button ref="decreaseLevel" class="m-1 rounded bg-yellow-500 px-2 text-white">-</button>
-            <input ref="levelInput"
-              class="w-1/12 rounded bg-gray-700 px-0.5 text-center text-white focus:outline-none focus:ring focus:ring-violet-300"
-              type="text" maxlength="2" value="1" />
-            <button ref="increaseLevel" class="m-1 rounded bg-yellow-500 px-2 text-white">+</button>
+            <DigitTextInput v-model:input-value="currentLevel" @update:input-value="updateLevel" :min="1" :max="maxLevel"/>
           </div>
           <div>
             <span class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white">Master Rank</span>
-            <button ref="decreaseRank" class="m-1 rounded bg-yellow-500 px-2 text-white">-</button>
-            <input ref="rankInput"
-              class="w-1/12 rounded bg-gray-700 px-0.5 text-center text-white focus:outline-none focus:ring focus:ring-violet-300"
-              type="text" maxlength="1" value="0" />
-            <button ref="increaseRank" class="m-1 rounded bg-yellow-500 px-2 text-white">+</button>
+            <DigitTextInput v-model:input-value="currentRank" @update:input-value="updateRank" :min="0" :max="card.stats?.maxMasterRank"/>
           </div>
         </div>
         <div class="flex flex-row gap-3">
