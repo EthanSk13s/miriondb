@@ -1,6 +1,5 @@
 import json
 import os
-from json.decoder import JSONDecodeError
 
 from mirion.database import db
 from mirion.utils import enums
@@ -55,6 +54,13 @@ class Skill(db.Model):
 
         return f"{interval_str} {effect_str} {duration_str}"
 
+    @property
+    def serialize(self):
+        return {
+            'name': enums.SKILL_TYPES.get(self.effect_id),
+            'description': self.tl_desc
+        }
+
     def __repr__(self):
         return '<Skill {}>'.format(self.id)
 
@@ -94,6 +100,13 @@ class CenterSkill(db.Model):
         else:
             return first_cond
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'description': self.tl_desc
+        }
+
     def __repr__(self):
         return '<Center Skill {}>'.format(self.id)
 
@@ -108,7 +121,7 @@ class Costume(db.Model):
 
         try:
             costumes = json.loads(self.costume_resc_ids.replace('\'', '"'))
-        except JSONDecodeError:
+        except:
             return None
         for resc_id in costumes:
             if BASE_URL == "https://storage.matsurihi.me/mltd":
@@ -121,6 +134,14 @@ class Costume(db.Model):
 
         return urls
 
+    @property
+    def serialize(self):
+        try:
+            costumes = json.loads(self.costume_resc_ids.replace('\'', '"'))
+        except:
+            costumes = None
+        return costumes
+
     def __repr__(self):
         return '<Costumes {}>'.format(self.resc_id)
 
@@ -131,6 +152,16 @@ class Event(db.Model):
     name = db.Column(db.Text)
     begin = db.Column(db.DateTime)
     end = db.Column(db.DateTime)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'eventType': self.event_type,
+            'name': self.name,
+            'begin': self.begin,
+            'end': self.end
+        }
 
     def __repr__(self):
         return '<Event {}>'.format(self.name)
@@ -148,13 +179,13 @@ class Card(db.Model):
     ex_type = db.Column(db.Integer, index=True)
     release = db.Column(db.DateTime, index=True, default=None)
     event_id = db.Column(db.Integer, db.ForeignKey(Event.id), index=True, default=None)
-    event = db.relationship('Event', foreign_keys='Card.event_id')
+    event: Event = db.relationship('Event', foreign_keys='Card.event_id', lazy='joined')
 
     skill_id = db.Column(db.Integer, db.ForeignKey(Skill.id), default=None)
     center_skill_id = db.Column(db.Integer, db.ForeignKey(CenterSkill.id), default=None)
 
-    skill = db.relationship('Skill', foreign_keys='Card.skill_id', lazy='joined')
-    center_skill = db.relationship('CenterSkill', foreign_keys='Card.center_skill_id', lazy='joined')
+    skill: Skill = db.relationship('Skill', foreign_keys='Card.skill_id', lazy='joined')
+    center_skill: CenterSkill = db.relationship('CenterSkill', foreign_keys='Card.center_skill_id', lazy='joined')
 
     vocal = db.Column(db.Integer)
     dance = db.Column(db.Integer)
@@ -178,7 +209,7 @@ class Card(db.Model):
     dance_rank_bonus = db.Column(db.Integer)
     visual_rank_bonus = db.Column(db.Integer)
 
-    costumes = db.relationship('Costume', foreign_keys='Card.resc_id', lazy='joined')
+    costumes: Costume = db.relationship('Costume', foreign_keys='Card.resc_id', lazy='joined')
 
     @property
     def icon(self):
@@ -214,6 +245,42 @@ class Card(db.Model):
             return f"{BASE_URL}/card_bg/{self.resc_id}_1.png"
         else:
             return None
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'rescId': self.resc_id,
+            'idolId': self.idol_id,
+            'cardName': self.card_name,
+            'rarity': self.rarity,
+            'idolType': self.idol_type,
+            'exType': self.ex_type,
+            'release': self.release,
+            'event': self.event.serialize if self.event is not None else None,
+            'skill': self.skill.serialize if self.skill is not None else None,
+            'centerSkill': self.center_skill.serialize if self.center_skill is not None else None,
+            'stats': {
+                'life': self.life,
+                'vocal': self.vocal,
+                'dance': self.dance,
+                'visual': self.visual,
+                'maxVocal': self.max_vocal,
+                'maxDance': self.max_dance,
+                'maxVisual': self.max_visual,
+                'awakeVocal': self.awake_vocal,
+                'awakeDance': self.awake_dance,
+                'awakeVisual': self.awake_visual,
+                'maxAwakeVocal': self.max_awake_vocal,
+                'maxAwakeDance': self.max_awake_dance,
+                'maxAwakeVisual': self.max_awake_visual,
+                'maxMasterRank': self.max_master_rank,
+                'vocalRankBonus': self.vocal_rank_bonus,
+                'danceRankBonus': self.dance_rank_bonus,
+                'visualRankBonus': self.visual_rank_bonus
+            },
+            'costumes': self.costumes.serialize if self.costumes is not None else None
+        }
 
     def __repr__(self):
         return '<Card {}>'.format(self.card_name)

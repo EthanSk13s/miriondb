@@ -1,6 +1,6 @@
 import jinja2
 
-from flask import Blueprint, render_template, request, redirect, abort
+from flask import Blueprint, jsonify, render_template, request, redirect, abort
 from mirion.models import Card
 from mirion.utils import enums
 
@@ -10,10 +10,10 @@ card_page = Blueprint("card", __name__)
 
 @card_page.route("/card/<card_id>")
 def card(card_id):
-    card = Card.query.filter_by(id=card_id).first()
+    card: Card = Card.query.filter_by(id=card_id).first()
     enums.set_enums(card)
 
-    return render_template('card_view.html', card=card)
+    return jsonify({'data': card.serialize})
 
 
 @card_page.route("/idol_query", methods=['POST'])
@@ -76,6 +76,6 @@ def idol(id):
         enums.set_enums(card)
 
     try:
-        return render_template('idol_view.html', idol_cards=cards)
+        return jsonify({'data': [card.serialize for card in cards]})
     except jinja2.exceptions.UndefinedError:
         abort(404)
