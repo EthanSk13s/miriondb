@@ -21,14 +21,11 @@ export default {
 
             if (value < this.min!) {
                 newValue = this.min!
-                element.value = String(this.min!);
             } else if (value > this.max!) {
                 newValue = this.max!
-                element.value = String(this.max!);
             }
 
             if (newValue) {
-                element.value = String(newValue);
                 value = newValue;
             }
 
