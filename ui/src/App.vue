@@ -11,6 +11,7 @@ onMounted(() => {
 
   button.addEventListener('click', () => {
     menu.classList.toggle('hidden');
+    menu.classList.toggle('flex');
   })
 })
 </script>
@@ -29,7 +30,7 @@ onMounted(() => {
           </svg>
         </button>
       </div>
-      <div ref="menuDiv" class="flex md:flex basis-full md:basis-0 flex-col md:flex-row gap-8 justify-center align-middle self-center">
+      <div ref="menuDiv" class="hidden md:flex basis-full md:basis-0 flex-col md:flex-row gap-8 justify-center align-middle self-center">
         <RouterLink to="/" class="self-center hover:opacity-80 w-max">Cards</RouterLink>
         <RouterLink to="/card" class="self-center hover:opacity-80 w-max">Example Card View</RouterLink>
         <RouterLink to="/about" class="self-center hover:opacity-80 w-max">History</RouterLink>
