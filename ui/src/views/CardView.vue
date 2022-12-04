@@ -91,13 +91,6 @@ export default {
 
       return className;
     },
-    handleDigitInput(event: KeyboardEvent) {
-      if (!event.key.match(/^[0-9]+$/) && event.key !== "Backspace"
-        && event.key !== "Enter"
-        && event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
-        event.preventDefault()
-      }
-    },
     updateRank(newRank: number) {
       this.currentRank = newRank;
       this.changeStats();
@@ -153,7 +146,7 @@ export default {
         <div class="flex flex-row">
           <div>
             <button ref="awakenButton"
-              class="absolute m-1 rounded bg-stone-900 p-1 text-sm text-white hover:bg-stone-800">
+              class="absolute m-1 rounded bg-stone-900 p-1 text-sm text-white hover:bg-stone-800 transition-colors duration-200">
               Awaken
             </button>
           </div>
@@ -164,11 +157,13 @@ export default {
         <div class="flex flex-row">
           <div>
             <span class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white">Level</span>
-            <DigitTextInput v-model:input-value="currentLevel" @update:input-value="updateLevel" :min="1" :max="maxLevel"/>
+            <DigitTextInput v-model:input-value="currentLevel" @update:input-value="updateLevel" :min="1"
+              :max="maxLevel" />
           </div>
           <div>
             <span class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white">Master Rank</span>
-            <DigitTextInput v-model:input-value="currentRank" @update:input-value="updateRank" :min="0" :max="card.stats?.maxMasterRank"/>
+            <DigitTextInput v-model:input-value="currentRank" @update:input-value="updateRank" :min="0"
+              :max="card.stats?.maxMasterRank" />
           </div>
         </div>
         <div class="flex flex-row gap-3">

@@ -64,9 +64,9 @@ export default {
 </script>
 
 <template>
-    <button ref="decrease" class="m-1 rounded bg-yellow-500 px-2 text-white">-</button>
+    <button ref="decrease" class="m-1 rounded bg-yellow-500 hover:bg-yellow-600 px-2 text-white transition-colors duration-200">-</button>
     <input ref="digitInput" @input="emitInput"
-        class="w-1/12 rounded bg-gray-700 px-0.5 text-center text-white focus:outline-none focus:ring focus:ring-violet-300"
+        class="w-1/6 md:w-1/12 rounded bg-gray-700 px-0.5 text-center text-white focus:outline-none focus:ring focus:ring-violet-300"
         type="text" maxlength="2" :value="inputValue" />
-    <button ref="increase" class="m-1 rounded bg-yellow-500 px-2 text-white">+</button>
+    <button ref="increase" class="m-1 rounded bg-yellow-500 hover:bg-yellow-600 px-2 text-white transition-colors duration-200">+</button>
 </template>
