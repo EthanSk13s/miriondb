@@ -1,134 +1,272 @@
 <script lang="ts">
 import ItemContainer from '@/components/partials/ItemContainer.vue';
+import { Card } from '@/models';
 
 export default {
+  data() {
+    return {
+      card: new Card(),
+      isAwaken: false,
+      currentVocal: 0,
+      currentDance: 0,
+      currentVisual: 0,
+      maxLevel: 0
+    }
+  },
   components: {
     ItemContainer
+  },
+  methods: {
+    fetchCard(id: string) {
+      this.$http.get(`http://127.0.0.1:5500/card/${id}`)
+        .then((response) => {
+          this.$data.card = new Card(response.data.data);
+
+          this.currentVocal = this.$data.card.stats?.vocal!;
+          this.currentDance = this.$data.card.stats?.dance!;
+          this.currentVisual = this.$data.card.stats?.visual!;
+
+          switch (this.card.rarity) {
+            case 1:
+              this.maxLevel = 20;
+              break;
+            case 2:
+              this.maxLevel = 40;
+              break;
+            case 3:
+              this.maxLevel = 60;
+              break;
+            case 4:
+              this.maxLevel = 80;
+              break;
+            default:
+              this.maxLevel = 0;
+          }
+        })
+    },
+    mapRarity(rarity: number) {
+      let rarityShort: string;
+      switch (rarity) {
+        case 1:
+          rarityShort = 'N';
+          break;
+        case 2:
+          rarityShort = 'R';
+          break;
+        case 3:
+          rarityShort = 'SR';
+          break;
+        case 4:
+          rarityShort = 'SSR';
+          break;
+        default:
+          rarityShort = '??';
+      }
+
+      return rarityShort;
+    },
+    constructColorType(idolType: number) {
+      let className: string;
+      switch (idolType) {
+        case 1:
+          className = 'flex flex-row rounded-t-lg bg-pink-600 p-2 text-2xl text-white';
+          break;
+        case 2:
+          className = 'flex flex-row rounded-t-lg bg-blue-600 p-2 text-2xl text-white';
+          break;
+        case 3:
+          className = 'flex flex-row rounded-t-lg bg-yellow-500 p-2 text-2xl text-white';
+          break;
+        case 5:
+          className = 'flex flex-row rounded-t-lg bg-green-400 p-2 text-2xl text-white';
+          break;
+        default:
+          className = 'flex flex-row rounded-t-lg p-2 text-2xl text-white';
+      }
+
+      return className;
+    },
+    handleDigitInput(event: KeyboardEvent) {
+      if (!event.key.match(/^[0-9]+$/) && event.key !== "Backspace"
+        && event.key !== "Enter"
+        && event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+        event.preventDefault()
+      }
+    },
+    changeStats() {
+      let levelValue = this.$refs.levelInput as HTMLInputElement;
+      let rankValue = this.$refs.rankInput as HTMLInputElement;
+
+      let level = Number(levelValue.value);
+      let rank = Number(rankValue.value);
+
+      let newVocal = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "vocal");
+      let newDance = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "dance");
+      let newVisual = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "visual");
+
+      this.currentVocal = newVocal! + this.calcRankBonus(rank, this.card.stats?.vocalRankBonus!);
+      this.currentDance = newDance! + this.calcRankBonus(rank, this.card.stats?.danceRankBonus!);
+      this.currentVisual = newVisual! + this.calcRankBonus(rank, this.card.stats?.visualRankBonus!);
+    },
+    calcRankBonus(rank: number, value: number) {
+      return rank * value;
+    }
+  },
+  mounted() {
+    this.fetchCard(String(this.$route.params.id!))
+
+    let awakenButton = this.$refs.awakenButton as HTMLElement;
+    let decreaseLevel = this.$refs.decreaseLevel as HTMLElement;
+    let increaseLevel = this.$refs.increaseLevel as HTMLElement;
+    let decreaseRank = this.$refs.decreaseRank as HTMLElement;
+    let increaseRank = this.$refs.increaseRank as HTMLElement;
+
+    let levelInput = this.$refs.levelInput as HTMLInputElement;
+    let rankInput = this.$refs.rankInput as HTMLInputElement;
+
+    awakenButton.addEventListener('click', () => {
+      if (this.isAwaken) {
+        this.isAwaken = false;
+        this.maxLevel -= 10;
+      } else {
+        this.isAwaken = true;
+        this.maxLevel += 10;
+      }
+
+      this.changeStats();
+    })
+
+    decreaseLevel.addEventListener('click', () => {
+      let level: number = Number(levelInput.value);
+      if (level != 1) {
+        let newLevel = level - 1;
+        levelInput.value = String(newLevel);
+
+        this.changeStats();
+      }
+    })
+
+    increaseLevel.addEventListener('click', () => {
+      let level: number = Number(levelInput.value);
+      if (level != this.maxLevel) {
+        let newLevel = level + 1;
+        levelInput.value = String(newLevel);
+
+        this.changeStats();
+      }
+    })
+
+    decreaseRank.addEventListener('click', () => {
+      let rank: number = Number(rankInput.value);
+      if (rank != 0) {
+        let newRank = rank - 1;
+        rankInput.value = String(newRank);
+
+        this.changeStats();
+      }
+    })
+
+    increaseRank.addEventListener('click', () => {
+      let rank: number = Number(rankInput.value);
+      if (rank < this.card.stats?.maxMasterRank!) {
+        let newRank = rank + 1;
+        rankInput.value = String(newRank);
+
+        this.changeStats();
+      }
+    })
+
+    levelInput.addEventListener('keydown', this.handleDigitInput);
+    rankInput.addEventListener('keydown', this.handleDigitInput);
+
+    levelInput.addEventListener('change', () => {
+      let level: number = Number(levelInput.value);
+
+      if (level > this.maxLevel) {
+        levelInput.value = String(this.maxLevel);
+      } else if (level < 0) {
+        levelInput.value = "1"
+      }
+
+      this.changeStats();
+    })
   }
 }
 </script>
 
 <template>
-  <main class="flex flex-col justify-center bg-slate-800 m-auto md:w-7/12 mt-5">
-    <div class="flex flex-row rounded-t-lg bg-pink-600 p-2 text-2xl text-white">
-      <h1>[SR] RisingLight Tanaka Kotoha</h1>
+  <main class="flex flex-col justify-center bg-slate-800 m-auto lg:w-7/12 mt-5">
+    <div :class="constructColorType(card.idolType)">
+      <h1>{{ `[${mapRarity(card.rarity)}] ` + card.name }}</h1>
     </div>
     <div class="flex flex-row flex-wrap justify-center gap-1 align-middle">
       <div>
         <div class="flex flex-row">
           <div>
-            <button
-              class="absolute m-1 rounded bg-stone-900 p-1 text-sm text-white hover:bg-stone-800"
-            >
+            <button ref="awakenButton"
+              class="absolute m-1 rounded bg-stone-900 p-1 text-sm text-white hover:bg-stone-800">
               Awaken
             </button>
           </div>
         </div>
-        <img
-          class="h-auto w-fit md:h-auto md:w-96"
-          src="https://theater.miriondb.com/card/017kth0353_0.png"
-          alt=""
-        />
+        <img class="h-auto w-fit md:h-auto md:w-96" :src="card.getCardImageUrl(isAwaken)" alt="" />
       </div>
       <div class="m-1 flex flex-1 flex-col gap-2">
         <div class="flex flex-row">
           <div>
-            <span
-              class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white"
-              >Level</span
-            >
-            <button class="m-1 rounded bg-yellow-500 px-2 text-white">-</button>
-            <input
+            <span class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white">Level</span>
+            <button ref="decreaseLevel" class="m-1 rounded bg-yellow-500 px-2 text-white">-</button>
+            <input ref="levelInput"
               class="w-1/12 rounded bg-gray-700 px-0.5 text-center text-white focus:outline-none focus:ring focus:ring-violet-300"
-              type="text"
-              maxlength="2"
-              name=""
-              id=""
-              value="1"
-            />
-            <button class="m-1 rounded bg-yellow-500 px-2 text-white">+</button>
+              type="text" maxlength="2" value="1" />
+            <button ref="increaseLevel" class="m-1 rounded bg-yellow-500 px-2 text-white">+</button>
           </div>
           <div>
-            <span
-              class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white"
-              >Master Rank</span
-            >
-            <button class="m-1 rounded bg-yellow-500 px-2 text-white">-</button>
-            <input
+            <span class="m-1 rounded bg-slate-600 px-1 py-0.5 font-bold text-white">Master Rank</span>
+            <button ref="decreaseRank" class="m-1 rounded bg-yellow-500 px-2 text-white">-</button>
+            <input ref="rankInput"
               class="w-1/12 rounded bg-gray-700 px-0.5 text-center text-white focus:outline-none focus:ring focus:ring-violet-300"
-              type="text"
-              maxlength="1"
-              name=""
-              id=""
-              value="0"
-            />
-            <button class="m-1 rounded bg-yellow-500 px-2 text-white">+</button>
+              type="text" maxlength="1" value="0" />
+            <button ref="increaseRank" class="m-1 rounded bg-yellow-500 px-2 text-white">+</button>
           </div>
         </div>
         <div class="flex flex-row gap-3">
           <div class="text-white">
-            <span class="m-1 rounded bg-green-500 px-1 py-0.5 font-bold"
-              >Life</span
-            >100
+            <span class="m-1 rounded bg-green-500 px-1 py-0.5 font-bold">Life</span>{{ card.stats?.life }}
           </div>
           <div class="text-white">
-            <span class="m-1 rounded bg-red-500 px-1 py-0.5 font-bold"
-              >Vocal</span
-            >100
+            <span class="m-1 rounded bg-red-500 px-1 py-0.5 font-bold">Vocal</span>{{ currentVocal }}
           </div>
           <div class="text-white">
-            <span class="m-1 rounded bg-blue-500 px-1 py-0.5 font-bold"
-              >Dance</span
-            >100
+            <span class="m-1 rounded bg-blue-500 px-1 py-0.5 font-bold">Dance</span>{{ currentDance }}
           </div>
           <div class="text-white">
-            <span class="m-1 rounded bg-yellow-500 px-1 py-0.5 font-bold"
-              >Visual</span
-            >100
+            <span class="m-1 rounded bg-yellow-500 px-1 py-0.5 font-bold">Visual</span>{{ currentVisual }}
           </div>
         </div>
         <div class="flex flex-col">
-          <ItemContainer label="Skill" color="yellow-300">
-            Every 9 seconds, there is a 40% chance that your Perfect/Great score
-            will increase by 30. When there are two or more Score Up cards in
-            the unit, the score of Perfect/Great is increased to 37, and when
-            there are one or more cards that are Fusion Combo, Great/Good is set
-            to Perfect for 5 seconds
+          <ItemContainer :label='("Skill: " + card.skill?.name)' color="yellow">
+            {{ card.skill?.description }}
           </ItemContainer>
         </div>
         <div class="flex flex-col">
-          <ItemContainer label="Skill" color="yellow-300">
-            Princess idols' visual value is increased by 60%
+          <ItemContainer label="Center Skill" color="yellow">
+            {{ card.centerSkill?.description }}
           </ItemContainer>
         </div>
-        <div class="flex flex-col gap-2">
-          <div
-            class="m-1 w-min rounded bg-cyan-400 px-1 py-0.5 font-bold text-white"
-          >
+        <div v-if="card.costumes" class="flex flex-col gap-2">
+          <div class="m-1 w-min rounded bg-cyan-400 px-1 py-0.5 font-bold text-white">
             Costumes
           </div>
           <div class="mx-2 flex flex-row flex-wrap gap-3">
-            <img
-              class="h-auto w-1/4 rounded md:h-auto md:w-24"
-              src="https://theater.miriondb.com/costumes/017kth0353.png"
-              alt=""
-            />
-            <img
-              class="h-auto w-1/4 rounded md:h-auto md:w-24"
-              src="https://theater.miriondb.com/costumes/017kth0353_v.png"
-              alt=""
-              srcset=""
-            />
+            <img v-for="url in card.getCostumesUrl()" class="h-auto w-1/4 rounded md:h-auto md:w-24" :src="url"
+              alt="" />
           </div>
         </div>
       </div>
     </div>
-    <div>
-      <img
-        class="w-screen h-auto"
-        src="https://theater.miriondb.com/card_bg/017kth0324_0.png"
-        alt=""
-      />
+    <div v-if="(card.rarity == 4)">
+      <img class="w-screen h-auto" :src="card.getBgImageUrl(isAwaken)!" alt="" />
     </div>
   </main>
 </template>
