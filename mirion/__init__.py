@@ -3,6 +3,7 @@ import logging.handlers
 import pryncess
 
 from flask import Flask
+from flask_cors import CORS
 from mirion import views, database, task
 from config import Config
 
@@ -14,6 +15,7 @@ def create_app(config=Config):
     app.pryncess = pryncess.Pryncess("ja")
 
     app.static_folder = "static"
+    cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
     # Setup Logging
     app.event_handler = logging.basicConfig(
