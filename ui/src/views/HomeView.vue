@@ -12,13 +12,13 @@ import CardIcon from "@/components/partials/CardIcon.vue";
           placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)">
       </form>
     </div>
-    <ItemContainer label="Current Event" color="sky-500" :bold="true" :is-text-white="true">
+    <ItemContainer label="Current Event" color="sky" :bold="true" :is-text-white="true">
       <CardIcon />
       <CardIcon />
       <CardIcon />
       <CardIcon />
     </ItemContainer>
-    <ItemContainer label="Recent Additions" color="gray-700" :bold="true" :is-text-white="true">
+    <ItemContainer label="Recent Additions" color="gray" :bold="true" :is-text-white="true">
       <CardIcon />
       <CardIcon />
       <CardIcon />
@@ -36,19 +36,19 @@ import CardIcon from "@/components/partials/CardIcon.vue";
     </div>
     <div class="flex flex-col gap-2">
       <h1 class="text-white text-xl mx-2">Previous Additions</h1>
-      <ItemContainer label="Dec 3 2022, 15:00" color="gray-700" :bold="true" :is-text-white="true">
+      <ItemContainer label="Dec 3 2022, 15:00" color="gray" :bold="true" :is-text-white="true">
         <CardIcon />
         <CardIcon />
         <CardIcon />
         <CardIcon />
       </ItemContainer>
-      <ItemContainer label="Dec 3 2022, 15:00" color="gray-700" :bold="true" :is-text-white="true">
+      <ItemContainer label="Dec 3 2022, 15:00" color="gray" :bold="true" :is-text-white="true">
         <CardIcon />
         <CardIcon />
         <CardIcon />
         <CardIcon />
       </ItemContainer>
-      <ItemContainer label="Dec 3 2022, 15:00" color="gray-700" :bold="true" :is-text-white="true">
+      <ItemContainer label="Dec 3 2022, 15:00" color="gray" :bold="true" :is-text-white="true">
         <CardIcon />
         <CardIcon />
         <CardIcon />
