@@ -120,6 +120,9 @@ export default {
             this.currentVocal = card.stats?.vocal!;
             this.currentDance = card.stats?.dance!;
             this.currentVisual = card.stats?.visual!;
+        },
+        redirectToIdol() {
+            this.$router.push(`/idol/${this.$data.card.idolId}`)
         }
     },
     mounted() {
@@ -164,12 +167,11 @@ export default {
                         </button>
                     </div>
                     <div v-if="cardId">
-                        <a :href='`/idol/${card.idolId}`'>
                             <button
+                                @click="redirectToIdol"
                                 class="m-1 rounded bg-stone-900 p-1 text-sm text-white hover:bg-stone-800 transition-colors duration-200">
                                 Other Cards
                             </button>
-                        </a>
                     </div>
                 </div>
                 <img class="h-auto w-fit md:h-auto md:w-96" :src="card.getCardImageUrl(isAwaken)" alt="" />
