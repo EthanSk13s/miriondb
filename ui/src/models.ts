@@ -18,19 +18,33 @@ class CenterSkill {
     }
 }
 
-class CardEvent {
-    readonly begin: Date;
-    readonly end: Date;
-    readonly eventType: number;
-    readonly id: number;
-    readonly name: string;
+export class CardEvent {
+    readonly begin: Date = new Date();
+    readonly end: Date = new Date();
+    readonly eventType: number = 0;
+    readonly id: number = 0;
+    readonly name: string = '';
 
-    constructor(eventObj: any) {
-        this.begin = eventObj.begin;
-        this.end = eventObj.end;
-        this.eventType = eventObj.eventType;
-        this.id = eventObj.id;
-        this.name = eventObj.name;
+    constructor(eventObj?: any) {
+        if (eventObj) {
+            this.begin = new Date(eventObj.begin);
+            this.end = new Date(eventObj.end);
+            this.eventType = eventObj.eventType;
+            this.id = eventObj.id;
+            this.name = eventObj.name;
+        }
+    }
+
+    getDeltaTime() {
+        let now = new Date();
+        let delta = this.end.valueOf() - now.valueOf();
+        let result: number | boolean = false;
+
+        if (delta > 0) {
+            result = delta;
+        }
+
+        return result
     }
 }
 
@@ -133,7 +147,7 @@ export class Card {
             this.exType = cardObj.exType;
             this.rarity = cardObj.rarity;
             this.idolType = cardObj.idolType;
-            this.release = cardObj.release;
+            this.release = new Date(cardObj.release);
 
             if (cardObj.skill) {
                 this.skill = new Skill(cardObj.skill)
@@ -163,8 +177,12 @@ export class Card {
         }
     }
 
+    getIconUrl() {
+        return `https://theater.miriondb.com/icons/${this.rescId}_0.png`;
+    }
+
     getCardImageUrl(isAwaken: boolean) {
-        if (isAwaken) {
+        if (isAwaken && this.rescId) {
             return `https://theater.miriondb.com/card/${this.rescId}_1.png`;
         } else {
             return `https://theater.miriondb.com/card/${this.rescId}_0.png`;
