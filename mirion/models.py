@@ -150,8 +150,8 @@ class Event(db.Model):
     id = db.Column(db.Integer, index=True, primary_key=True)
     event_type = db.Column(db.Integer, index=True)
     name = db.Column(db.Text)
-    begin = db.Column(db.DateTime)
-    end = db.Column(db.DateTime)
+    begin = db.Column(db.DateTime(timezone=True))
+    end = db.Column(db.DateTime(timezone=True))
 
     @property
     def serialize(self):
@@ -177,7 +177,7 @@ class Card(db.Model):
 
     idol_type = db.Column(db.Integer, index=True)
     ex_type = db.Column(db.Integer, index=True)
-    release = db.Column(db.DateTime, index=True, default=None)
+    release = db.Column(db.DateTime(timezone=True), index=True, default=None)
     event_id = db.Column(db.Integer, db.ForeignKey(Event.id), index=True, default=None)
     event: Event = db.relationship('Event', foreign_keys='Card.event_id', lazy='joined')
 

@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import logging
 import json
+import datetime
 
 import dateutil.parser
 
+from datetime import timezone
 from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -23,7 +25,11 @@ def add_changes_cards(changes: list[PryncessCard]):
     changes.reverse()
     num_of_changes = 0
     for item in changes:
-        card_rows = Card.query.filter(Card.release == item.add_date).all()
+        add_date = None
+        if item.add_date is not None:
+            add_date = datetime.datetime.fromtimestamp(dateutil.parser.isoparse(item.add_date).timestamp(), tz=timezone.utc)         
+        card_rows = Card.query.filter(Card.release == add_date).all()
+
         exists = [card.resc_id for card in card_rows]
 
         if item.resc_id not in exists:
@@ -31,7 +37,7 @@ def add_changes_cards(changes: list[PryncessCard]):
             num_of_changes += 1
         else:
             if card_rows[0].release is not None:
-                if card_rows[0].release <= dateutil.parser.parse(item.add_date, ignoretz=True) and item.type != 5:
+                if card_rows[0].release <= add_date and item.type != 5:
                     break
                 
 

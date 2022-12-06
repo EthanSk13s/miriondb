@@ -1,5 +1,7 @@
+import datetime
 import dateutil.parser
 
+from datetime import timezone
 from mirion.models import Card, Event, CenterSkill, Skill, Costume
 
 
@@ -51,7 +53,7 @@ def get_card(card, db):
                  visual_rank_bonus=card.bonus_visual)
 
     if card.add_date is not None:
-        entry.release = dateutil.parser.parse(card.add_date, ignoretz=True)
+        entry.release = datetime.datetime.fromtimestamp(dateutil.parser.isoparse(card.add_date).timestamp(), tz=timezone.utc)
 
     if card.event_id is not None:
         entry.event_id = card.event_id
@@ -95,7 +97,7 @@ def get_events(event, db):
     entry = Event(id=event.id,
                   event_type=event.type,
                   name=event.name,
-                  begin=dateutil.parser.parse(event.schedule.begin),
-                  end=dateutil.parser.parse(event.schedule.end))
+                  begin=datetime.datetime.fromtimestamp(dateutil.parser.isoparse(event.schedule.begin).timestamp(), tz=timezone.utc),
+                  end=datetime.datetime.fromtimestamp(dateutil.parser.isoparse(event.schedule.end).timestamp(), tz=timezone.utc))
 
     db.session.add(entry)
