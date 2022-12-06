@@ -9,8 +9,8 @@ main_page = Blueprint("main", __name__)
 
 
 @main_page.app_errorhandler(404)
-def page_not_found(e):
-    return render_template('404.html'), 404
+def resource_not_found(e):
+    return jsonify({'data': {'error': "Resource Not Found"}}), 404
 
 @main_page.route("/latest")
 def latest():

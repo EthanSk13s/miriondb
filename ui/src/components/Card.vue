@@ -31,9 +31,13 @@ export default {
         fetchCard(id: string) {
             this.$http.get(`http://127.0.0.1:5500/card/${id}`)
                 .then((response) => {
-                    this.$data.card = new Card(response.data.data);
+                    if (!response.data.data.error) {
+                        this.$data.card = new Card(response.data.data);
 
-                    this.setData(this.$data.card);
+                        this.setData(this.$data.card);
+                    } else {
+                        this.$router.push({'name': 'NotFound'})
+                    }
                 })
         },
         mapRarity(rarity: number) {

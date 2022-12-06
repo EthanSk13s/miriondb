@@ -11,9 +11,12 @@ card_page = Blueprint("card", __name__)
 @card_page.route("/card/<card_id>")
 def card(card_id):
     card: Card = Card.query.filter_by(id=card_id).first()
-    enums.set_enums(card)
+    if card is not None:
+        enums.set_enums(card)
 
-    return jsonify({'data': card.serialize})
+        return jsonify({'data': card.serialize})
+    else :
+        return abort(404)
 
 
 @card_page.route("/idol_query", methods=['POST'])
