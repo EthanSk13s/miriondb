@@ -1,4 +1,6 @@
 <script lang="ts">
+import { RouterLink } from 'vue-router';
+
 export default {
   props: {
     name: String,
@@ -49,16 +51,14 @@ export default {
       }
 
       return url;
-    },
-    redirect() {
-      this.$router.push(`/card/${this.id}`)
     }
   }
 }
 </script>
 
 <template>
-    <div @click="redirect" class="cursor-pointer flex w-fit flex-row rounded bg-slate-700 align-middle hover:opacity-80">
+  <RouterLink :to="`/card/${id}`">
+    <div class="flex w-fit flex-row rounded bg-slate-700 align-middle hover:opacity-80">
     <div class="w-12">
       <img class="absolute h-12 w-12" :src="matchType()" alt="" />
       <img class="absolute h-12 w-12" :src="matchRarity()" alt="" />
@@ -68,4 +68,5 @@ export default {
       {{ name }}
     </div>
   </div>
+</RouterLink>
 </template>
