@@ -1,6 +1,6 @@
 import sqlalchemy
 
-from flask import Blueprint, render_template
+from flask import Blueprint, jsonify, render_template
 
 from mirion.models import Card, Event
 from mirion.utils import helpers
@@ -12,16 +12,15 @@ main_page = Blueprint("main", __name__)
 def page_not_found(e):
     return render_template('404.html'), 404
 
-
-@main_page.route("/")
-def index():
+@main_page.route("/latest")
+def latest():
     recent_datetime = Card.query.filter(Card.ex_type != 13,
                                         Card.event_id == None,
                                         Card.idol_type != 5).order_by(Card.id.desc()).first().release
     recent_additions = Card.query.filter(recent_datetime == Card.release,
                                          Card.event_id == None, Card.ex_type != 13).order_by(Card.id.asc()).all()
 
-    current_event = Event.query.order_by(-Event.id).first()
+    current_event: Event = Event.query.order_by(-Event.id).first()
     if current_event.event_type in (3, 4, 5, 9, 11, 13, 16):
         event_cards = Card.query.filter(Card.event_id == current_event.id,
                                         sqlalchemy.or_(Card.rarity == 3, Card.rarity == 2)).all()
@@ -39,11 +38,24 @@ def index():
 
     sorted_additions = helpers.list_grouper(previous_additions,
                                             helpers.check_for_release)
+    
+    payload = {
+        'currentEvent': 
+            {
+                'event': current_event.serialize,
+                'cards': [card.serialize for card in event_cards] if event_cards is not None else event_cards
+            },
+        'recentCards': [card.serialize for card in recent_additions],
+        'previousAdditions': []
+    }
 
-    return render_template('main.html', recent_additions=recent_additions,
-                           event=current_event, event_cards=event_cards,
-                           previous_additions=sorted_additions)
+    temp_list = []
+    for date in sorted_additions:
+        temp_list.append([card.serialize for card in date])
 
+    payload['previousAdditions'] = temp_list
+
+    return jsonify({'data': payload})
 
 @main_page.route("/history/<page>")
 def history(page):
