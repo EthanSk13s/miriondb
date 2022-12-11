@@ -25,9 +25,21 @@ export default {
     mounted() {
         let searchBar = this.$refs.search as HTMLInputElement;
 
-        searchBar.addEventListener('input', (ev) => {
+        searchBar.addEventListener('input', () => {
             this.searchString = searchBar.value;
         })
+    },
+    updated() {
+        if (this.searchString) {
+            let items = this.$refs.items as HTMLElement[];
+            let searchBar = this.$refs.search as HTMLInputElement;
+
+            items.forEach((item) => {
+                item.addEventListener('click', () => {
+                    searchBar.value = item.getElementsByTagName('input')[0].value;
+                })
+            })
+        }
     }
 }
 </script>
@@ -37,9 +49,11 @@ export default {
         <input ref="search" type="text"
             class="w-full py-1 pl-2 bg-slate-800 text-white rounded focus:outline-none focus:ring focus:ring-violet-400"
             :placeholder="placeholder">
-        <div v-if="searchString" class="top-full inset-x-0 py-1 pl-2 bg-slate-800 text-white rounded-b z-50 shadow-lg absolute">
-            <div class="py-1 cursor-pointer" v-for="result in matchResult()">
-                {{result}}
+        <div v-if="searchString"
+            class="top-full inset-x-0 py-1 my-2 bg-slate-800 text-white rounded-lg z-50 shadow-lg absolute">
+            <div ref="items" class="pl-2 py-1 cursor-pointer hover:bg-slate-900" v-for="result in matchResult()">
+                <strong>{{ result.substring(0, searchString.length) }}</strong>{{ result.substring(searchString.length) }}
+                <input type="hidden" :value="result">
             </div>
         </div>
     </div>
