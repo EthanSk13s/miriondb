@@ -4,8 +4,10 @@ import type { Ref } from 'vue';
 import type { AxiosResponse } from 'axios';
 
 import { Card, CardEvent } from '@/models';
+import { IDOL_NAMES } from '@/consts';
 import ItemContainer from "@/components/partials/ItemContainer.vue";
 import CardIcon from "@/components/partials/CardIcon.vue";
+import SearchBar from '@/components/partials/SearchBar.vue';
 
 const axios: any = inject('axios');
 
@@ -20,6 +22,7 @@ axios.get(`http://127.0.0.1:5500/latest`)
     let data = response.data.data
 
     refEvent.value = new CardEvent(data.currentEvent.event);
+    refEventString.value = refEvent.value.name;
 
     if (data.currentEvent.cards) {
       data.currentEvent.cards.forEach((cards: any) => {
@@ -68,9 +71,7 @@ onMounted(() => {
   <main class="flex flex-col justify-center m-auto md:w-7/12 mt-5 gap-2">
     <div class="p-1 m-1">
       <form action="" method="GET">
-        <input type="text"
-          class="w-full py-1 pl-2 bg-slate-800 text-white rounded focus:outline-none focus:ring focus:ring-violet-400"
-          placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)">
+        <SearchBar placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)" :result-list="IDOL_NAMES" />
       </form>
     </div>
     <ItemContainer :label="refEventString" color="sky" :bold="true" :is-text-white="true">
