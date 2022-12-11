@@ -19,7 +19,7 @@ onMounted(() => {
 <template>
   <header>
     <nav
-      class="bg-gray-800 flex md:flex-row flex-wrap gap-2 align-middle justify-between md:justify-around text-white text-center p-5 border-slate-700 border-b">
+      class="bg-gray-800 flex md:flex-row flex-wrap gap-2 md:gap-52 align-middle justify-between md:justify-around text-white text-center p-5 border-slate-700 border-b">
       <RouterLink to="" class="text-lg"><b>MirionDB</b></RouterLink>
       <div class="md:hidden flex items-center justify-self-end">
         <button ref="menuButton"
@@ -34,14 +34,13 @@ onMounted(() => {
       <div ref="menuDiv"
         class="hidden md:flex basis-full md:basis-0 flex-col md:flex-row gap-8 justify-center align-middle self-center">
         <RouterLink to="/" class="self-center hover:opacity-80 w-max">Cards</RouterLink>
-        <RouterLink to="/card" class="self-center hover:opacity-80 w-max">Example Card View</RouterLink>
         <RouterLink to="/about" class="self-center hover:opacity-80 w-max">History</RouterLink>
       </div>
     </nav>
   </header>
   <RouterView />
   <footer
-    class="flex flex-col justify-center m-auto md:w-7/12 my-5 align-middle border-t-2 border-slate-800 text-slate-500 text-xs text-center">
+    class="flex flex-col justify-center m-auto md:w-7/12 py-0.5 my-5 align-middle border-t-2 border-slate-800 text-slate-500 text-xs text-center">
     <div>Data is provided by <a class="text-teal-700 hover:text-teal-800" href="https://api.matsurihi.me/docs/">matsurihi.me</a></div>
     <div>Copyright of THE IDOLM@STER content belongs to BANDAI NAMCO Entertainment Inc.</div>
   </footer>
