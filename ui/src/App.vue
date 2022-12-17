@@ -34,7 +34,7 @@ onMounted(() => {
       <div ref="menuDiv"
         class="hidden md:flex basis-full md:basis-0 flex-col md:flex-row gap-8 justify-center align-middle self-center">
         <RouterLink to="/" class="self-center hover:opacity-80 w-max">Cards</RouterLink>
-        <RouterLink to="/about" class="self-center hover:opacity-80 w-max">History</RouterLink>
+        <RouterLink to="/history/1" class="self-center hover:opacity-80 w-max">History</RouterLink>
       </div>
     </nav>
   </header>
