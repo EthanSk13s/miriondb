@@ -1,3 +1,4 @@
+from flask_sqlalchemy import Pagination
 import sqlalchemy
 
 from flask import Blueprint, jsonify, render_template
@@ -59,8 +60,7 @@ def latest():
 
 @main_page.route("/history/<page>")
 def history(page):
-    # TODO: Probably should add a check if we've reached the end of the pages
-    dates = Card.query.with_entities(Card.release).\
+    dates: Pagination = Card.query.with_entities(Card.release).\
         order_by(Card.release.desc()).group_by(Card.release).\
         paginate(int(page), 10, False)
 
@@ -74,6 +74,8 @@ def history(page):
     sorted_history = helpers.list_grouper(paginated_cards,
                                           helpers.check_for_release)
 
-    return render_template('history.html',
-                           paginated_cards=sorted_history,
-                           current_page=page)
+    temp_list = []
+    for date in sorted_history:
+        temp_list.append([card.serialize for card in date])
+
+    return jsonify({'data': temp_list, 'hasNext': dates.has_next, 'hasPrev': dates.has_prev})
