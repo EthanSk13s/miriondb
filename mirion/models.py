@@ -282,5 +282,17 @@ class Card(db.Model):
             'costumes': self.costumes.serialize if self.costumes is not None else None
         }
 
+    @property
+    def mini_serialize(self):
+        return {
+            'id': self.id,
+            'rescId': self.resc_id,
+            'cardName': self.card_name,
+            'rarity': self.rarity,
+            'idolType': self.idol_type,
+            'release': self.release,
+            'event': self.event.serialize if self.event is not None else None
+        }
+
     def __repr__(self):
         return '<Card {}>'.format(self.card_name)
