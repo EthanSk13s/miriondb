@@ -24,7 +24,7 @@ const router = createRouter({
       component: CardView,
     },
     {
-      path: "/idol/:id(\\d+)",
+      path: "/idol/:id(\\d+)/:rarity?",
       name: "idol",
       component: IdolView
     },

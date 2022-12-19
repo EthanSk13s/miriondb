@@ -14,19 +14,24 @@ const axios: any = inject('axios');
 let cardList: Card[] = [];
 let refCard = ref(cardList)
 
-if (route.params.id) {
-    axios.get(`http://127.0.0.1:5500/idol/${route.params.id}`)
-        .then((response: AxiosResponse) => {
-            let data = response.data.data as any[];
+function getCards(response: AxiosResponse) {
+    let data = response.data.data as any[];
 
-            if (data.length > 0) {
-                data.forEach((card) => {
-                    refCard.value.push(new Card(card));
-                })
-            } else {
-                router.push({'name': 'NotFound'})
-            }
+    if (data.length > 0) {
+        data.forEach((card) => {
+            refCard.value.push(new Card(card));
         })
+    } else {
+        router.push({ 'name': 'NotFound' })
+    }
+}
+
+if (route.params.id && !route.params.rarity) {
+    axios.get(`http://127.0.0.1:5500/idol/${route.params.id}`)
+        .then(getCards)
+} else if (route.params.id && route.params.rarity) {
+    axios.get(`http://127.0.0.1:5500/idol/${route.params.id}?rarity=${route.params.rarity}`)
+        .then(getCards)
 }
 </script>
 
