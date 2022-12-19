@@ -5,7 +5,7 @@ import type { AxiosResponse } from 'axios';
 
 import { useRouter } from 'vue-router'
 
-import { Card, CardEvent } from '@/models';
+import { MiniCard, CardEvent } from '@/models';
 import { IDOL_NAMES } from '@/consts';
 import ItemContainer from "@/components/partials/ItemContainer.vue";
 import CardIcon from "@/components/partials/CardIcon.vue";
@@ -14,9 +14,9 @@ import SearchBar from '@/components/partials/SearchBar.vue';
 const axios: any = inject('axios');
 const router = useRouter();
 
-let refEventCards: Ref<Card[]> = ref([]);
+let refEventCards: Ref<MiniCard[]> = ref([]);
 let refEvent: Ref<CardEvent> = ref(new CardEvent());
-let refRecentCards: Ref<Card[]> = ref([]);
+let refRecentCards: Ref<MiniCard[]> = ref([]);
 let refPreviousCards: Ref<any[][]> = ref([]);
 let refEventString = ref('');
 let refSearchString = ref('');
@@ -30,12 +30,12 @@ axios.get(`http://127.0.0.1:5500/latest`)
 
     if (data.currentEvent.cards) {
       data.currentEvent.cards.forEach((cards: any) => {
-        refEventCards.value.push(new Card(cards))
+        refEventCards.value.push(new MiniCard(cards))
       })
     }
 
     data.recentCards.forEach((cards: any) => {
-      refRecentCards.value.push(new Card(cards))
+      refRecentCards.value.push(new MiniCard(cards))
     })
 
     data.previousAdditions.forEach((date: any) => {
@@ -43,10 +43,10 @@ axios.get(`http://127.0.0.1:5500/latest`)
     })
 
     refPreviousCards.value.forEach((date: any[]) => {
-      let tempList: Card[] = []
+      let tempList: MiniCard[] = []
 
       date.forEach((card: any) => {
-        tempList.push(new Card(card));
+        tempList.push(new MiniCard(card));
       })
 
       date.splice(0, tempList.length, ...tempList)

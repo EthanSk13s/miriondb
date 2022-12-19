@@ -9,7 +9,7 @@ import ItemContainer from "@/components/partials/ItemContainer.vue";
 import CardIcon from "@/components/partials/CardIcon.vue";
 import ArrowButton from '@/components/partials/ArrowButton.vue';
 
-import { Card } from '@/models';
+import { MiniCard } from '@/models';
 
 const route = useRoute();
 const router = useRouter();
@@ -31,10 +31,10 @@ function getHistory(page: number) {
             })
 
             tempList.forEach((date: any[]) => {
-                let cardList: Card[] = []
+                let cardList: MiniCard[] = []
 
                 date.forEach((card: any) => {
-                    cardList.push(new Card(card));
+                    cardList.push(new MiniCard(card));
                 })
 
                 date.splice(0, cardList.length, ...cardList)
