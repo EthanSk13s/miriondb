@@ -44,15 +44,15 @@ def latest():
         'currentEvent': 
             {
                 'event': current_event.serialize,
-                'cards': [card.serialize for card in event_cards] if event_cards is not None else event_cards
+                'cards': [card.mini_serialize for card in event_cards] if event_cards is not None else event_cards
             },
-        'recentCards': [card.serialize for card in recent_additions],
+        'recentCards': [card.mini_serialize for card in recent_additions],
         'previousAdditions': []
     }
 
     temp_list = []
     for date in sorted_additions:
-        temp_list.append([card.serialize for card in date])
+        temp_list.append([card.mini_serialize for card in date])
 
     payload['previousAdditions'] = temp_list
 
@@ -76,6 +76,6 @@ def history(page):
 
     temp_list = []
     for date in sorted_history:
-        temp_list.append([card.serialize for card in date])
+        temp_list.append([card.mini_serialize for card in date])
 
     return jsonify({'data': temp_list, 'hasNext': dates.has_next, 'hasPrev': dates.has_prev})
