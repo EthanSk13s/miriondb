@@ -123,7 +123,7 @@ class CardStats {
     }
 }
 
-export class Card {
+export class MiniCard {
     readonly name: string = "";
     readonly rescId: string = "";
     readonly id: number = 0;
@@ -132,11 +132,7 @@ export class Card {
     readonly rarity: number = 0;
     readonly idolType: number = 0;
     readonly release: Date = new Date();
-    readonly skill: Skill | null = null;
-    readonly centerSkill: CenterSkill | null = null;
-    readonly costumes: string[] | null = null;
     readonly event: CardEvent | null = null;
-    readonly stats: CardStats | null = null;
 
     constructor(cardObj?: any) {
         if (cardObj) {
@@ -149,6 +145,28 @@ export class Card {
             this.idolType = cardObj.idolType;
             this.release = new Date(cardObj.release);
 
+            if (cardObj.event) {
+                this.event = new CardEvent(cardObj.event);
+            } else {
+                this.event = null;
+            }
+        }
+    }
+
+    getIconUrl() {
+        return `https://theater.miriondb.com/icons/${this.rescId}_0.png`;
+    }
+}
+
+export class Card extends MiniCard {
+    readonly skill: Skill | null = null;
+    readonly centerSkill: CenterSkill | null = null;
+    readonly costumes: string[] | null = null;
+    readonly stats: CardStats | null = null;
+
+    constructor(cardObj?: any) {
+        super(cardObj);
+        if (cardObj) {
             if (cardObj.skill) {
                 this.skill = new Skill(cardObj.skill)
             } else {
@@ -167,18 +185,8 @@ export class Card {
                 this.costumes = null;
             }
 
-            if (cardObj.event) {
-                this.event = new CardEvent(cardObj.event);
-            } else {
-                this.event = null;
-            }
-
             this.stats = new CardStats(cardObj.stats);
         }
-    }
-
-    getIconUrl() {
-        return `https://theater.miriondb.com/icons/${this.rescId}_0.png`;
     }
 
     getCardImageUrl(isAwaken: boolean) {
