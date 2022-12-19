@@ -15,7 +15,7 @@ def card(card_id):
         enums.set_enums(card)
 
         return jsonify({'data': card.serialize})
-    else :
+    else:
         return abort(404)
 
 
@@ -28,7 +28,7 @@ def handle_query():
 
     if len(query) == 1:
         idol_id = enums.NAMES.get_id(query[0].lower())
-        return redirect(f"/idol/{idol_id}")
+        return jsonify({'data': {'idolId': idol_id}})
 
     for param in query:
         if param.isdigit():
@@ -60,11 +60,11 @@ def handle_query():
 
         try:
             card = Card.query.filter(*filters).order_by(Card.id.asc()).all()[i]
-            return redirect(f"/card/{card.id}")
+            return jsonify({'data': {'cardId': card.id}})
         except IndexError:
             abort(404)
     else:
-        return redirect(f"/idol/{idol_id}?rarity={rarity}")
+        return jsonify({'data': {'idolId': idol_id, 'rarity': rarity}})
 
 
 @card_page.route("/idol/<id>", methods=['GET'])

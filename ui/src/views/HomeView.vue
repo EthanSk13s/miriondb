@@ -3,6 +3,8 @@ import { ref, inject, onMounted } from 'vue';
 import type { Ref } from 'vue';
 import type { AxiosResponse } from 'axios';
 
+import { useRouter } from 'vue-router'
+
 import { Card, CardEvent } from '@/models';
 import { IDOL_NAMES } from '@/consts';
 import ItemContainer from "@/components/partials/ItemContainer.vue";
@@ -10,12 +12,14 @@ import CardIcon from "@/components/partials/CardIcon.vue";
 import SearchBar from '@/components/partials/SearchBar.vue';
 
 const axios: any = inject('axios');
+const router = useRouter();
 
 let refEventCards: Ref<Card[]> = ref([]);
 let refEvent: Ref<CardEvent> = ref(new CardEvent());
 let refRecentCards: Ref<Card[]> = ref([]);
 let refPreviousCards: Ref<any[][]> = ref([]);
 let refEventString = ref('');
+let refSearchString = ref('');
 
 axios.get(`http://127.0.0.1:5500/latest`)
   .then((response: AxiosResponse) => {
@@ -49,6 +53,31 @@ axios.get(`http://127.0.0.1:5500/latest`)
     })
   })
 
+function updateSearch(newSearch: string) {
+  refSearchString.value = newSearch;
+}
+
+function searchQuery(e: Event) {
+  e.preventDefault();
+  let form = new FormData();
+  form.append('card-search', refSearchString.value);
+
+  axios.post('http://127.0.0.1:5500/idol_query', form)
+    .then((response: AxiosResponse) => {
+      let data = response.data.data;
+
+      if (data.idolId && data.rarity) {
+        return router.push(`/idol/${data.idolId}/${data.rarity}`);
+      }
+
+      if (data.cardId) {
+        router.push(`/card/${data.cardId}`);
+      } else if (data.idolId) {
+        router.push(`/idol/${data.idolId}`);
+      }
+    })
+}
+
 onMounted(() => {
   setInterval(() => {
     let delta = refEvent.value.getDeltaTime();
@@ -70,8 +99,8 @@ onMounted(() => {
 <template>
   <main class="flex flex-col justify-center m-auto md:w-7/12 mt-5 gap-2">
     <div class="p-1 m-1">
-      <form action="" method="GET">
-        <SearchBar placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)" :result-list="IDOL_NAMES" />
+      <form @submit="searchQuery">
+        <SearchBar @search-input="updateSearch" placeholder="Search for Cards (E.g kotoha ssr 5 | kotoha ssr)" :result-list="IDOL_NAMES" />
       </form>
     </div>
     <ItemContainer :label="refEventString" color="sky" :bold="true" :is-text-white="true">
