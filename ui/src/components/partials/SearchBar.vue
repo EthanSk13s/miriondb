@@ -13,6 +13,7 @@ export default {
             type: [] as PropType<String[]>
         }
     },
+    emits: ['searchInput'],
     methods: {
         matchResult() {
             let filtered = this.resultList!.filter((result) => {
@@ -20,6 +21,12 @@ export default {
             })
 
             return filtered;
+        },
+        emitSearch(event: Event) {
+            let element = event.target as HTMLInputElement;
+            let value = element.value;
+
+            this.$emit('searchInput', value);
         }
     },
     mounted() {
@@ -37,6 +44,7 @@ export default {
             items.forEach((item) => {
                 item.addEventListener('click', () => {
                     searchBar.value = item.getElementsByTagName('input')[0].value;
+                    this.$emit('searchInput', searchBar.value);
 
                     this.searchString = '';
                 })
@@ -48,7 +56,7 @@ export default {
 
 <template>
     <div class="flex flex-col relative">
-        <input ref="search" type="text"
+        <input ref="search" @input="emitSearch" type="text"
             class="w-full py-1 pl-2 bg-slate-800 text-white rounded focus:outline-none focus:ring focus:ring-violet-400"
             :placeholder="placeholder">
         <div v-if="searchString"
