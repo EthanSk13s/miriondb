@@ -62,7 +62,7 @@ function searchQuery(e: Event) {
   let form = new FormData();
   form.append('card-search', refSearchString.value);
 
-  axios.post('http://127.0.0.1:5500/idol_query', form)
+  axios.post(`${API_URL}/idol_query`, form)
     .then((response: AxiosResponse) => {
       let data = response.data.data;
 
