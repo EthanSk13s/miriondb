@@ -10,6 +10,7 @@ import CardIcon from "@/components/partials/CardIcon.vue";
 import ArrowButton from '@/components/partials/ArrowButton.vue';
 
 import { MiniCard } from '@/models';
+import { API_URL } from '@/consts';
 
 const route = useRoute();
 const router = useRouter();
@@ -21,7 +22,7 @@ let refHasPrev: Ref<Boolean> = ref(false);
 const axios: any = inject('axios');
 
 function getHistory(page: number) {
-    let newList = axios.get(`http://127.0.0.1:5500/history/${page}`)
+    let newList = axios.get(`${API_URL}/history/${page}`)
         .then((response: AxiosResponse) => {
             let data = response.data.data;
             let tempList: any[][] = [];

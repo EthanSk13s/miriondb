@@ -9,3 +9,5 @@ export const IDOL_NAMES = [
     'Noriko', 'Mizuki', 'Karen', 'Rio', 'Subaru', 'Reika',
     'Momoko', 'Julia', 'Tsumugi', 'Kaori', 'Shika', 'Leon',
     'Frederica', 'Shiki', 'Kotori', 'Misaki'];
+
+export const API_URL = (import.meta.env.PROD) ? "/api" : "http://127.0.0.1:5500/api"

@@ -5,6 +5,7 @@ import ItemContainer from '@/components/partials/ItemContainer.vue';
 import DigitTextInput from '@/components/partials/DigitTextInput.vue';
 
 import { Card } from '@/models';
+import { API_URL } from '@/consts';
 
 export default {
     data() {
@@ -29,7 +30,7 @@ export default {
     },
     methods: {
         fetchCard(id: string) {
-            this.$http.get(`http://127.0.0.1:5500/card/${id}`)
+            this.$http.get(`${API_URL}/card/${id}`)
                 .then((response) => {
                     if (!response.data.data.error) {
                         this.$data.card = new Card(response.data.data);

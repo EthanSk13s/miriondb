@@ -6,6 +6,7 @@ import type { AxiosResponse } from 'axios';
 
 import CardVue from "@/components/Card.vue";
 import { Card } from '@/models';
+import { API_URL } from '@/consts';
 
 const route = useRoute();
 const router = useRouter();
@@ -27,10 +28,10 @@ function getCards(response: AxiosResponse) {
 }
 
 if (route.params.id && !route.params.rarity) {
-    axios.get(`http://127.0.0.1:5500/idol/${route.params.id}`)
+    axios.get(`${API_URL}/idol/${route.params.id}`)
         .then(getCards)
 } else if (route.params.id && route.params.rarity) {
-    axios.get(`http://127.0.0.1:5500/idol/${route.params.id}?rarity=${route.params.rarity}`)
+    axios.get(`${API_URL}/idol/${route.params.id}?rarity=${route.params.rarity}`)
         .then(getCards)
 }
 </script>

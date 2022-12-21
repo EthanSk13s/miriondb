@@ -6,7 +6,7 @@ import type { AxiosResponse } from 'axios';
 import { useRouter } from 'vue-router'
 
 import { MiniCard, CardEvent } from '@/models';
-import { IDOL_NAMES } from '@/consts';
+import { API_URL, IDOL_NAMES } from '@/consts';
 import ItemContainer from "@/components/partials/ItemContainer.vue";
 import CardIcon from "@/components/partials/CardIcon.vue";
 import SearchBar from '@/components/partials/SearchBar.vue';
@@ -21,7 +21,7 @@ let refPreviousCards: Ref<any[][]> = ref([]);
 let refEventString = ref('');
 let refSearchString = ref('');
 
-axios.get(`http://127.0.0.1:5500/latest`)
+axios.get(`${API_URL}/latest`)
   .then((response: AxiosResponse) => {
     let data = response.data.data
 
