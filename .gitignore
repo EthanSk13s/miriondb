@@ -24,6 +24,9 @@ theater/target
 # Image cache
 theater/cache/**/*.png
 
+# Vite Build
+mirion/dist
+
 # Fifo
 theater/wake.fifo
 
