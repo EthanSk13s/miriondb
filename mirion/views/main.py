@@ -1,7 +1,7 @@
 from flask_sqlalchemy import Pagination
 import sqlalchemy
 
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify
 
 from mirion.models import Card, Event
 from mirion.utils import helpers
@@ -35,7 +35,7 @@ def latest():
 
     dates = [card.release for card in previous_dates]
 
-    previous_additions = Card.query.filter(Card.release.in_(dates)).all()
+    previous_additions = Card.query.filter(Card.release.in_(dates)).order_by(Card.release.desc()).all()
 
     sorted_additions = helpers.list_grouper(previous_additions,
                                             helpers.check_for_release)

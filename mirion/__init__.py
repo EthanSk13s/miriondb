@@ -1,8 +1,9 @@
 import logging
 import logging.handlers
+import os
 import pryncess
 
-from flask import Flask
+from flask import Flask, render_template, send_from_directory
 from flask_cors import CORS
 from mirion import views, database, task
 from config import Config
@@ -14,7 +15,8 @@ def create_app(config=Config):
 
     app.pryncess = pryncess.Pryncess("ja")
 
-    app.static_folder = "static"
+    app.static_folder = "dist"
+    app.template_folder = "dist"
     cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
     # Setup Logging
@@ -28,6 +30,13 @@ def create_app(config=Config):
         level=logging.DEBUG
     )
     app.logger.addHandler(app.event_handler)
+
+    @app.route('/', defaults={'path': ''})
+    @app.route('/<path:path>')
+    def serve_index(path):
+        if path != "" and os.path.exists(app.static_folder + '/' + path):
+            return send_from_directory(app.static_folder, path)
+        return send_from_directory(app.static_folder, 'index.html')
 
     # Setup Database
     database.init_app(app)
