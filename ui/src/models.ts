@@ -1,3 +1,5 @@
+import { IMAGE_URL } from "./consts";
+
 class Skill {
     readonly name: string;
     readonly description: string;
@@ -154,7 +156,7 @@ export class MiniCard {
     }
 
     getIconUrl() {
-        return `https://theater.miriondb.com/icons/${this.rescId}_0.png`;
+        return `${IMAGE_URL}/icons/${this.rescId}_0.png`;
     }
 }
 
@@ -191,9 +193,9 @@ export class Card extends MiniCard {
 
     getCardImageUrl(isAwaken: boolean) {
         if (isAwaken && this.rescId) {
-            return `https://theater.miriondb.com/card/${this.rescId}_1.png`;
+            return `${IMAGE_URL}/card/${this.rescId}_1.png`;
         } else {
-            return `https://theater.miriondb.com/card/${this.rescId}_0.png`;
+            return `${IMAGE_URL}/card/${this.rescId}_0.png`;
         }
     }
 
@@ -201,7 +203,7 @@ export class Card extends MiniCard {
         let urls: string[] = [];
         if (this.costumes) {
             this.costumes.forEach((costume) => {
-                urls.push(`https://theater.miriondb.com/costumes/${costume}.png`);
+                urls.push(`${IMAGE_URL}/costumes/${costume}.png`);
             })
         } else {
             return null;
@@ -213,9 +215,9 @@ export class Card extends MiniCard {
     getBgImageUrl(isAwaken: boolean) {
         if (this.rarity == 4) {
             if (isAwaken) {
-                return `https://theater.miriondb.com/card_bg/${this.rescId}_1.png`;
+                return `${IMAGE_URL}/card_bg/${this.rescId}_1.png`;
             } else {
-                return `https://theater.miriondb.com/card_bg/${this.rescId}_0.png`;
+                return `${IMAGE_URL}/card_bg/${this.rescId}_0.png`;
             }
         } else {
             return null;

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { RouterLink } from 'vue-router';
+import { ICONS_URL } from '@/consts';
 
 export default {
   props: {
@@ -14,19 +15,19 @@ export default {
       let url: string;
       switch (this.rarity) {
         case 1:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/1.png';
+          url = `${ICONS_URL}/1.png`;
           break;
         case 2:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/2.png';
+          url = `${ICONS_URL}/2.png`;
           break;
         case 3:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/3.png';
+          url = `${ICONS_URL}/3.png`;
           break;
         case 4:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/4.png';
+          url = `${ICONS_URL}/4.png`;
           break;
         default:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/1.png';
+          url = `${ICONS_URL}/1.png`;
       }
 
       return url
@@ -35,19 +36,19 @@ export default {
       let url: string;
       switch(this.type) {
         case 1:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/1_type.png';
+          url = `${ICONS_URL}/1_type.png`;
           break;
         case 2:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/2_type.png';
+          url = `${ICONS_URL}/2_type.png`;
           break;
         case 3:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/3_type.png';
+          url = `${ICONS_URL}/3_type.png`;
           break;
         case 5:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/5_type.png';
+          url = `${ICONS_URL}/5_type.png`;
           break;
         default:
-          url = 'https://chupa.miriondb.com/static/imgs/icon_overlays/5_type.png';
+          url = `${ICONS_URL}/5_type.png`;
       }
 
       return url;

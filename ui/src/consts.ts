@@ -11,3 +11,5 @@ export const IDOL_NAMES = [
     'Frederica', 'Shiki', 'Kotori', 'Misaki'];
 
 export const API_URL = (import.meta.env.PROD) ? "/api" : "http://127.0.0.1:5500/api"
+export const IMAGE_URL = "https://theater.miriondb.com";
+export const ICONS_URL = "/icon-overlays";
