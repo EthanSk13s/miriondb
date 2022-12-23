@@ -191,12 +191,12 @@ EFFECTS = {
     6: "of converting {evaluation} into Perfect",
     7: "of increasing the {evaluation} score by {value[0]} and the combo bonus by {value[1]}%",
     8: "of increasing {evaluation} score by {value[0]}% and recovering {value[1]} life with every {evaluation2}",
-    9: "of boosting combo bonus by {value[0]}% while also restoring {value[1]} life for every {evaluation2}",
+    9: "of boosting combo bonus by {value[0]}% while also restoring {value[1]} life for every Perfect",
     10: "of consuming {value[1]} lives, and increasing {evaluation} score by {value[0]}%",
     11: "of consuming {value[1]} lives, and increasing combo bonus by {value[0]}%",
     12: "of boosting score and combo bonuses by {value[0]}%",
     17: "that your {evaluation} score will increase by {value[0]}. When there are two or more Score Up cards in the unit, the score of {evaluation2} is increased to {value[1]}, and when there are one or more cards that are Fusion Combo, {evaluation3} is set to Perfect",
-    18: "that the combo bonus will increase by {value[0]}% for 5 seconds. When there are two or more Combo Bonus cards in the unit, the skill activation rate will increase by {value[1]}%, and when there are one or more cards that are Fusion Score, {evaluation3} is set to Perfect"
+    18: "that the combo bonus will increase by {value[0]}% for 5 seconds. When there are two or more Combo Bonus cards in the unit, the skill activation rate will increase by {value[1]}%, and when there are one or more cards that are Fusion Score, Great/Good is set to Perfect"
 }
 
 
