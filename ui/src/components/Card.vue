@@ -37,7 +37,7 @@ export default {
 
                         this.setData(this.$data.card);
                     } else {
-                        this.$router.push({'name': 'NotFound'})
+                        this.$router.push({ 'name': 'NotFound' })
                     }
                 })
         },
@@ -179,7 +179,7 @@ export default {
                         </RouterLink>
                     </div>
                 </div>
-                <img class="h-auto w-fit md:h-auto md:w-96" :src="card.getCardImageUrl(isAwaken)" alt="" />
+                <img class="h-auto w-fit md:h-auto md:w-96" v-lazy="{ src: card.getCardImageUrl(isAwaken) }" alt="" />
             </div>
             <div class="m-1 flex flex-1 flex-col gap-2">
                 <div class="flex flex-row">
@@ -224,13 +224,13 @@ export default {
                     </div>
                     <div class="mx-2 flex flex-row flex-wrap gap-3">
                         <img v-for="url in card.getCostumesUrl()" class="h-auto w-1/4 rounded md:h-auto md:w-24"
-                            :src="url" alt="" />
+                            alt="" v-lazy="{ src: url }"/>
                     </div>
                 </div>
             </div>
         </div>
-        <div v-if="(card.rarity == 4)">
-            <img class="w-screen h-auto" :src="card.getBgImageUrl(isAwaken)!" alt="" />
+        <div v-if="(card.rarity == 4 && !([5, 7, 10, 13, 16].indexOf(card.exType, 0) >= 0))">
+            <img class="w-screen h-auto" v-lazy="{ src: card.getBgImageUrl(isAwaken)! }" alt="" />
         </div>
     </main>
 </template>
