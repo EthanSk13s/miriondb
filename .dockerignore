@@ -1,5 +1,10 @@
+.vscode
+
 # python stuff
 __pycache__/
 
 # Assets
 theater/cache/**/*.png
+
+# Frontend stuff
+node_modules

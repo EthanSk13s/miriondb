@@ -9,6 +9,17 @@ COPY theater/src/ /build/src
 
 RUN cargo build --release
 
+FROM node:16 as build-frontend
+
+WORKDIR /frontend
+
+COPY ui/ ./ui/
+
+WORKDIR /frontend/ui/
+
+RUN npm install
+RUN npm run build
+
 FROM python:3.8
 
 WORKDIR /app
@@ -25,6 +36,8 @@ RUN mkdir theater
 COPY theater/cache/ /app/theater/cache
 COPY --from=asset-server /build/target/release/theater /app/theater/theater
 COPY --from=asset-server /build/Rocket.toml theater/Rocket.toml
+
+COPY --from=build-frontend /frontend/mirion /app/mirion
 
 COPY start.sh ./
 RUN chmod +x start.sh
