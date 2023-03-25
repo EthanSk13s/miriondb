@@ -1,6 +1,10 @@
 import json
 import os
 
+from typing import List
+
+from sqlalchemy.orm import Mapped
+
 from mirion.database import db
 from mirion.utils import enums
 
@@ -179,13 +183,13 @@ class Card(db.Model):
     ex_type = db.Column(db.Integer, index=True)
     release = db.Column(db.DateTime(timezone=True), index=True, default=None)
     event_id = db.Column(db.Integer, db.ForeignKey(Event.id), index=True, default=None)
-    event: Event = db.relationship('Event', foreign_keys='Card.event_id', lazy='joined')
+    event: Mapped["Event"] = db.relationship('Event', foreign_keys='Card.event_id', lazy='joined')
 
     skill_id = db.Column(db.Integer, db.ForeignKey(Skill.id), default=None)
     center_skill_id = db.Column(db.Integer, db.ForeignKey(CenterSkill.id), default=None)
 
-    skill: Skill = db.relationship('Skill', foreign_keys='Card.skill_id', lazy='joined')
-    center_skill: CenterSkill = db.relationship('CenterSkill', foreign_keys='Card.center_skill_id', lazy='joined')
+    skill: Mapped["Skill"] = db.relationship('Skill', foreign_keys='Card.skill_id', lazy='joined')
+    center_skill: Mapped["CenterSkill"] = db.relationship('CenterSkill', foreign_keys='Card.center_skill_id', lazy='joined')
 
     vocal = db.Column(db.Integer)
     dance = db.Column(db.Integer)
@@ -209,7 +213,7 @@ class Card(db.Model):
     dance_rank_bonus = db.Column(db.Integer)
     visual_rank_bonus = db.Column(db.Integer)
 
-    costumes: Costume = db.relationship('Costume', foreign_keys='Card.resc_id', lazy='joined')
+    costumes: Mapped[List["Costume"]] = db.relationship('Costume', foreign_keys='Card.resc_id', lazy='joined')
 
     @property
     def icon(self):

@@ -26,7 +26,6 @@ impl Default for Costumes {
 }
 
 #[database("theater")]
-#[derive(Clone)]
 pub struct DbConn(postgres::Client);
 
 impl DbConn {
