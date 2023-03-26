@@ -62,7 +62,7 @@ def latest():
 def history(page):
     dates: Pagination = Card.query.with_entities(Card.release).\
         order_by(Card.release.desc()).group_by(Card.release).\
-        paginate(int(page), 10, False)
+        paginate(page=int(page), per_page=10, error_out=False)
 
     # In docker, without making a copy of the dates list,
     # and specifying the release column
