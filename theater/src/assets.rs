@@ -165,21 +165,34 @@ impl ImageServer {
         // Anything below 129 bytes is considered "invalid" so we redownload the image
         if size <= 129 {
             let url: Vec<&str> = name.split(&['\\', '/'][..]).collect();
-            let mut base = "";
-            let mut image= ""; 
+            let mut base = String::new();
+            let mut image= String::new(); 
     
             for string in url {
                 if string == "cache" {
                     continue;
                 }
                 match string {
-                    "card" => base = "card/",
-                    "card_bg" => base = "card_bg/",
-                    "costumes" => base = "costume_icon_ll/",
-                    "icons" => base = "icons/",
+                    "card" => base = "card/".to_string(),
+                    "card_bg" => base = "card_bg/".to_string(),
+                    "costumes" => base = "costume_icon_ll/".to_string(),
+                    "icons" => base = "icon_l/".to_string(),
                     "DO_NOT_DELETE_TO_KEEP_DIR" => continue,
-                    &_ => image = string
+                    &_ => image = string.to_string()
                 }
+            }
+
+            if base == "card" {
+                image = match image.strip_suffix(".png") {
+                    Some(valid) => {
+                        valid.to_owned()
+                    }
+                    None => {
+                        image
+                    },
+                };
+            
+                image.insert_str(image.len(), "_a.png");
             }
 
             let img_url = format!("https://storage.matsurihi.me/mltd/{}{}", base, image);
