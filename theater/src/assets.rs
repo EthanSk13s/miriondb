@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use hyper::header::CONTENT_TYPE;
 use rocket::{Orbit, Rocket, fairing::{Fairing, Kind, Info}, tokio::{self, fs, time::Duration, select}};
 use rocket::serde::{Deserialize, json};
 use rocket_sync_db_pools::{database, postgres};
@@ -76,7 +77,7 @@ pub struct ImageServer {
 }
 
 impl ImageServer {
-    async fn write_image(name: String, data: Vec<u8>) {    
+    async fn write_image(name: String, data: Vec<u8>) {
         fs::write(name, data).await
             .expect("Something went wrong with writing the file...");
     }
@@ -84,14 +85,23 @@ impl ImageServer {
     async fn write_assets(&self, url: &str, path: String) {
         if Path::new(&format!("cache/{}", path)).exists() == false {
             let image = self.client.get(url).send().await;
+
             match image {
                 Ok(data) => {
-                    match data.bytes().await {
-                        Ok(bytes) => {
-                            let fp = format!("cache/{}", path); 
-                            Self::write_image(fp, bytes.to_vec()).await 
-                        },
-                        Err(_) => {}
+                    match data.headers().get(CONTENT_TYPE) {
+                        Some(header) => {
+                            if header.to_str().unwrap() == "image/png" {
+                                match data.bytes().await {
+                                    Ok(bytes) => {
+                                        let fp = format!("cache/{}", path); 
+
+                                        Self::write_image(fp, bytes.to_vec()).await 
+                                    },
+                                    Err(_) => {}
+                                }
+                            }
+                        }
+                        None => {}
                     }
                 },
                 Err(_) => {}
@@ -152,8 +162,8 @@ impl ImageServer {
     async fn check_image_health(&self, file: fs::File, name: String) {
         let size = file.metadata().await.unwrap().len();
 
-        // Anything below 127 bytes is considered "invalid" so we redownload the image
-        if size <= 127 {
+        // Anything below 129 bytes is considered "invalid" so we redownload the image
+        if size <= 129 {
             let url: Vec<&str> = name.split(&['\\', '/'][..]).collect();
             let mut base = "";
             let mut image= ""; 
