@@ -182,7 +182,7 @@ impl ImageServer {
                 }
             }
 
-            if base == "card" {
+            if base == "card/" {
                 image = match image.strip_suffix(".png") {
                     Some(valid) => {
                         valid.to_owned()
