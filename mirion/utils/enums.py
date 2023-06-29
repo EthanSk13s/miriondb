@@ -143,7 +143,9 @@ ATTRIBUTES = {
 
 CENTER_SKILL_STRING = "{0} idols' {1} value is increased by {2}%"
 CENTER_BOOST_STRING = "When 3 idol types are present, {1} value is increased by {2}% and skill activation is boosted by {0}% "
-SONG_STRING = "If playing an {0} song, an additional {1}% is added."
+SONG_STRING = "If playing an {0} song,"
+CENTER_SWING_STRING = "{0} idols' skill activation is boosted by {1}%."
+CENTER_IDOL_BOOST_STRING = "an additional {0}% is added."
 
 SKILL_TYPES = {
     1: "Score Up",

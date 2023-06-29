@@ -1,6 +1,6 @@
 import jinja2
 
-from flask import Blueprint, jsonify, render_template, request, redirect, abort
+from flask import Blueprint, jsonify, request, abort
 from mirion.models import Card
 from mirion.utils import enums
 
@@ -49,7 +49,7 @@ def handle_query():
             pass
 
     if release is not None:
-        allowed_types = [0, 1, 2, 3, 4, 6, 8, 9, 11, 12, 14]
+        allowed_types = [0, 1, 2, 3, 4, 6, 8, 9, 11, 12, 14, 19]
         i = int(release) - 1
         filters = [Card.idol_id == idol_id]
 
