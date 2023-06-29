@@ -99,8 +99,15 @@ class CenterSkill(db.Model):
         if self.song_type is not None:
             attr_2 = enums.TYPES.get(self.song_type)
             value_2 = self.value_2
-            second_cond = enums.SONG_STRING.format(attr_2, value_2)
-            return f"{first_cond}. {second_cond}"
+            second_cond = enums.SONG_STRING.format(attr_2)
+
+            if (self.id % 1000) >= 420 and (self.id % 1000) < 500:
+                third_cond = enums.CENTER_SWING_STRING.format(idol_type.capitalize(),
+                                                        value_2)
+                return f"{first_cond}. {second_cond} {third_cond}"
+            else:
+                third_cond = enums.CENTER_IDOL_BOOST_STRING.format(value_2)
+                return f"{first_cond}. {second_cond} {third_cond}"
         else:
             return first_cond
 
