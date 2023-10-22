@@ -1,4 +1,4 @@
-from flask_sqlalchemy import Pagination
+from flask_sqlalchemy import pagination
 import sqlalchemy
 
 from flask import Blueprint, jsonify
@@ -60,7 +60,7 @@ def latest():
 
 @main_page.route("/history/<page>")
 def history(page):
-    dates: Pagination = Card.query.with_entities(Card.release).\
+    dates: pagination.Pagination = Card.query.with_entities(Card.release).\
         order_by(Card.release.desc()).group_by(Card.release).\
         paginate(page=int(page), per_page=10, error_out=False)
 
