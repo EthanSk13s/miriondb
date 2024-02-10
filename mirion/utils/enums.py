@@ -146,6 +146,7 @@ CENTER_BOOST_STRING = "When 3 idol types are present, {1} value is increased by 
 SONG_STRING = "If playing an {0} song,"
 CENTER_SWING_STRING = "{0} idols' skill activation is boosted by {1}%."
 CENTER_IDOL_BOOST_STRING = "an additional {0}% is added."
+CENTER_AFFECTION_BOOST = "After clearing a live, Affinity gained is increased by {0}%."
 
 SKILL_TYPES = {
     1: "Score Up",

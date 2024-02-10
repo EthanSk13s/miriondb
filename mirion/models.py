@@ -90,6 +90,8 @@ class CenterSkill(db.Model):
             first_cond = enums.CENTER_SKILL_STRING.format(idol_type.capitalize(),
                                                           attribute,
                                                           value)
+        elif self.id >= 20000:
+            first_cond = enums.CENTER_AFFECTION_BOOST.format(value)
         else:
             value_2 = self.value_2
             first_cond = enums.CENTER_BOOST_STRING.format(value_2,
