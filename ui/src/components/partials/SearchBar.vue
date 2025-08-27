@@ -43,7 +43,7 @@ export default {
 
             items.forEach((item) => {
                 item.addEventListener('click', () => {
-                    searchBar.value = item.getElementsByTagName('input')[0].value;
+                    searchBar.value = item.getElementsByTagName('input')[0]!.value;
                     this.$emit('searchInput', searchBar.value);
 
                     this.searchString = '';
