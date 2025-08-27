@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 import ItemContainer from '@/components/partials/ItemContainer.vue';
 import DigitTextInput from '@/components/partials/DigitTextInput.vue';
 
-import { Card } from '@/models';
+import { Card, CardStatType } from '@/models';
 import { API_URL } from '@/consts';
 
 export default {
@@ -96,9 +96,9 @@ export default {
             let level = this.currentLevel;
             let rank = this.currentRank;
 
-            let newVocal = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "vocal");
-            let newDance = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "dance");
-            let newVisual = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, "visual");
+            let newVocal = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, CardStatType.VOCAL);
+            let newDance = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, CardStatType.DANCE);
+            let newVisual = this.card.calcStatAtX(this.isAwaken, level, this.maxLevel, CardStatType.VISUAL);
 
             this.currentVocal = newVocal! + this.calcRankBonus(rank, this.card.stats?.vocalRankBonus!);
             this.currentDance = newDance! + this.calcRankBonus(rank, this.card.stats?.danceRankBonus!);

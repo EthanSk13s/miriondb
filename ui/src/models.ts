@@ -50,6 +50,12 @@ export class CardEvent {
     }
 }
 
+export enum CardStatType {
+    VOCAL,
+    DANCE,
+    VISUAL
+}
+
 class CardStats {
     readonly life: number;
     readonly vocal: number;
@@ -89,32 +95,36 @@ class CardStats {
         this.visualRankBonus = statsObj.visualRankBonus;
     }
 
-    calcStatAtX(isAwaken: boolean, level: number, maxLevel: number, stat: "vocal" | "dance" | "visual") {
+    calcStatAtX(isAwaken: boolean, level: number, maxLevel: number, stat: CardStatType) {
         let result: number;
-        if (!isAwaken) {
-            switch (stat) {
-                case "vocal":
-                    result = this.interpolate(level, 1, maxLevel, this.vocal, this.maxVocal);
-                    break;
-                case "dance":
-                    result = this.interpolate(level, 1, maxLevel, this.dance, this.maxDance);
-                    break;
-                case "visual":
-                    result = this.interpolate(level, 1, maxLevel, this.visual, this.maxVisual);
-                    break;
-            }
-        } else {
-            switch (stat) {
-                case "vocal":
-                    result = this.interpolate(level, 1, maxLevel, this.awakeVocal, this.maxAwakeVocal);
-                    break;
-                case "dance":
-                    result = this.interpolate(level, 1, maxLevel, this.awakeDance, this.maxAwakeDance);
-                    break;
-                case "visual":
-                    result = this.interpolate(level, 1, maxLevel, this.awakeVisual, this.maxAwakeVisual);
-                    break;
-            }
+        let vocal: number = this.vocal;
+        let dance: number = this.dance;
+        let visual: number = this.visual;
+
+        let maxVocal: number = this.maxVocal;
+        let maxDance: number = this.maxDance;
+        let maxVisual: number = this.maxVisual;
+
+        if (isAwaken) {
+            vocal = this.awakeVocal;
+            dance = this.awakeDance;
+            visual = this.awakeVisual;
+
+            maxVocal = this.maxAwakeVocal;
+            maxDance = this.maxAwakeDance;
+            maxVisual = this.maxAwakeVisual;
+        }
+
+        switch (stat) {
+            case CardStatType.VOCAL:
+                result = this.interpolate(level, 1, maxLevel, vocal, maxVocal);
+                break;
+            case CardStatType.DANCE:
+                result = this.interpolate(level, 1, maxLevel, dance, maxDance);
+                break;
+            case CardStatType.VISUAL:
+                result = this.interpolate(level, 1, maxLevel, visual, maxVisual);
+                break;
         }
 
         return result;
@@ -224,7 +234,7 @@ export class Card extends MiniCard {
         }
     }
 
-    calcStatAtX(isAwaken: boolean, level: number, maxLevel: number, stat: "vocal" | "dance" | "visual") {
+    calcStatAtX(isAwaken: boolean, level: number, maxLevel: number, stat: CardStatType) {
         return this.stats!.calcStatAtX(isAwaken, level, maxLevel, stat);
     }
 }
