@@ -9,7 +9,7 @@ COPY theater/src/ /build/src
 
 RUN cargo build --release
 
-FROM node:16 as build-frontend
+FROM node:22.18 as build-frontend
 
 WORKDIR /frontend
 
