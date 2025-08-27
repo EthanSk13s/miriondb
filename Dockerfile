@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM rust:1.68 as asset-server
+FROM rust:1.89 as asset-server
 
 WORKDIR /build
 
