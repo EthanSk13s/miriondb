@@ -105,7 +105,10 @@ onMounted(() => {
     </div>
     <ItemContainer :label="refEventString" color="sky" :bold="true" :is-text-white="true">
       <CardIcon v-for="card in refEventCards" :name="card.name" :rarity="card.rarity" :type="card.idolType"
-        :url="card.getIconUrl()" :id="card.id" />
+        :url="card.getIconUrl()" :id="card.id" v-if="refEventCards.length != 0"/>
+      <div v-if="refEventCards.length == 0">
+        <p>This event has no cards.</p>
+      </div>
     </ItemContainer>
     <ItemContainer label="Recent Additions" color="gray" :bold="true" :is-text-white="true">
       <CardIcon v-for="card in refRecentCards" :name="card.name" :rarity="card.rarity" :type="card.idolType"
