@@ -72,7 +72,7 @@ def latest():
     for date in sorted_additions:
         prev_list.append([card.mini_serialize for card in date])
 
-    payload['previousAdditions'] = temp_list
+    payload['previousAdditions'] = prev_list
 
     return jsonify({'data': payload})
 
