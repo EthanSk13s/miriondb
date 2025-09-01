@@ -125,24 +125,31 @@ impl ImageServer {
             let card_file = format!("{}_0", x.resc_id);
             let awake_card = format!("{}_1", x.resc_id);
 
-            let urls = vec![
-                format!("{}/card/{}_a.png", base, card_file),
+            let mut urls = vec![
                 format!("{}/card/{}_a.png", base, awake_card),
-                format!("{}/icon_l/{}.png", base, card_file),
                 format!("{}/icon_l/{}.png", base, awake_card)
             ];
 
-            let paths = vec![
-                format!("card/{}.png", card_file),
+            let mut paths = vec![
                 format!("card/{}.png", awake_card),
-                format!("icons/{}.png", card_file),
                 format!("icons/{}.png", awake_card)
             ];
+
+            // Catch all check for cards that have base images.
+            // Which is 98% of cards, except for some.
+            // Mainly collab, or extra cards.
+            if x.ex_type != 17 {
+                urls.push(format!("{}/icon_l/{}.png", base, card_file));
+                urls.push(format!("{}/card/{}_a.png", base, card_file));
+
+                paths.push(format!("card/{}.png", card_file));
+                paths.push(format!("icons/{}.png", card_file));
+            }
 
             self.batch_write(urls, paths).await;
 
             // Download SSR backgrounds... also ignore SSR anniv. cards
-            let anniv_types = vec![5, 7, 10, 13];
+            let anniv_types = vec![5, 7, 10, 13, 16, 19, 21, 22];
             if x.rarity == 4 && anniv_types.iter().any(|&ex| ex == x.ex_type) == false {
                 let bg_url = format!("{}/card_bg/{}.png", base, card_file);
                 self.write_assets(&bg_url, format!("card_bg/{}.png", card_file)).await;
