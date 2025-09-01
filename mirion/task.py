@@ -22,8 +22,8 @@ scheduler = APScheduler(scheduler=BackgroundScheduler(
     {'apscheduler.timezone': 'Asia/Tokyo'}))
 
 def add_changes_cards(changes: list[PryncessCard]):
-    card_rows: list[Card] = Card.query.all()
-    cards_in_db: list[int] = [card.id for card in card_rows]
+    card_rows: list[tuple[int]] = Card.query.with_entities(Card.id).all()
+    cards_in_db: list[int] = [id for id, in card_rows]
     changes_ids: list[tuple[int, int]] = [(i, card.id) for i, card in enumerate(changes)]
 
     # Simple list comprehension to check if we have any changes. If not in db, then it's new.
