@@ -137,7 +137,7 @@ export default {
             cardImage.src = this.card.getCardImageUrl(this.isAwaken);
         }
     },
-    mounted() {
+    beforeMount() {
         if (this.cardId) {
             this.fetchCard(String(this.cardId))
         }
@@ -147,7 +147,8 @@ export default {
 
             this.setData(this.$data.card);
         }
-
+    },
+    mounted() {
         let awakenButton = this.$refs.awakenButton as HTMLElement;
         awakenButton.addEventListener('click', () => {
             if (this.isAwaken) {
