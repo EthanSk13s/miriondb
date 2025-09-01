@@ -22,27 +22,17 @@ scheduler = APScheduler(scheduler=BackgroundScheduler(
     {'apscheduler.timezone': 'Asia/Tokyo'}))
 
 def add_changes_cards(changes: list[PryncessCard]):
-    changes.reverse()
-    num_of_changes = 0
-    for item in changes:
-        add_date = None
-        if item.add_date is not None:
-            add_date = datetime.datetime.fromtimestamp(dateutil.parser.isoparse(item.add_date).timestamp(), tz=timezone.utc)         
-        card_rows = Card.query.filter(Card.release == add_date).all()
+    card_rows: list[Card] = Card.query.all()
+    cards_in_db: list[int] = [card.id for card in card_rows]
+    changes_ids: list[tuple[int, int]] = [(i, card.id) for i, card in enumerate(changes)]
 
-        exists = [card.resc_id for card in card_rows]
+    # Simple list comprehension to check if we have any changes. If not in db, then it's new.
+    differences: list[int] = [i for i, id in changes_ids if id not in cards_in_db]
 
-        if item.resc_id not in exists:
-            fetch.get_card(item, db)
-            num_of_changes += 1
-        else:
-            if card_rows[0].release is not None:
-                if card_rows[0].release <= add_date and item.type != 5:
-                    break
-                
-
-    if num_of_changes > 0:
-        logging.info(f"{num_of_changes} cards have been added")
+    if len(differences) > 0:
+        for diff in differences:
+            fetch.get_card(changes[diff], db)
+        logging.info(f"{len(differences)} cards have been added.")
     else:
         logging.info("No Changes found")
 
