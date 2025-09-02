@@ -127,23 +127,22 @@ impl ImageServer {
 
             let mut urls = vec![
                 format!("{}/card/{}_a.png", base, awake_card),
-                format!("{}/icon_l/{}.png", base, awake_card)
+                format!("{}/icon_l/{}.png", base, awake_card),
+                format!("{}/icon_l/{}.png", base, card_file)
             ];
 
             let mut paths = vec![
                 format!("card/{}.png", awake_card),
-                format!("icons/{}.png", awake_card)
+                format!("icons/{}.png", awake_card),
+                format!("icons/{}.png", card_file)
             ];
 
             // Catch all check for cards that have base images.
             // Which is 98% of cards, except for some.
             // Mainly collab, or extra cards.
             if x.ex_type != 17 {
-                urls.push(format!("{}/icon_l/{}.png", base, card_file));
                 urls.push(format!("{}/card/{}_a.png", base, card_file));
-
                 paths.push(format!("card/{}.png", card_file));
-                paths.push(format!("icons/{}.png", card_file));
             }
 
             self.batch_write(urls, paths).await;
