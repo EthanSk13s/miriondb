@@ -129,12 +129,12 @@ export default {
             this.currentDance = card.stats?.dance!;
             this.currentVisual = card.stats?.visual!;
         },
-        onBaseCardFail() {
-            this.isAwaken = true;
-            this.hasNoBaseImg = true;
-
-            let cardImage = this.$refs.cardImage as HTMLImageElement;
-            cardImage.src = this.card.getCardImageUrl(this.isAwaken);
+        determineImage() {
+            if (this.card.exType == 17) {
+                return true;
+            } else {
+                return this.isAwaken;
+            }
         }
     },
     beforeMount() {
@@ -161,11 +161,6 @@ export default {
 
             this.changeStats();
         });
-    },
-    computed: {
-        isDisabled() {
-            return this.hasNoBaseImg;
-        }
     }
 }
 </script>
@@ -178,7 +173,7 @@ export default {
         <div class="flex flex-row flex-wrap justify-center gap-1 align-middle">
             <div>
                 <div class="flex flex-row absolute">
-                    <div v-if="!isDisabled">
+                    <div>
                         <button ref="awakenButton"
                             class="m-1 rounded bg-stone-900 p-1 text-sm text-white hover:bg-stone-800 transition-colors duration-200">
                             Awaken
@@ -193,7 +188,7 @@ export default {
                         </RouterLink>
                     </div>
                 </div>
-                <img ref="cardImage" class="h-auto w-fit md:h-auto md:w-96" @error="onBaseCardFail" v-lazy="{ src: card.getCardImageUrl(isAwaken) }" alt="" />
+                <img ref="cardImage" class="h-auto w-fit md:h-auto md:w-96" v-lazy="{ src: card.getCardImageUrl(determineImage()) }" alt="" />
             </div>
             <div class="m-1 flex flex-1 flex-col gap-2">
                 <div class="flex flex-row">
