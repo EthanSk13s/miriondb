@@ -20,7 +20,7 @@ WORKDIR /frontend/ui/
 RUN npm install
 RUN npm run build
 
-FROM python:3.8
+FROM python:3.12
 
 WORKDIR /app
 
