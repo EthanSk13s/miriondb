@@ -18,8 +18,9 @@ def latest():
     recent_datetime =  (
         Card.query.filter(Card.ex_type != 13,
                           Card.event_id == None,
+                          Card.release != None,
                           Card.idol_type != 5)
-            .order_by(Card.db_id.desc())
+            .order_by(Card.release.desc())
             .first().release
     )
     recent_additions = (
