@@ -46,14 +46,13 @@ def handle_query():
                 got_rarity = 1
 
     if release is not None:
-        allowed_types = [0, 1, 2, 3, 4, 6, 8, 9, 11, 12, 14, 19]
         i = int(release) - 1
         filters = [Card.idol_id == idol_id]
 
         if rarity is not None:
             filters.append(Card.rarity == rarity)
 
-        filters.append(Card.ex_type.in_(allowed_types))
+        filters.append(Card.ex_type.notin_(enums.ANNIV_TYPES))
 
         try:
             card = Card.query.filter(*filters).order_by(Card.id.asc()).all()[i]

@@ -1,6 +1,6 @@
 import re
 
-from enum import Enum
+from enum import Enum, IntEnum
 from dataclasses import dataclass
 from typing import List
 
@@ -61,6 +61,42 @@ class RarityType(Enum):
     SR = 3,
     SSR = 4
 
+
+class CardExtraType(IntEnum):
+    NONE = 0,
+    RANKING = 2,
+    POINTS = 3,
+    FES = 4,
+    FIRST_ANNIV = 5,
+    EXTRA = 6,
+    SECOND_ANNIV = 7,
+    COLLAB_LEON = 8,
+    COLLAB_SHIKA = 9,
+    THIRD_ANNIV = 10,
+    COLLAB_SHIKI = 11,
+    COLLAB_FRED = 12,
+    FOURTH_ANNIV = 13,
+    SHS = 14,
+    COLLAB_SHOP = 15,
+    FIFTH_ANNIV = 16,
+    PR = 17,
+    ML_TENTH_ANNIV = 18,
+    SIXTH_ANNIV = 19,
+    LINKAGE = 20,
+    SEVENTH_ANNIV = 21,
+    EIGTH_ANNIV = 22
+
+
+ANNIV_TYPES = [
+    CardExtraType.FIRST_ANNIV,
+    CardExtraType.SECOND_ANNIV,
+    CardExtraType.THIRD_ANNIV,
+    CardExtraType.FOURTH_ANNIV,
+    CardExtraType.FIFTH_ANNIV,
+    CardExtraType.SIXTH_ANNIV,
+    CardExtraType.SEVENTH_ANNIV,
+    CardExtraType.EIGTH_ANNIV,
+]
 
 tl_names = [
     NameTl('天海春香', 'Amami Haruka', 1),

@@ -16,8 +16,7 @@ def resource_not_found(e):
 @main_page.route("/latest")
 def latest():
     recent_datetime =  (
-        Card.query.filter(Card.ex_type != 13,
-                          Card.event_id == None,
+        Card.query.filter(Card.event_id == None,
                           Card.release != None,
                           Card.idol_type != 5)
             .order_by(Card.release.desc())
@@ -25,8 +24,7 @@ def latest():
     )
     recent_additions = (
         Card.query.filter(recent_datetime == Card.release,
-                          Card.event_id == None,
-                          Card.ex_type != 13)
+                          Card.event_id == None)
             .order_by(Card.id.asc()).all()
     )
 
@@ -40,7 +38,6 @@ def latest():
     previous_dates = (
         Card.query.with_entities(Card.release)
             .filter(recent_datetime != Card.release,
-                    Card.ex_type != 13,
                     Card.event_id == None)
             .order_by(Card.release.desc())
             .group_by(Card.release)[0:2]
