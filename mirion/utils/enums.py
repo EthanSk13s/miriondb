@@ -1,5 +1,6 @@
 import re
 
+from enum import Enum
 from dataclasses import dataclass
 from typing import List
 
@@ -52,6 +53,13 @@ class NameList:
                     found = True
 
         return id
+
+
+class RarityType(Enum):
+    N = 1,
+    R = 2,
+    SR = 3,
+    SSR = 4
 
 
 tl_names = [
@@ -117,12 +125,6 @@ tl_names = [
 
 NAMES = NameList(tl_names)
 
-RARITIES = {
-    1: 'N',
-    2: 'R',
-    3: 'SR',
-    4: 'SSR'
-}
 
 TYPES = {
     1: 'princess',
@@ -206,7 +208,11 @@ EFFECTS = {
 def set_enums(card):
     # card.idol_type = TYPES.get(card.idol_type)
     card.level_max = LEVEL_LIMITS.get(card.rarity)
-    card.text_rarity = RARITIES.get(card.rarity)
+    try:
+        card.text_rarity = RarityType(card.rarity).name
+    except ValueError:
+        card.text_rarity = "??"
+
     # Modify skill_id, because adding attributes only applies to last index
     if card.skill is not None:
         card.skill_id = SKILL_TYPES.get(card.skill.effect_id)
@@ -214,13 +220,12 @@ def set_enums(card):
         card.skill_id = None
 
 
-def get_rarity(query: str):
-    for i in RARITIES.keys():
-        rarity = RARITIES[i].lower()
-        if rarity == query:
-            value = i
+def get_rarity(query: str) -> int | None:
+    value = None
+    for rarity in RarityType:
+        name = rarity.name.lower()
+        if name == query:
+            value = int(rarity.value)
             break
-        else:
-            value = False
 
     return value
