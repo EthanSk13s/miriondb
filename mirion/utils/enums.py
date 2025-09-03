@@ -2,8 +2,8 @@ import re
 
 from enum import Enum, IntEnum
 from dataclasses import dataclass
-from typing import List
 
+from mirion.models import Card
 
 @dataclass
 class NameTl:
@@ -25,17 +25,17 @@ class NameTl:
 
 @dataclass
 class NameList:
-    names: List[NameTl]
+    names: list[NameTl]
 
     def find_tl_name(self, query: str) -> str:
         found = False
-        name = ""
-        for name in self.names:
+        name: str = ""
+        for jp_name in self.names:
             if found:
                 break
             else:
-                if name.match_name(query) is True:
-                    name = name.tl_name
+                if jp_name.match_name(query) is True:
+                    name = jp_name.tl_name
                     found = True
 
         return name
@@ -47,10 +47,10 @@ class NameList:
         for name in self.names:
             if found:
                 break
-            else:
-                if name.match_name(query) is True:
-                    id = name.id
-                    found = True
+
+            if name.match_name(query) is True:
+                id = name.id
+                found = True
 
         return id
 
@@ -63,27 +63,27 @@ class RarityType(Enum):
 
 
 class CardExtraType(IntEnum):
-    NONE = 0,
-    RANKING = 2,
-    POINTS = 3,
-    FES = 4,
-    FIRST_ANNIV = 5,
-    EXTRA = 6,
-    SECOND_ANNIV = 7,
-    COLLAB_LEON = 8,
-    COLLAB_SHIKA = 9,
-    THIRD_ANNIV = 10,
-    COLLAB_SHIKI = 11,
-    COLLAB_FRED = 12,
-    FOURTH_ANNIV = 13,
-    SHS = 14,
-    COLLAB_SHOP = 15,
-    FIFTH_ANNIV = 16,
-    PR = 17,
-    ML_TENTH_ANNIV = 18,
-    SIXTH_ANNIV = 19,
-    LINKAGE = 20,
-    SEVENTH_ANNIV = 21,
+    NONE = 0
+    RANKING = 2
+    POINTS = 3
+    FES = 4
+    FIRST_ANNIV = 5
+    EXTRA = 6
+    SECOND_ANNIV = 7
+    COLLAB_LEON = 8
+    COLLAB_SHIKA = 9
+    THIRD_ANNIV = 10
+    COLLAB_SHIKI = 11
+    COLLAB_FRED = 12
+    FOURTH_ANNIV = 13
+    SHS = 14
+    COLLAB_SHOP = 15
+    FIFTH_ANNIV = 16
+    PR = 17
+    ML_TENTH_ANNIV = 18
+    SIXTH_ANNIV = 19
+    LINKAGE = 20
+    SEVENTH_ANNIV = 21
     EIGTH_ANNIV = 22
 
 
@@ -241,7 +241,7 @@ EFFECTS = {
 }
 
 
-def set_enums(card):
+def set_enums(card: Card):
     # card.idol_type = TYPES.get(card.idol_type)
     card.level_max = LEVEL_LIMITS.get(card.rarity)
     try:
