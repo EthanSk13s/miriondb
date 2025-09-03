@@ -238,7 +238,7 @@ EFFECTS = {
     18: "that the combo bonus will increase by {value[0]}% for 5 seconds. When there are two or more Combo Bonus cards in the unit, the skill activation rate will increase by {value[1]}%, and when there are one or more cards that are Fusion Score, Great/Good is set to Perfect"
 }
 
-def set_enums():
+def set_enums(card):
     # card.idol_type = TYPES.get(card.idol_type)
     card.level_max = LEVEL_LIMITS.get(card.rarity)
     try:
