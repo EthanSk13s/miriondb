@@ -1,9 +1,11 @@
 import json
 import os
 
-from typing import List
+from datetime import datetime
+from typing import override
 
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import JSON, DateTime, ForeignKey
 
 from mirion.database import db
 from mirion.utils import enums
@@ -14,15 +16,15 @@ BASE_URL = os.environ.get("USE_ASSETS") if os.environ.get("USE_ASSETS") else "ht
 # Instead of relying on pryncess's TLs
 # let's manually TL skills to save space on DB
 class Skill(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    effect_id = db.Column(db.Integer)
-    evaluation = db.Column(db.Integer)
-    evaluation2 = db.Column(db.Integer)
-    evaluation3 = db.Column(db.Integer)
-    duration = db.Column(db.Integer)
-    interval = db.Column(db.Integer)
-    probability = db.Column(db.Integer)
-    value = db.Column(db.JSON)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    effect_id: Mapped[int]
+    evaluation: Mapped[int]
+    evaluation2: Mapped[int]
+    evaluation3: Mapped[int]
+    duration: Mapped[int]
+    interval: Mapped[int]
+    probability: Mapped[int]
+    value: Mapped[JSON] = mapped_column(type_=JSON, nullable=True)
 
     @property
     def tl_desc(self):
@@ -31,7 +33,7 @@ class Skill(db.Model):
         duration = self.duration
 
         interval_str = enums.INTERVAL_STRING.format(interval=interval,
-                                                    probability=probability)
+                                                         probability=probability)
         duration_str = enums.DURATION_STRING.format(duration=duration)
 
         eff_id = self.effect_id
@@ -39,22 +41,28 @@ class Skill(db.Model):
         if eff_id == 4:
             return f"{interval_str} {enums.EFFECTS.get(eff_id)} {duration_str}"
 
-        eff_vals = {}
+        eff_vals= {}
         if self.evaluation != 0:
-            eff_vals['evaluation'] = enums.EVALUATIONS.get(self.evaluation)
+            tl = enums.EVALUATIONS.get(self.evaluation)
+            if tl:
+                eff_vals['evaluation'] = tl
 
-        if len(list(self.value)) != 0:
+        if self.value:
             eff_vals['value'] = self.value
 
         if self.evaluation2 != 0:
-            eff_vals['evaluation2'] = enums.EVALUATIONS.get(self.evaluation2)
+            tl = enums.EVALUATIONS.get(self.evaluation2)
+            if tl:
+                eff_vals['evaluation2'] = tl
         if self.evaluation3 != 0:
-            eff_vals['evaluation3'] = enums.EVALUATIONS.get(self.evaluation3)
-
-        try:
-            effect_str = enums.EFFECTS.get(eff_id).format(**eff_vals)
-        except AttributeError:
+            tl = enums.EVALUATIONS.get(self.evaluation3)
+            if tl:
+                eff_vals['evaluation3'] = tl
+        effect_str = enums.EFFECTS.get(eff_id)
+        if not effect_str:
             return "No TL available"
+        
+        effect_str = effect_str.format(**eff_vals)
 
         return f"{interval_str} {effect_str} {duration_str}"
 
@@ -65,25 +73,29 @@ class Skill(db.Model):
             'description': self.tl_desc
         }
 
+    @override
     def __repr__(self):
         return '<Skill {}>'.format(self.id)
 
 
 class CenterSkill(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    idol_type = db.Column(db.Integer)
-    attribute = db.Column(db.Integer)
-    value = db.Column(db.Integer)
-    song_type = db.Column(db.Integer, default=None)
-    value_2 = db.Column(db.Integer)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    idol_type: Mapped[int]
+    attribute: Mapped[int]
+    value: Mapped[int]
+    value_2: Mapped[int | None] = mapped_column(nullable=None)
+    song_type: Mapped[int | None] = mapped_column(default=None)
 
     @property
     def tl_desc(self):
         idol_type = enums.TYPES.get(self.idol_type)
+        if idol_type is None:
+            idol_type = "unknown"
+
         attribute = enums.ATTRIBUTES.get(self.attribute)
         value = self.value
 
-        if any([idol_type, attribute]) is None:
+        if not any([idol_type, attribute]):
             return "No TL available"
 
         if self.id <= 7000:
@@ -120,22 +132,23 @@ class CenterSkill(db.Model):
             'description': self.tl_desc
         }
 
+    @override
     def __repr__(self):
         return '<Center Skill {}>'.format(self.id)
 
 
 class Costume(db.Model):
-    resc_id = db.Column(db.Text, primary_key=True)
-    costume_resc_ids = db.Column(db.Text, default=None)
+    resc_id: Mapped[str] = mapped_column(primary_key=True)
+    costume_resc_ids: Mapped[str | None] = mapped_column(default=None)
 
     @property
     def url(self):
-        urls = []
+        urls: list[str] = []
 
-        try:
-            costumes = json.loads(self.costume_resc_ids.replace('\'', '"'))
-        except:
+        if self.costume_resc_ids is None:
             return None
+        costumes: list[str] = json.loads(self.costume_resc_ids.replace('\'', '"'))
+
         for resc_id in costumes:
             if BASE_URL == "https://storage.matsurihi.me/mltd":
                 urls.append(f"{BASE_URL}/costume_icon_ll/{resc_id}.png")
@@ -149,22 +162,24 @@ class Costume(db.Model):
 
     @property
     def serialize(self):
-        try:
-            costumes = json.loads(self.costume_resc_ids.replace('\'', '"'))
-        except:
-            costumes = None
+        if self.costume_resc_ids is None:
+            return None
+
+        costumes: list[str] = json.loads(self.costume_resc_ids.replace('\'', '"'))
+
         return costumes
 
+    @override
     def __repr__(self):
         return '<Costumes {}>'.format(self.resc_id)
 
 
 class Event(db.Model):
-    id = db.Column(db.Integer, index=True, primary_key=True)
-    event_type = db.Column(db.Integer, index=True)
-    name = db.Column(db.Text)
-    begin = db.Column(db.DateTime(timezone=True))
-    end = db.Column(db.DateTime(timezone=True))
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    event_type: Mapped[int] = mapped_column(index=True)
+    name: Mapped[str]
+    begin: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
     @property
     def serialize(self):
@@ -176,53 +191,66 @@ class Event(db.Model):
             'end': self.end
         }
 
+    @override
     def __repr__(self):
         return '<Event {}>'.format(self.name)
 
 
 class Card(db.Model):
-    db_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    id = db.Column(db.Integer)
-    resc_id = db.Column(db.Text, db.ForeignKey(Costume.resc_id))
-    idol_id = db.Column(db.Integer, index=True)
-    card_name = db.Column(db.Text, index=True)
-    rarity = db.Column(db.Integer, index=True)
+    db_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int]
+    resc_id: Mapped[str] = mapped_column(ForeignKey(Costume.resc_id))
+    idol_id: Mapped[int] = mapped_column(index=True)
+    card_name: Mapped[str]
+    rarity: Mapped[int] = mapped_column(index=True)
+    idol_type: Mapped[int] = mapped_column(index=True)
+    ex_type: Mapped[int] = mapped_column(index=True)
+    release: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),
+                                                     index=True,
+                                                     default=None)
+    event_id: Mapped[int | None] = mapped_column(ForeignKey(Event.id),
+                                                 index=True,
+                                                 default=None)
+    event: Mapped["Event | None"] = relationship('Event',
+                                          foreign_keys='Card.event_id',
+                                          lazy='joined')
+    skill_id: Mapped[str | None] = mapped_column(ForeignKey(Skill.id),
+                                                 default=None)
+    center_skill_id: Mapped[int | None] = mapped_column(ForeignKey(CenterSkill.id),
+                                                        default=None)
 
-    idol_type = db.Column(db.Integer, index=True)
-    ex_type = db.Column(db.Integer, index=True)
-    release = db.Column(db.DateTime(timezone=True), index=True, default=None)
-    event_id = db.Column(db.Integer, db.ForeignKey(Event.id), index=True, default=None)
-    event: Mapped["Event"] = db.relationship('Event', foreign_keys='Card.event_id', lazy='joined')
+    skill: Mapped["Skill | None"] = relationship('Skill',
+                                          foreign_keys='Card.skill_id',
+                                          lazy='joined')
+    center_skill: Mapped["CenterSkill | None"] = relationship('CenterSkill',
+                                                       foreign_keys='Card.center_skill_id',
+                                                       lazy='joined')
 
-    skill_id = db.Column(db.Integer, db.ForeignKey(Skill.id), default=None)
-    center_skill_id = db.Column(db.Integer, db.ForeignKey(CenterSkill.id), default=None)
+    vocal: Mapped[int]
+    dance: Mapped[int]
+    visual: Mapped[int]
 
-    skill: Mapped["Skill"] = db.relationship('Skill', foreign_keys='Card.skill_id', lazy='joined')
-    center_skill: Mapped["CenterSkill"] = db.relationship('CenterSkill', foreign_keys='Card.center_skill_id', lazy='joined')
+    max_vocal: Mapped[int]
+    max_dance: Mapped[int]
+    max_visual: Mapped[int]
+    life: Mapped[int]
 
-    vocal = db.Column(db.Integer)
-    dance = db.Column(db.Integer)
-    visual = db.Column(db.Integer)
+    awake_vocal: Mapped[int]
+    awake_dance: Mapped[int]
+    awake_visual: Mapped[int]
 
-    max_vocal = db.Column(db.Integer)
-    max_dance = db.Column(db.Integer)
-    max_visual = db.Column(db.Integer)
-    life = db.Column(db.Integer)
+    max_awake_vocal: Mapped[int]
+    max_awake_dance: Mapped[int]
+    max_awake_visual: Mapped[int]
 
-    awake_vocal = db.Column(db.Integer)
-    awake_dance = db.Column(db.Integer)
-    awake_visual = db.Column(db.Integer)
+    max_master_rank: Mapped[int]
+    vocal_rank_bonus: Mapped[int]
+    dance_rank_bonus: Mapped[int]
+    visual_rank_bonus: Mapped[int]
 
-    max_awake_vocal = db.Column(db.Integer)
-    max_awake_dance = db.Column(db.Integer)
-    max_awake_visual = db.Column(db.Integer)
-
-    max_master_rank = db.Column(db.Integer)
-    vocal_rank_bonus = db.Column(db.Integer)
-    dance_rank_bonus = db.Column(db.Integer)
-    visual_rank_bonus = db.Column(db.Integer)
-
-    costumes: Mapped[List["Costume"]] = db.relationship('Costume', foreign_keys='Card.resc_id', lazy='joined')
+    costumes: Mapped["Costume"] = relationship('Costume',
+                                                     foreign_keys='Card.resc_id',
+                                                     lazy='joined')
 
     @property
     def icon(self):
@@ -261,7 +289,7 @@ class Card(db.Model):
 
     @property
     def serialize(self):
-        return {
+        to_serialize = {
             'id': self.id,
             'rescId': self.resc_id,
             'idolId': self.idol_id,
@@ -292,8 +320,10 @@ class Card(db.Model):
                 'danceRankBonus': self.dance_rank_bonus,
                 'visualRankBonus': self.visual_rank_bonus
             },
-            'costumes': self.costumes.serialize if self.costumes is not None else None
+            'costumes': self.costumes.serialize
         }
+
+        return to_serialize
 
     @property
     def mini_serialize(self):
@@ -307,5 +337,6 @@ class Card(db.Model):
             'event': self.event.serialize if self.event is not None else None
         }
 
+    @override
     def __repr__(self):
         return '<Card {}>'.format(self.card_name)
