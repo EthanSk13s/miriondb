@@ -1,6 +1,5 @@
-import jinja2
-
 from flask import Blueprint, jsonify, request, abort
+
 from mirion.models import Card
 from mirion.utils import enums
 
@@ -9,8 +8,8 @@ card_page = Blueprint("card", __name__)
 
 
 @card_page.route("/card/<card_id>")
-def card(card_id):
-    card: Card = Card.query.filter_by(id=card_id).first()
+def card(card_id: int):
+    card: Card | None = Card.query.filter_by(id=card_id).first()
     if card is not None:
         enums.set_enums(card)
 
@@ -21,10 +20,14 @@ def card(card_id):
 
 @card_page.route("/idol_query", methods=['POST'])
 def handle_query():
-    query = request.form.get('card-search').split(" ")
+    form = request.form.get("card-search")
+    if not form:
+        abort(404)
+
+    query = form.split(" ")
     release = None
-    got_idol = 0
-    got_rarity = 0
+    rarity = None
+    idol_id = 0
 
     if len(query) == 1:
         idol_id = enums.NAMES.get_id(query[0].lower())
@@ -33,17 +36,13 @@ def handle_query():
     for param in query:
         if param.isdigit():
             release = param
-        if got_idol == 0:
+        if not idol_id:
             idol_id = enums.NAMES.get_id(param.lower())
-            if idol_id is not None:
-                got_idol = 1
-            else:
+            if not idol_id:
                 abort(404)
 
-        if got_rarity == 0:
+        if not rarity:
             rarity = enums.get_rarity(param.lower())
-            if rarity is not None:
-                got_rarity = 1
 
     if release is not None:
         i = int(release) - 1
@@ -55,7 +54,7 @@ def handle_query():
         filters.append(Card.ex_type.notin_(enums.ANNIV_TYPES))
 
         try:
-            card = Card.query.filter(*filters).order_by(Card.id.asc()).all()[i]
+            card= Card.query.filter(*filters).order_by(Card.id.asc()).all()[i]
             return jsonify({'data': {'cardId': card.id}})
         except IndexError:
             abort(404)
@@ -67,14 +66,21 @@ def handle_query():
 def idol(id):
     if len(request.args) != 0:
         rarity = request.args.get('rarity')
-        cards = Card.query.filter_by(idol_id=id, rarity=rarity).order_by(Card.id.asc()).all()
+
+        if rarity:
+            cards = (
+                Card.query.filter_by(idol_id=id, rarity=rarity)
+                    .order_by(Card.id.asc()).all()
+            )
+        else:
+            cards = Card.query.filter_by(idol_id=id).order_by(Card.id.asc()).all()
     else:
         cards = Card.query.filter_by(idol_id=id).order_by(Card.id.asc()).all()
+    
+    if not cards:
+        return abort(404)
 
     for card in cards:
         enums.set_enums(card)
 
-    try:
-        return jsonify({'data': [card.serialize for card in cards]})
-    except jinja2.exceptions.UndefinedError:
-        abort(404)
+    return jsonify({'data': [card.serialize for card in cards]})

@@ -2,7 +2,7 @@
 import { inject, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-import type { AxiosResponse } from 'axios';
+import type { AxiosError, AxiosResponse } from 'axios';
 
 import CardVue from "@/components/Card.vue";
 import { Card } from '@/models';
@@ -27,12 +27,26 @@ function getCards(response: AxiosResponse) {
     }
 }
 
+function handleResponseError(error: AxiosError) {
+    if (error.response) {
+        if (error.response.status == 404) {
+            router.push({ 'name': 'NotFound' })
+        }
+    } else if (error.request) {
+        console.log(error.request)
+    } else {
+        console.log(error.config)
+    }
+}
+
 if (route.params.id && !route.params.rarity) {
     axios.get(`${API_URL}/idol/${route.params.id}`)
         .then(getCards)
+        .catch(handleResponseError)
 } else if (route.params.id && route.params.rarity) {
     axios.get(`${API_URL}/idol/${route.params.id}?rarity=${route.params.rarity}`)
         .then(getCards)
+        .catch(handleResponseError)
 }
 </script>
 
