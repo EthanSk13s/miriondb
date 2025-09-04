@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request, abort
+from sqlalchemy import select
 
+from mirion.database import db
 from mirion.models import Card
 from mirion.utils import enums
 
@@ -9,7 +11,11 @@ card_page = Blueprint("card", __name__)
 
 @card_page.route("/card/<card_id>")
 def card(card_id: int):
-    card: Card | None = Card.query.filter_by(id=card_id).first()
+    card = db.session.scalar(
+        select(Card)
+            .filter_by(id=card_id)
+    )
+
     if card is not None:
         enums.set_enums(card)
 
@@ -54,7 +60,12 @@ def handle_query():
         filters.append(Card.ex_type.notin_(enums.ANNIV_TYPES))
 
         try:
-            card= Card.query.filter(*filters).order_by(Card.id.asc()).all()[i]
+            card = db.session.scalars(
+                select(Card)
+                    .filter(*filters)
+                    .order_by(Card.id.asc())
+            ).all()[i]
+
             return jsonify({'data': {'cardId': card.id}})
         except IndexError:
             abort(404)
@@ -63,20 +74,19 @@ def handle_query():
 
 
 @card_page.route("/idol/<id>", methods=['GET'])
-def idol(id):
-    if len(request.args) != 0:
-        rarity = request.args.get('rarity')
+def idol(id: int):
+    rarity = request.args.get('rarity', type=int)
 
-        if rarity:
-            cards = (
-                Card.query.filter_by(idol_id=id, rarity=rarity)
-                    .order_by(Card.id.asc()).all()
-            )
-        else:
-            cards = Card.query.filter_by(idol_id=id).order_by(Card.id.asc()).all()
-    else:
-        cards = Card.query.filter_by(idol_id=id).order_by(Card.id.asc()).all()
-    
+    kwargs = {"idol_id": id}
+    if rarity:
+        kwargs["rarity"] = rarity
+
+    cards = db.session.scalars(
+        select(Card)
+            .filter_by(**kwargs)
+            .order_by(Card.id.asc())
+    ).all()
+
     if not cards:
         return abort(404)
 
