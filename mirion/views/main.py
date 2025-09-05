@@ -1,8 +1,11 @@
-from flask_sqlalchemy import pagination
 import sqlalchemy
 
-from flask import Blueprint, jsonify
+from collections.abc import Sequence
 
+from flask import Blueprint, jsonify, abort
+from sqlalchemy import select
+
+from mirion.database import db
 from mirion.models import Card, Event
 from mirion.utils import helpers
 
@@ -15,42 +18,57 @@ def resource_not_found(e):
 
 @main_page.route("/latest")
 def latest():
-    recent_datetime =  (
-        Card.query.filter(Card.event_id == None,
-                          Card.release != None,
-                          Card.idol_type != 5)
+    recent_datetime = db.session.scalar(
+        select(Card.release)
+            .filter(Card.event_id == None,
+                    Card.release != None,
+                    Card.idol_type != 5)
             .order_by(Card.release.desc())
-            .first().release
-    )
-    recent_additions = (
-        Card.query.filter(recent_datetime == Card.release,
-                          Card.event_id == None)
-            .order_by(Card.id.asc()).all()
     )
 
-    current_event: Event = Event.query.order_by(-Event.id).first()
+    if recent_datetime is None:
+        abort(404)
+    
+    recent_additions = db.session.scalars(
+        select(Card)
+            .filter(Card.release == recent_datetime,
+                    Card.event_id == None)
+            .order_by(Card.id.asc())
+    ).all()
+
+    current_event = db.session.scalar(
+        select(Event)
+            .order_by(-Event.id)
+    )
+
+    if current_event is None:
+        abort(404)
+
+    event_cards: Sequence[Card] = []
     if current_event.event_type in (3, 4, 5, 9, 11, 13, 16):
-        event_cards = (
-            Card.query.filter(Card.event_id == current_event.id,
-                              sqlalchemy.or_(Card.rarity.in_([3, 2]))).all()
-        )
+        event_cards = db.session.scalars(
+            select(Card)
+                .filter(Card.event_id == current_event.id,
+                        sqlalchemy.or_(Card.rarity.in_([3, 2])))
+        ).all()
 
-    previous_dates = (
-        Card.query.with_entities(Card.release)
-            .filter(recent_datetime != Card.release,
+    previous_dates = db.session.scalars(
+        select(Card.release)
+            .filter(Card.release != recent_datetime,
                     Card.event_id == None)
             .order_by(Card.release.desc())
-            .group_by(Card.release)[0:2]
-    )
+            .group_by(Card.release)
+    ).all()[0:2]
 
-    dates = [card.release for card in previous_dates]
-    previous_additions = (
-        Card.query.filter(Card.release.in_(dates))
-            .order_by(Card.release.desc()).all()
-    )
+    dates = [release for release in previous_dates]
+    previous_additions = db.session.scalars(
+        select(Card)
+            .filter(Card.release.in_(dates))
+            .order_by(Card.release.desc())
+    ).all()
 
-    sorted_additions = helpers.list_grouper(previous_additions,
-                                            helpers.check_for_release)
+    sorted_additions: list[list[Card]] = helpers.list_grouper(previous_additions,
+                                                              helpers.check_for_release)
     
     payload = {
         'currentEvent': 
@@ -74,19 +92,24 @@ def latest():
 
     return jsonify({'data': payload})
 
-@main_page.route("/history/<page>")
-def history(page):
-    dates: pagination.Pagination = Card.query.with_entities(Card.release).\
-        order_by(Card.release.desc()).group_by(Card.release).\
-        paginate(page=int(page), per_page=10, error_out=False)
-
-    # In docker, without making a copy of the dates list,
-    # and specifying the release column
-    # it throws a psycopg2 error (Can't adapt to type 'row')
-    new_dates = [date.release for date in dates.items]
+@main_page.route("/history/<int:page>")
+def history(page: int):    
+    dates = db.paginate(
+        select(Card.release)
+                .order_by(Card.release.desc())
+                .group_by(Card.release),
+        page = page,
+        per_page = 10,
+        error_out = False
+    )
 
     # TODO: Properly separate event cards from regular cards
-    paginated_cards = Card.query.filter(Card.release.in_(new_dates)).order_by(Card.release.desc()).all()
+    paginated_cards = db.session.scalars(
+        select(Card)
+            .filter(Card.release.in_(dates))
+            .order_by(Card.release.desc())
+    ).all()
+
     sorted_history = helpers.list_grouper(paginated_cards,
                                           helpers.check_for_release)
 
