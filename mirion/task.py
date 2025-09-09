@@ -2,13 +2,10 @@ from __future__ import annotations
 
 import logging
 import json
-import datetime
 
-import dateutil.parser
-
-from datetime import timezone
 from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler
+from sqlalchemy import select, update
 
 from mirion.utils import fetch
 from mirion.database import db
@@ -22,12 +19,13 @@ scheduler = APScheduler(scheduler=BackgroundScheduler(
     {'apscheduler.timezone': 'Asia/Tokyo'}))
 
 def add_changes_cards(changes: list[PryncessCard]):
-    card_rows: list[tuple[int]] = Card.query.with_entities(Card.id).all()
-    cards_in_db: list[int] = [id for id, in card_rows]
+    card_ids = db.session.scalars(
+        select(Card.id)
+    ).all()
     changes_ids: list[tuple[int, int]] = [(i, card.id) for i, card in enumerate(changes)]
 
     # Simple list comprehension to check if we have any changes. If not in db, then it's new.
-    differences: list[int] = [i for i, id in changes_ids if id not in cards_in_db]
+    differences: list[int] = [i for i, id in changes_ids if id not in card_ids]
 
     if len(differences) > 0:
         for diff in differences:
@@ -58,14 +56,32 @@ def check_for_master_ranks(changes: list[PryncessCard]):
     ssr_cards = [card for card in changes if card.rarity == 4]
     ssr_cards.sort(key=lambda x: x.id)
 
-    cards = Card.query.filter(Card.rarity == 4).order_by(Card.id)
+    cards = db.session.scalars(
+        select(Card)
+            .filter(Card.rarity == 4)
+            .order_by(Card.id)
+    ).all()
 
     for ssr_card, card in zip(ssr_cards, cards):
         if card.max_master_rank != ssr_card.max_master_rank:
-            Card.query.filter(Card.id == ssr_card.id).update({'max_master_rank': ssr_card.max_master_rank})
+            db.session.execute(
+                update(Card)
+                    .where(Card.id == ssr_card.id)
+                    .values(max_master_rank=ssr_card.max_master_rank)
+            )
 
-            costume = Costume.query.filter(card.resc_id == Costume.resc_id).first()
-            list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
+            costume = db.session.scalar(
+                select(Costume)
+                    .filter(Costume.resc_id == card.resc_id)
+            )
+
+            if costume is None:
+                logging.info(f"Costume for {card.id} is not present. Resource ID: {card.resc_id}.")
+                continue
+
+            list_of_costumes: list[str] = []
+            if costume.costume_resc_ids is not None:
+                list_of_costumes = json.loads(costume.costume_resc_ids.replace('\'', '"'))
 
             # For whatever reason, this can cause an error when
             # starting up for the first time
@@ -74,7 +90,11 @@ def check_for_master_ranks(changes: list[PryncessCard]):
             except AttributeError:
                 continue
 
-            Costume.query.filter(Costume.resc_id == card.resc_id).update({"costume_resc_ids": (str(list_of_costumes).replace('"', '\''))})
+            db.session.execute(
+                update(Costume)
+                    .where(Costume.resc_id == card.resc_id)
+                    .values(costume_resc_ids=(str(list_of_costumes).replace('"', '\'')))
+            )
 
             logging.info(f"{card.card_name}'s master rank has been updated")
 
@@ -115,5 +135,3 @@ def init_app(app):
 
             app.first_run = 1
             scheduler.start()
-    else:
-        pass
