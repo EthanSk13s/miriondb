@@ -36,17 +36,18 @@ def add_changes_cards(changes: list[PryncessCard]):
 
     db.session.commit()
 
-def add_changes_events(db_list: list, changes: list[PryncessEvent]):
-    # Works great, so fine to leave as is (for now)
-    diff = len(changes) - len(db_list)
-    num_of_changes = 0
-    if diff > 0:
-        for item in changes[-diff:]:
-            fetch.get_events(item, db)
-            num_of_changes += 1
+def add_changes_events(changes: list[PryncessEvent]):
+    event_ids = db.session.scalars(
+        select(Event.id)
+    ).all()
 
-    if num_of_changes > 0:
-        logging.info(f"{num_of_changes} events have been added")
+    changes_ids = [(i, event.id) for i, event in enumerate(changes)]
+    differences: list[int] = [i for i, id in changes_ids if id not in event_ids]
+
+    if len(differences) > 0:
+        for diff in differences:
+            fetch.get_events(changes[diff], db)
+        logging.info(f"{len(differences)} events have been added.")
     else:
         logging.info("No Changes found")
 
@@ -113,7 +114,7 @@ def add_to_database():
         client = app.pryncess
         card_changes = app.pryncess.get_all_cards(tl=True)
 
-        add_changes_events(Event.query.all(), client.get_all_events())
+        add_changes_events(client.get_all_events())
         add_changes_cards(card_changes)
         check_for_master_ranks(card_changes)
 
@@ -127,7 +128,7 @@ def init_app(app):
             card_changes = app.pryncess.get_all_cards(tl=True)
 
             logging.info("Startup checking for new events...")
-            add_changes_events(Event.query.all(), app.pryncess.get_all_events())
+            add_changes_events(app.pryncess.get_all_events())
 
             logging.info("Startup checking for new cards...")
             add_changes_cards(card_changes)

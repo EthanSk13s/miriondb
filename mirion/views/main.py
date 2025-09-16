@@ -38,7 +38,7 @@ def latest():
 
     current_event = db.session.scalar(
         select(Event)
-            .order_by(-Event.id)
+            .order_by(Event.begin.desc())
     )
 
     if current_event is None:
