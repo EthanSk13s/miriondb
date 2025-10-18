@@ -199,7 +199,8 @@ SKILL_TYPES = {
     12: "Double Effect",
     17: "Fusion Score",
     18: "Fusion Combo",
-    19: "Pure Boost"
+    19: "Overeffect",
+    20: "Pure Boost"
 }
 
 LEVEL_LIMITS = {
@@ -221,7 +222,7 @@ EVALUATIONS = {
 }
 
 INTERVAL_STRING = "Every {interval} seconds, there is a {probability}% chance"
-DURATION_STRING = "for {duration} seconds"
+DURATION_STRING = "for {duration} seconds."
 EFFECTS = {
     1: "of increasing {evaluation} scores by {value[0]}%",
     2: "of increasing the combo bonus by {value[0]}%",
@@ -237,7 +238,8 @@ EFFECTS = {
     12: "of boosting score and combo bonuses by {value[0]}%",
     17: "that your {evaluation} score will increase by {value[0]}. When there are two or more Score Up cards in the unit, the score of {evaluation2} is increased to {value[1]}, and when there are one or more cards that are Fusion Combo, {evaluation3} is set to Perfect",
     18: "that the combo bonus will increase by {value[0]}%. When there are two or more Combo Bonus cards in the unit, the skill activation rate will increase by {value[1]}%, and when there are one or more cards that are Fusion Score, Great/Good is set to Perfect",
-    19: "there is a {value[0]}% chance to consume {value[1]} Life and increase the effect amount of other skills' Score and Combo Bonuses"
+    19: "there is a {value[0]}% chance to consume {value[1]} Life and increase the effect amount of other skills' Score and Combo Bonuses",
+    20: "to increase Perfect score by {value[0]}% and combo bonus by {value[1]}%. Additionally, for each idol of the same type in your lineup, score and combo bonus increase by {value[2]}% each"
 }
 
 def set_enums(card):
